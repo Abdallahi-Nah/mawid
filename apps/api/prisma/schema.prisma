@@ -54,6 +54,7 @@ enum NotificationChannel {
   EMAIL
   WHATSAPP
   SMS
+  IN_APP
 }
 
 enum NotificationStatus {
@@ -77,6 +78,9 @@ model Business {
   plan             Plan        @default(FREE)
   bookingMode      BookingMode @default(AUTO) @map("booking_mode")
   cancelLimitHours Int         @default(24) @map("cancel_limit_hours")
+  minNoticeHours   Int         @default(2) @map("min_notice_hours")
+  maxDaysAhead     Int         @default(60) @map("max_days_ahead")
+  slotStepMin      Int         @default(15) @map("slot_step_min")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
 
@@ -248,12 +252,14 @@ model Customer {
   notes       String?
   visitsCount Int      @default(0) @map("visits_count")
   noShowCount Int      @default(0) @map("no_show_count")
+  userId      String?  @map("user_id")
   createdAt   DateTime @default(now()) @map("created_at")
 
   business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   bookings Booking[]
 
   @@unique([businessId, phone])
+  @@index([userId])
   @@map("customers")
 }
 
@@ -269,6 +275,8 @@ model Booking {
   source      BookingSource @default(WEB)
   price       Decimal       @db.Decimal(10, 2)
   notes       String?
+  bufferMin   Int           @default(0) @map("buffer_min")
+  locale      String        @default("ar")
   cancelToken String        @unique @default(uuid()) @map("cancel_token")
   createdAt   DateTime      @default(now()) @map("created_at")
 
@@ -329,12 +337,15 @@ model Notification {
   type       String
   status     NotificationStatus  @default(PENDING)
   sentAt     DateTime?           @map("sent_at")
+  readAt     DateTime?           @map("read_at")
+  createdAt  DateTime            @default(now()) @map("created_at")
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([businessId])
   @@index([bookingId])
+  @@index([businessId, channel, createdAt])
   @@map("notifications")
 }
 

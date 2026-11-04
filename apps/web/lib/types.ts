@@ -25,6 +25,9 @@ export interface BusinessDto {
   brandColor: string | null;
   bookingMode: 'AUTO' | 'MANUAL';
   cancelLimitHours: number;
+  minNoticeHours: number;
+  maxDaysAhead: number;
+  slotStepMin: number;
 }
 export interface ServiceDto {
   id: string;
@@ -50,3 +53,40 @@ export interface TimeOffDto {
   endsAt: string;
   reason: string | null;
 }
+
+export type ApiBookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+export interface OwnerBooking {
+  id: string;
+  status: ApiBookingStatus;
+  source: string;
+  startsAt: string;
+  endsAt: string;
+  price: number;
+  notes: string | null;
+  customer: { id: string; name: string; phone: string; email: string | null };
+  service: { id: string; name: string; durationMin: number };
+  staff: { id: string; displayName: string };
+}
+export interface CustomerSummary {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  visitsCount: number;
+  noShowCount: number;
+  bookingsCount: number;
+  lastBookingAt: string | null;
+}
+export interface CustomerDetail extends CustomerSummary {
+  notes: string | null;
+  createdAt: string;
+  history: {
+    id: string;
+    status: ApiBookingStatus;
+    startsAt: string;
+    price: number;
+    serviceName: string;
+    staffName: string;
+  }[];
+}
+export type { InAppNotification } from '@mawid/shared';

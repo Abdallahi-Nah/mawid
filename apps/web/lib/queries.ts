@@ -1,17 +1,25 @@
 'use client';
 
 import type {
+  InAppNotification,
+  ManualBookingInput,
+  MoveBookingInput,
   ServiceInput,
   ServiceUpdateInput,
   StaffInput,
   StaffUpdateInput,
   TimeOffInput,
   UpdateBusinessInput,
+  UpdateCustomerInput,
 } from '@mawid/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '@/lib/api';
 import type {
+  ApiBookingStatus,
   BusinessDto,
+  CustomerDetail,
+  CustomerSummary,
+  OwnerBooking,
   Page,
   ServiceDto,
   StaffDto,
@@ -141,3 +149,71 @@ export const useLogout = () => {
     onSettled: () => qc.clear(),
   });
 };
+
+// Bookings, customers and notifications (phase 3)
+export const useBookings = (from: string, to: string, enabled = true) =>
+  useQuery({
+    queryKey: ['bookings', from, to],
+    queryFn: () =>
+      api<Page<OwnerBooking>>(
+        `/bookings?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&pageSize=500`,
+      ),
+    enabled,
+    placeholderData: (prev) => prev,
+  });
+
+const REFRESH_BOOKINGS = [['bookings'], ['customers'], ['customer'], ['notifications']];
+export const useCreateManualBooking = () =>
+  useApiMutation(
+    (v: ManualBookingInput) => api<OwnerBooking>('/bookings', { method: 'POST', body: v }),
+    REFRESH_BOOKINGS,
+  );
+export const useMoveBooking = () =>
+  useApiMutation(
+    (v: { id: string; data: MoveBookingInput }) =>
+      api<OwnerBooking>(`/bookings/${v.id}`, { method: 'PATCH', body: v.data }),
+    REFRESH_BOOKINGS,
+  );
+export const useBookingStatus = () =>
+  useApiMutation(
+    (v: { id: string; status: ApiBookingStatus }) =>
+      api<OwnerBooking>(`/bookings/${v.id}/status`, {
+        method: 'PATCH',
+        body: { status: v.status },
+      }),
+    REFRESH_BOOKINGS,
+  );
+
+export const useCustomers = (q: string, page: number) =>
+  useQuery({
+    queryKey: ['customers', q, page],
+    queryFn: () =>
+      api<Page<CustomerSummary>>(
+        `/customers?page=${page}&pageSize=20${q ? `&q=${encodeURIComponent(q)}` : ''}`,
+      ),
+    placeholderData: (prev) => prev,
+  });
+export const useCustomer = (id: string) =>
+  useQuery({ queryKey: ['customer', id], queryFn: () => api<CustomerDetail>(`/customers/${id}`) });
+export const useUpdateCustomer = () =>
+  useApiMutation(
+    (v: { id: string; data: UpdateCustomerInput }) =>
+      api<CustomerDetail>(`/customers/${v.id}`, { method: 'PATCH', body: v.data }),
+    [['customer'], ['customers']],
+  );
+
+export const useNotifications = () =>
+  useQuery({
+    queryKey: ['notifications'],
+    queryFn: () =>
+      api<Page<InAppNotification> & { unreadCount: number }>('/notifications?pageSize=20'),
+    refetchInterval: 30_000,
+  });
+export const useReadNotifications = () =>
+  useApiMutation(
+    (id?: string) =>
+      id
+        ? api<void>(`/notifications/${id}/read`, { method: 'PATCH' })
+        : api<void>('/notifications/read-all', { method: 'POST' }),
+    [['notifications']],
+  );

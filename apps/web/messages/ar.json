@@ -352,7 +352,11 @@
     "successTitle": "تم حجز موعدك!",
     "successDesc": "أرسلنا لك تأكيدًا. نراك قريبًا.",
     "backToBusiness": "العودة إلى الصفحة",
-    "notSelected": "لم يتم الاختيار بعد"
+    "notSelected": "لم يتم الاختيار بعد",
+    "pendingDesc": "تم إرسال طلبك. يجب على النشاط تأكيده وستصلك رسالة.",
+    "addToCalendar": "أضف إلى تقويمي",
+    "icsFile": "ملف ‎.ics",
+    "manageLink": "عرض الموعد أو تغييره أو إلغاؤه"
   },
   "dash": {
     "nav": {
@@ -362,7 +366,8 @@
       "publicPage": "صفحتي العامة",
       "services": "الخدمات",
       "staff": "الفريق",
-      "settings": "الإعدادات"
+      "settings": "الإعدادات",
+      "customers": "الزبائن"
     },
     "greeting": "مرحبًا، {name}",
     "chart": {
@@ -404,7 +409,25 @@
     "more": "+{count} أخرى",
     "price": "السعر",
     "duration": "المدة",
-    "openDay": "فتح اليوم {date}"
+    "openDay": "فتح اليوم {date}",
+    "new": "موعد جديد",
+    "newTitle": "موعد جديد",
+    "newDesc": "لزبون اتصل أو حضر مباشرة.",
+    "choose": "اختر",
+    "time": "الوقت",
+    "notes": "ملاحظات",
+    "create": "إنشاء",
+    "created": "تم إنشاء الموعد",
+    "moved": "تم نقل الموعد",
+    "dragHint": "اسحب الموعد لنقله (يوم آخر أو وقت آخر).",
+    "moveTitle": "نقل الموعد",
+    "move": "نقل",
+    "action": {
+      "CONFIRMED": "تأكيد",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "إلغاء",
+      "NO_SHOW": "لم يحضر"
+    }
   },
   "auth": {
     "name": "الاسم",
@@ -497,7 +520,14 @@
     "FILE_REQUIRED": "اختر صورة",
     "TOO_MANY_REQUESTS": "محاولات كثيرة. انتظر دقيقة.",
     "PAYLOAD_TOO_LARGE": "الملف كبير جدًا (2 ميغابايت كحد أقصى)",
-    "CONFLICT": "هذه القيمة موجودة بالفعل"
+    "CONFLICT": "هذه القيمة موجودة بالفعل",
+    "SLOT_TAKEN": "تم حجز هذا الموعد للتو. اختر وقتًا آخر.",
+    "BOOKING_CLOSED": "لا يمكن تعديل هذا الحجز بعد الآن.",
+    "CHANGE_WINDOW_PASSED": "فات الوقت لتعديل هذا الحجز.",
+    "SERVICE_NOT_FOUND": "هذه الخدمة غير موجودة.",
+    "STAFF_NOT_FOUND": "هذا الموظف لا يقدّم هذه الخدمة.",
+    "INVALID_TRANSITION": "لا يمكن تغيير الحالة هكذا.",
+    "TOO_EARLY": "هذا الوقت قريب جدًا أو غير متاح."
   },
   "settings": {
     "title": "إعدادات النشاط",
@@ -530,7 +560,14 @@
     "brandColorReset": "اللون الافتراضي",
     "share": "رابط صفحتك",
     "copyLink": "نسخ الرابط",
-    "copied": "تم نسخ الرابط"
+    "copied": "تم نسخ الرابط",
+    "minNotice": "الحد الأدنى قبل الموعد (ساعات)",
+    "minNoticeHint": "لا يستطيع الزبائن الحجز في وقت أقرب من هذا.",
+    "maxDaysAhead": "الحجز ممكن حتى (أيام)",
+    "maxDaysAheadHint": "كم يومًا مسبقًا.",
+    "slotStep": "الفاصل بين المواعيد",
+    "slotStepHint": "الأوقات المعروضة تفصلها هذه المدة.",
+    "minutes": "{count} د"
   },
   "services": {
     "title": "الخدمات",
@@ -587,5 +624,50 @@
     "title": "الصفحة غير موجودة",
     "desc": "هذه الصفحة غير موجودة أو تم نقلها.",
     "home": "العودة إلى الرئيسية"
+  },
+  "manage": {
+    "title": "موعدك",
+    "place": "المكان",
+    "tooLate": "فات الوقت لتعديل هذا الموعد (الحد: {hours} ساعة قبله).",
+    "callUs": "اتصل بنا: {phone}",
+    "reschedule": "تغيير الموعد",
+    "cancel": "إلغاء الموعد",
+    "cancelTitle": "إلغاء هذا الموعد؟",
+    "cancelDesc": "سيتم تحرير الموعد. لا يمكن التراجع.",
+    "cancelConfirm": "نعم، ألغِ",
+    "pickNew": "اختر وقتًا جديدًا",
+    "confirmNew": "تأكيد الوقت الجديد",
+    "cancelled": "تم إلغاء الموعد",
+    "rescheduled": "تم نقل الموعد"
+  },
+  "customers": {
+    "title": "الزبائن",
+    "search": "ابحث بالاسم أو الهاتف أو البريد",
+    "noResultTitle": "لا يوجد زبون",
+    "noResultDesc": "جرّب بحثًا آخر.",
+    "emptyTitle": "لا زبائن بعد",
+    "emptyDesc": "يظهر زبائنك هنا بعد أول حجز.",
+    "visits": "{count} زيارات",
+    "noShows": "{count} غيابات",
+    "last": "الأخير: {date}",
+    "visitsLabel": "الزيارات",
+    "noShowsLabel": "الغيابات",
+    "notes": "ملاحظات خاصة",
+    "notesHint": "تظهر لك وحدك.",
+    "history": "السجل",
+    "noHistory": "لا توجد حجوزات."
+  },
+  "notif": {
+    "aria": "الإشعارات",
+    "ariaUnread": "الإشعارات ({count} غير مقروءة)",
+    "title": "الإشعارات",
+    "markAll": "تحديد الكل كمقروء",
+    "empty": "لا إشعارات",
+    "error": "تعذر تحميل الإشعارات.",
+    "types": {
+      "owner_new_booking": "حجز جديد من {name}",
+      "owner_cancelled": "ألغى {name} موعده",
+      "owner_changed": "غيّر {name} موعده"
+    }
   }
 }

@@ -58,16 +58,14 @@ describe('modules (integration, needs the database)', () => {
       const a = await owner();
       const b = await owner();
       const slug = `salon-${Date.now().toString(36)}`;
-      const ok = await a.agent
-        .patch('/businesses/me')
-        .send({
-          name: 'Salon Test',
-          slug,
-          phone: '+222 22 00 11 22',
-          category: 'salon',
-          brandColor: '#0f766e',
-          defaultLocale: 'fr',
-        });
+      const ok = await a.agent.patch('/businesses/me').send({
+        name: 'Salon Test',
+        slug,
+        phone: '+222 22 00 11 22',
+        category: 'salon',
+        brandColor: '#0f766e',
+        defaultLocale: 'fr',
+      });
       expect(ok.status).toBe(200);
       expect(ok.body).toMatchObject({ name: 'Salon Test', slug, category: 'salon' });
       const taken = await b.agent.patch('/businesses/me').send({ slug });
@@ -159,14 +157,12 @@ describe('modules (integration, needs the database)', () => {
       expect(overlap.status).toBe(400);
       expect((await agent.get(`/staff/${staff.body.id}/working-hours`)).body).toHaveLength(3); // unchanged after failures
 
-      const off = await agent
-        .post('/time-off')
-        .send({
-          staffId: null,
-          startsAt: '2026-12-25T00:00:00Z',
-          endsAt: '2026-12-26T00:00:00Z',
-          reason: 'Holiday',
-        });
+      const off = await agent.post('/time-off').send({
+        staffId: null,
+        startsAt: '2026-12-25T00:00:00Z',
+        endsAt: '2026-12-26T00:00:00Z',
+        reason: 'Holiday',
+      });
       expect(off.status).toBe(201);
       expect(
         (
@@ -271,14 +267,28 @@ describe('modules (integration, needs the database)', () => {
         .put(`/staff/${st.id}/working-hours`)
         .send([{ weekday: 1, startTime: '09:00', endTime: '17:00' }])
         .expect(200);
+      const booking = (
+        await a.agent.post('/bookings').send({
+          serviceId: svc.id,
+          staffId: st.id,
+          startsAt: '2030-01-07T10:00:00Z',
+          customer: { name: 'Client A', phone: '+22233111111' },
+        })
+      ).body;
+      const alert = await prisma.notification.create({
+        data: {
+          businessId: a.businessId,
+          bookingId: booking.id,
+          channel: 'IN_APP',
+          type: 'owner_new_booking',
+        },
+      });
       const off = (
-        await a.agent
-          .post('/time-off')
-          .send({
-            staffId: st.id,
-            startsAt: '2026-12-25T00:00:00Z',
-            endsAt: '2026-12-26T00:00:00Z',
-          })
+        await a.agent.post('/time-off').send({
+          staffId: st.id,
+          startsAt: '2026-12-25T00:00:00Z',
+          endsAt: '2026-12-26T00:00:00Z',
+        })
       ).body;
 
       const calls: [string, string, (r: request.Test) => request.Test][] = [
@@ -297,6 +307,12 @@ describe('modules (integration, needs the database)', () => {
         ],
         ['PATCH', `/time-off/${off.id}`, (r) => r.send({ reason: 'hacked' })],
         ['DELETE', `/time-off/${off.id}`, (r) => r],
+        ['GET', `/bookings/${booking.id}`, (r) => r],
+        ['GET', `/customers/${booking.customer.id}`, (r) => r],
+        ['PATCH', `/customers/${booking.customer.id}`, (r) => r.send({ notes: 'hacked' })],
+        ['PATCH', `/notifications/${alert.id}/read`, (r) => r],
+        ['PATCH', `/bookings/${booking.id}`, (r) => r.send({ startsAt: '2030-01-07T12:00:00Z' })],
+        ['PATCH', `/bookings/${booking.id}/status`, (r) => r.send({ status: 'CANCELLED' })],
       ];
       for (const [method, path, build] of calls) {
         const res = await build(
@@ -314,19 +330,28 @@ describe('modules (integration, needs the database)', () => {
       ).toBe(400);
       expect(
         (
-          await b.agent
-            .post('/time-off')
-            .send({
-              staffId: st.id,
-              startsAt: '2026-12-25T00:00:00Z',
-              endsAt: '2026-12-26T00:00:00Z',
-            })
+          await b.agent.post('/time-off').send({
+            staffId: st.id,
+            startsAt: '2026-12-25T00:00:00Z',
+            endsAt: '2026-12-26T00:00:00Z',
+          })
         ).status,
       ).toBe(400);
       const own = (await b.agent.post('/staff').send({ displayName: 'B staff' })).body;
       expect((await b.agent.patch(`/staff/${own.id}`).send({ serviceIds: [svc.id] })).status).toBe(
         400,
       );
+
+      const foreign = await b.agent.post('/bookings').send({
+        serviceId: svc.id,
+        staffId: st.id,
+        startsAt: '2030-01-08T10:00:00Z',
+        customer: { name: 'Client B', phone: '+22233222222' },
+      });
+      expect(foreign.status).toBe(404);
+      expect((await b.agent.get('/bookings')).body.total).toBe(0);
+      expect((await b.agent.get('/customers')).body.total).toBe(0);
+      expect((await b.agent.get('/notifications')).body.total).toBe(0);
 
       // Lists never contain A's rows.
       expect((await b.agent.get('/services')).body.total).toBe(0);
@@ -344,6 +369,11 @@ describe('modules (integration, needs the database)', () => {
         serviceIds: [svc.id],
       });
       expect((await a.agent.get(`/staff/${st.id}/working-hours`)).body).toHaveLength(1);
+      expect((await a.agent.get(`/bookings/${booking.id}`)).body.status).toBe('CONFIRMED');
+      expect((await a.agent.get(`/customers/${booking.customer.id}`)).body.notes).toBeNull();
+      expect(
+        (await prisma.notification.findUniqueOrThrow({ where: { id: alert.id } })).readAt,
+      ).toBeNull();
       expect((await a.agent.get('/time-off')).body.items[0].reason).toBeNull();
     });
 
@@ -370,6 +400,12 @@ describe('modules (integration, needs the database)', () => {
           'POST /staff/:id/photo',
           'GET /staff/:id/working-hours',
           'PUT /staff/:id/working-hours',
+          'GET /bookings/:id',
+          'GET /customers/:id',
+          'PATCH /customers/:id',
+          'PATCH /notifications/:id/read',
+          'PATCH /bookings/:id',
+          'PATCH /bookings/:id/status',
           'PATCH /time-off/:id',
           'DELETE /time-off/:id',
         ].sort(),

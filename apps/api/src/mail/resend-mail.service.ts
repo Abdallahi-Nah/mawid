@@ -21,6 +21,11 @@ export class ResendMailService extends MailService {
       subject: message.subject,
       text: message.text,
       html: message.html,
+      attachments: message.attachments?.map((a) => ({
+        filename: a.filename,
+        content: Buffer.from(a.content),
+        contentType: a.contentType,
+      })),
     });
     if (error) throw new Error(`Resend error: ${error.message}`);
   }

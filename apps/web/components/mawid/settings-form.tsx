@@ -46,6 +46,9 @@ export function SettingsForm() {
     brandColor: '',
     bookingMode: 'AUTO',
     cancelLimitHours: '24',
+    minNoticeHours: '2',
+    maxDaysAhead: '60',
+    slotStepMin: '15',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string>();
@@ -66,6 +69,9 @@ export function SettingsForm() {
         brandColor: b.brandColor ?? '',
         bookingMode: b.bookingMode,
         cancelLimitHours: String(b.cancelLimitHours),
+        minNoticeHours: String(b.minNoticeHours),
+        maxDaysAhead: String(b.maxDaysAhead),
+        slotStepMin: String(b.slotStepMin),
       });
     }
   }, [biz.data]);
@@ -104,6 +110,9 @@ export function SettingsForm() {
       ...v,
       category: v.category || undefined,
       cancelLimitHours: Number(v.cancelLimitHours),
+      minNoticeHours: Number(v.minNoticeHours),
+      maxDaysAhead: Number(v.maxDaysAhead),
+      slotStepMin: Number(v.slotStepMin),
     });
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
@@ -291,6 +300,62 @@ export function SettingsForm() {
             value={v.cancelLimitHours}
             onChange={set('cancelLimitHours')}
           />
+        </Field>
+        <Field
+          id="s-notice"
+          label={t('settings.minNotice')}
+          error={err('minNoticeHours')}
+          hint={t('settings.minNoticeHint')}
+        >
+          <Input
+            id="s-notice"
+            type="number"
+            min={0}
+            max={720}
+            dir="ltr"
+            className="text-start"
+            value={v.minNoticeHours}
+            onChange={set('minNoticeHours')}
+          />
+        </Field>
+        <Field
+          id="s-ahead"
+          label={t('settings.maxDaysAhead')}
+          error={err('maxDaysAhead')}
+          hint={t('settings.maxDaysAheadHint')}
+        >
+          <Input
+            id="s-ahead"
+            type="number"
+            min={1}
+            max={365}
+            dir="ltr"
+            className="text-start"
+            value={v.maxDaysAhead}
+            onChange={set('maxDaysAhead')}
+          />
+        </Field>
+        <Field
+          id="s-step"
+          label={t('settings.slotStep')}
+          error={err('slotStepMin')}
+          hint={t('settings.slotStepHint')}
+        >
+          <Select
+            value={v.slotStepMin}
+            onValueChange={(c) => setV((x) => ({ ...x, slotStepMin: c }))}
+          >
+            <SelectTrigger id="s-step">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 15, 20, 30, 60].map((m) => (
+                <SelectItem key={m} value={String(m)}>
+                  {t('settings.minutes', { count: m })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
         <Field
           id="s-color"
