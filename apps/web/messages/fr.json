@@ -352,7 +352,11 @@
     "successTitle": "Votre rendez-vous est réservé !",
     "successDesc": "Nous vous avons envoyé une confirmation. À bientôt.",
     "backToBusiness": "Retour à la page",
-    "notSelected": "Pas encore choisi"
+    "notSelected": "Pas encore choisi",
+    "pendingDesc": "Votre demande est envoyée. Le commerce doit la confirmer. Vous recevrez un message.",
+    "addToCalendar": "Ajouter à mon calendrier",
+    "icsFile": "Fichier .ics",
+    "manageLink": "Voir, déplacer ou annuler"
   },
   "dash": {
     "nav": {
@@ -362,7 +366,8 @@
       "publicPage": "Ma page publique",
       "services": "Services",
       "staff": "Équipe",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "customers": "Clients"
     },
     "greeting": "Bonjour, {name}",
     "chart": {
@@ -404,7 +409,25 @@
     "more": "+{count} autres",
     "price": "Prix",
     "duration": "Durée",
-    "openDay": "Ouvrir le {date}"
+    "openDay": "Ouvrir le {date}",
+    "new": "Nouveau rendez-vous",
+    "newTitle": "Nouveau rendez-vous",
+    "newDesc": "Pour un client qui appelle ou qui vient sur place.",
+    "choose": "Choisir",
+    "time": "Heure",
+    "notes": "Notes",
+    "create": "Créer",
+    "created": "Rendez-vous créé",
+    "moved": "Rendez-vous déplacé",
+    "dragHint": "Glissez un rendez-vous pour le déplacer (autre jour ou autre heure).",
+    "moveTitle": "Déplacer le rendez-vous",
+    "move": "Déplacer",
+    "action": {
+      "CONFIRMED": "Confirmer",
+      "COMPLETED": "Terminé",
+      "CANCELLED": "Annuler",
+      "NO_SHOW": "Absent"
+    }
   },
   "auth": {
     "name": "Nom",
@@ -497,7 +520,14 @@
     "FILE_REQUIRED": "Choisissez une image",
     "TOO_MANY_REQUESTS": "Trop d’essais. Attendez une minute.",
     "PAYLOAD_TOO_LARGE": "Fichier trop gros (2 Mo maximum)",
-    "CONFLICT": "Cette valeur existe déjà"
+    "CONFLICT": "Cette valeur existe déjà",
+    "SLOT_TAKEN": "Ce créneau vient d'être pris. Choisissez un autre horaire.",
+    "BOOKING_CLOSED": "Ce rendez-vous ne peut plus être modifié.",
+    "CHANGE_WINDOW_PASSED": "Il est trop tard pour modifier ce rendez-vous.",
+    "SERVICE_NOT_FOUND": "Ce service n'existe pas.",
+    "STAFF_NOT_FOUND": "Cet employé ne fait pas ce service.",
+    "INVALID_TRANSITION": "Ce changement de statut n'est pas possible.",
+    "TOO_EARLY": "Cet horaire est trop proche ou non disponible."
   },
   "settings": {
     "title": "Réglages du commerce",
@@ -530,7 +560,14 @@
     "brandColorReset": "Couleur par défaut",
     "share": "Lien de votre page",
     "copyLink": "Copier le lien",
-    "copied": "Lien copié"
+    "copied": "Lien copié",
+    "minNotice": "Délai minimum avant un rendez-vous (heures)",
+    "minNoticeHint": "Les clients ne peuvent pas réserver plus près que ça.",
+    "maxDaysAhead": "Réservation possible jusqu'à (jours)",
+    "maxDaysAheadHint": "Combien de jours à l'avance.",
+    "slotStep": "Pas des créneaux",
+    "slotStepHint": "Les horaires proposés sont espacés de cette durée.",
+    "minutes": "{count} min"
   },
   "services": {
     "title": "Services",
@@ -587,5 +624,50 @@
     "title": "Page introuvable",
     "desc": "Cette page n'existe pas ou a été déplacée.",
     "home": "Retour à l'accueil"
+  },
+  "manage": {
+    "title": "Votre rendez-vous",
+    "place": "Lieu",
+    "tooLate": "Il est trop tard pour modifier ce rendez-vous (limite : {hours} h avant).",
+    "callUs": "Appelez-nous : {phone}",
+    "reschedule": "Changer l'horaire",
+    "cancel": "Annuler le rendez-vous",
+    "cancelTitle": "Annuler ce rendez-vous ?",
+    "cancelDesc": "Le créneau sera libéré. Cette action est définitive.",
+    "cancelConfirm": "Oui, annuler",
+    "pickNew": "Choisissez un nouvel horaire",
+    "confirmNew": "Confirmer le nouvel horaire",
+    "cancelled": "Rendez-vous annulé",
+    "rescheduled": "Rendez-vous déplacé"
+  },
+  "customers": {
+    "title": "Clients",
+    "search": "Chercher par nom, téléphone ou email",
+    "noResultTitle": "Aucun client trouvé",
+    "noResultDesc": "Essayez une autre recherche.",
+    "emptyTitle": "Pas encore de clients",
+    "emptyDesc": "Vos clients apparaissent ici après leur première réservation.",
+    "visits": "{count} visites",
+    "noShows": "{count} absences",
+    "last": "dernier : {date}",
+    "visitsLabel": "Visites",
+    "noShowsLabel": "Absences",
+    "notes": "Notes privées",
+    "notesHint": "Visible seulement par vous.",
+    "history": "Historique",
+    "noHistory": "Aucune réservation."
+  },
+  "notif": {
+    "aria": "Notifications",
+    "ariaUnread": "Notifications ({count} non lues)",
+    "title": "Notifications",
+    "markAll": "Tout marquer comme lu",
+    "empty": "Aucune notification",
+    "error": "Impossible de charger les notifications.",
+    "types": {
+      "owner_new_booking": "Nouvelle réservation de {name}",
+      "owner_cancelled": "{name} a annulé",
+      "owner_changed": "{name} a changé son horaire"
+    }
   }
 }

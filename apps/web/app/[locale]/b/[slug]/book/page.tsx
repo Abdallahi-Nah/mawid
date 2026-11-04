@@ -11,7 +11,7 @@ export default async function BookPage({
   searchParams,
 }: {
   params: { locale: string; slug: string };
-  searchParams: { service?: string; state?: string };
+  searchParams: { service?: string };
 }) {
   setRequestLocale(params.locale);
   const t = await getTranslations();
@@ -44,11 +44,7 @@ export default async function BookPage({
           <h1 className="text-2xl font-bold tracking-tight">{t('book.title')}</h1>
           <p className="text-muted-foreground">{t('book.at', { business: business.name })}</p>
         </div>
-        <BookingFlow
-          data={business}
-          initialService={searchParams.service}
-          forceSlotsError={searchParams.state === 'error'}
-        />
+        <BookingFlow data={business} initialService={searchParams.service} />
       </main>
     </div>
   );

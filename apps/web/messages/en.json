@@ -352,7 +352,11 @@
     "successTitle": "Your appointment is booked!",
     "successDesc": "We sent you a confirmation. See you soon.",
     "backToBusiness": "Back to the page",
-    "notSelected": "Not chosen yet"
+    "notSelected": "Not chosen yet",
+    "pendingDesc": "Your request was sent. The business must confirm it. You will get a message.",
+    "addToCalendar": "Add to my calendar",
+    "icsFile": ".ics file",
+    "manageLink": "View, move or cancel"
   },
   "dash": {
     "nav": {
@@ -362,7 +366,8 @@
       "publicPage": "My public page",
       "services": "Services",
       "staff": "Team",
-      "settings": "Settings"
+      "settings": "Settings",
+      "customers": "Customers"
     },
     "greeting": "Hello, {name}",
     "chart": {
@@ -404,7 +409,25 @@
     "more": "+{count} more",
     "price": "Price",
     "duration": "Duration",
-    "openDay": "Open {date}"
+    "openDay": "Open {date}",
+    "new": "New appointment",
+    "newTitle": "New appointment",
+    "newDesc": "For a customer who phones or walks in.",
+    "choose": "Choose",
+    "time": "Time",
+    "notes": "Notes",
+    "create": "Create",
+    "created": "Appointment created",
+    "moved": "Appointment moved",
+    "dragHint": "Drag an appointment to move it (other day or other time).",
+    "moveTitle": "Move the appointment",
+    "move": "Move",
+    "action": {
+      "CONFIRMED": "Confirm",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancel",
+      "NO_SHOW": "No-show"
+    }
   },
   "auth": {
     "name": "Name",
@@ -497,7 +520,14 @@
     "FILE_REQUIRED": "Choose an image",
     "TOO_MANY_REQUESTS": "Too many attempts. Wait a minute.",
     "PAYLOAD_TOO_LARGE": "File too large (2 MB maximum)",
-    "CONFLICT": "This value already exists"
+    "CONFLICT": "This value already exists",
+    "SLOT_TAKEN": "This slot was just taken. Please choose another time.",
+    "BOOKING_CLOSED": "This booking can no longer be changed.",
+    "CHANGE_WINDOW_PASSED": "It is too late to change this booking.",
+    "SERVICE_NOT_FOUND": "This service does not exist.",
+    "STAFF_NOT_FOUND": "This employee does not do this service.",
+    "INVALID_TRANSITION": "This status change is not possible.",
+    "TOO_EARLY": "This time is too soon or not available."
   },
   "settings": {
     "title": "Business settings",
@@ -530,7 +560,14 @@
     "brandColorReset": "Default color",
     "share": "Your page link",
     "copyLink": "Copy link",
-    "copied": "Link copied"
+    "copied": "Link copied",
+    "minNotice": "Minimum notice before an appointment (hours)",
+    "minNoticeHint": "Customers cannot book closer than this.",
+    "maxDaysAhead": "Booking possible up to (days)",
+    "maxDaysAheadHint": "How many days in advance.",
+    "slotStep": "Slot step",
+    "slotStepHint": "Offered times are spaced by this duration.",
+    "minutes": "{count} min"
   },
   "services": {
     "title": "Services",
@@ -587,5 +624,50 @@
     "title": "Page not found",
     "desc": "This page does not exist or has been moved.",
     "home": "Back to home"
+  },
+  "manage": {
+    "title": "Your appointment",
+    "place": "Place",
+    "tooLate": "It is too late to change this appointment (limit: {hours} h before).",
+    "callUs": "Call us: {phone}",
+    "reschedule": "Change the time",
+    "cancel": "Cancel appointment",
+    "cancelTitle": "Cancel this appointment?",
+    "cancelDesc": "The slot will be freed. This cannot be undone.",
+    "cancelConfirm": "Yes, cancel",
+    "pickNew": "Choose a new time",
+    "confirmNew": "Confirm new time",
+    "cancelled": "Appointment cancelled",
+    "rescheduled": "Appointment moved"
+  },
+  "customers": {
+    "title": "Customers",
+    "search": "Search by name, phone or email",
+    "noResultTitle": "No customer found",
+    "noResultDesc": "Try another search.",
+    "emptyTitle": "No customers yet",
+    "emptyDesc": "Your customers appear here after their first booking.",
+    "visits": "{count} visits",
+    "noShows": "{count} no-shows",
+    "last": "last: {date}",
+    "visitsLabel": "Visits",
+    "noShowsLabel": "No-shows",
+    "notes": "Private notes",
+    "notesHint": "Only you can see this.",
+    "history": "History",
+    "noHistory": "No bookings."
+  },
+  "notif": {
+    "aria": "Notifications",
+    "ariaUnread": "Notifications ({count} unread)",
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "empty": "No notifications",
+    "error": "Could not load notifications.",
+    "types": {
+      "owner_new_booking": "New booking from {name}",
+      "owner_cancelled": "{name} cancelled",
+      "owner_changed": "{name} changed the time"
+    }
   }
 }

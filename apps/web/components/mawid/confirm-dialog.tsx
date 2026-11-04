@@ -19,6 +19,7 @@ export function ConfirmDialog({
   description,
   error,
   busy,
+  confirmLabel,
   onConfirm,
 }: {
   open: boolean;
@@ -27,6 +28,7 @@ export function ConfirmDialog({
   description: string;
   error?: string;
   busy?: boolean;
+  confirmLabel?: string;
   onConfirm: () => void;
 }) {
   const t = useTranslations('common');
@@ -51,7 +53,7 @@ export function ConfirmDialog({
           </Button>
           <Button variant="destructive" disabled={busy} onClick={onConfirm}>
             {busy && <Spinner />}
-            {t('delete')}
+            {confirmLabel ?? t('delete')}
           </Button>
         </DialogFooter>
       </DialogContent>

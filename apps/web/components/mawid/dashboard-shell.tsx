@@ -3,6 +3,7 @@
 import {
   CalendarDays,
   ExternalLink,
+  Contact,
   LayoutDashboard,
   Scissors,
   Settings,
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
+import { NotificationBell } from '@/components/mawid/notification-bell';
 import { Link, usePathname } from '@/i18n/navigation';
 import { useBusiness, useMe } from '@/lib/queries';
 import { cn } from '@/lib/utils';
@@ -17,6 +19,7 @@ import { cn } from '@/lib/utils';
 const items = [
   { href: '/dashboard', key: 'dashboard', Icon: LayoutDashboard, ownerOnly: false },
   { href: '/dashboard/calendar', key: 'calendar', Icon: CalendarDays, ownerOnly: false },
+  { href: '/dashboard/customers', key: 'customers', Icon: Contact, ownerOnly: false },
   { href: '/dashboard/services', key: 'services', Icon: Scissors, ownerOnly: true },
   { href: '/dashboard/staff', key: 'staff', Icon: Users, ownerOnly: true },
   { href: '/dashboard/settings', key: 'settings', Icon: Settings, ownerOnly: true },
@@ -34,7 +37,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <aside className="sticky top-20 hidden h-fit w-56 shrink-0 py-6 lg:block">
         <nav aria-label={t('aria')} className="flex flex-col gap-1">
           {visible.map(({ href, key, Icon }) => {
-            const active = pathname === href;
+            const active =
+              pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'));
             return (
               <Link
                 key={href}
@@ -64,7 +68,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </nav>
       </aside>
 
-      <main className="min-w-0 flex-1 py-6 pb-24 lg:pb-8">{children}</main>
+      <main className="min-w-0 flex-1 py-6 pb-24 lg:pb-8">
+        <div className="mb-4 flex justify-end">
+          <NotificationBell />
+        </div>
+        {children}
+      </main>
 
       <nav
         aria-label={t('aria')}
@@ -72,19 +81,20 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         className="fixed inset-x-0 bottom-0 z-30 grid border-t bg-background/95 backdrop-blur lg:hidden"
       >
         {visible.map(({ href, key, Icon }) => {
-          const active = pathname === href;
+          const active =
+            pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'));
           return (
             <Link
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium',
+                'flex h-16 min-w-0 flex-col items-center justify-center gap-1 px-0.5 text-[11px] font-medium',
                 active ? 'text-primary' : 'text-muted-foreground',
               )}
             >
               <Icon aria-hidden className="size-5" />
-              {t(key)}
+              <span className="w-full truncate text-center">{t(key)}</span>
             </Link>
           );
         })}

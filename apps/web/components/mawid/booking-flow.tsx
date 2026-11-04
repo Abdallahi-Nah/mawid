@@ -1,9 +1,16 @@
 'use client';
 
-import { customerDetailsSchema } from '@mawid/shared';
-import { Check } from 'lucide-react';
+import {
+  bookingCustomerSchema,
+  type CreateBookingInput,
+  type PublicBookingView,
+  type SlotsResponse,
+} from '@mawid/shared';
+import { useQuery } from '@tanstack/react-query';
+import { CalendarPlus, Check } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { DatePicker } from '@/components/mawid/date-picker';
 import { EmptyState } from '@/components/mawid/empty-state';
 import { ErrorState } from '@/components/mawid/error-state';
@@ -19,11 +26,13 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
+import { api, ApiError } from '@/lib/api';
+import { errorMessage } from '@/lib/errors';
 import { formatDate, formatPrice } from '@/lib/format';
+import { toISO } from '@/lib/calendar';
+import { timeTz } from '@/lib/tz';
 import type { PublicBusiness } from '@mawid/shared';
-import { slotsFor } from '@/lib/mock';
 
-type SlotsState = 'idle' | 'loading' | 'ready' | 'error';
 type Errors = Partial<Record<'name' | 'phone' | 'email', string>>;
 
 const initials = (name: string) =>
@@ -36,11 +45,9 @@ const initials = (name: string) =>
 export function BookingFlow({
   data,
   initialService,
-  forceSlotsError,
 }: {
   data: Pick<PublicBusiness, 'slug' | 'services' | 'staff'>;
   initialService?: string;
-  forceSlotsError?: boolean;
 }) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
@@ -52,8 +59,9 @@ export function BookingFlow({
   );
   const [staffId, setStaffId] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>();
-  const [time, setTime] = useState<string | undefined>();
-  const [slotsState, setSlotsState] = useState<SlotsState>('idle');
+  const [startsAt, setStartsAt] = useState<string | undefined>();
+  const [booked, setBooked] = useState<PublicBookingView | null>(null);
+  const [formError, setFormError] = useState<string>();
   const [values, setValues] = useState({ name: '', phone: '', email: '' });
   const [errors, setErrors] = useState<Errors>({});
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -62,16 +70,32 @@ export function BookingFlow({
   const steps = (['service', 'staff', 'datetime', 'details'] as const).map((k) => t(`steps.${k}`));
   const service = data.services.find((s) => s.id === serviceId);
   const team = data.staff.filter((m) => !serviceId || m.serviceIds.includes(serviceId));
-  const slots = useMemo(() => (date ? slotsFor(date) : []), [date]);
+  const dateKey = date ? toISO(date) : undefined;
+  const slotsQuery = useQuery({
+    queryKey: ['slots', data.slug, serviceId, staffId, dateKey],
+    queryFn: () =>
+      api<SlotsResponse>(
+        `/public/businesses/${data.slug}/slots?serviceId=${serviceId}&date=${dateKey}${
+          staffId && staffId !== 'any' ? `&staffId=${staffId}` : ''
+        }`,
+      ),
+    enabled: !!serviceId && !!staffId && !!dateKey,
+    staleTime: 0,
+  });
+  const tz = slotsQuery.data?.timezone ?? 'UTC';
+  const slots = useMemo(() => {
+    const seen = new Map<string, string>(); // HH:mm -> ISO start (one button per time)
+    for (const sl of slotsQuery.data?.slots ?? []) {
+      const time = timeTz(sl.start, tz);
+      if (!seen.has(time)) seen.set(time, sl.start);
+    }
+    return Array.from(seen.entries()).map(([time, start]) => ({ time, start }));
+  }, [slotsQuery.data, tz]);
+  const time = startsAt ? timeTz(startsAt, tz) : undefined;
+  const slotsState = slotsQuery.isError ? 'error' : slotsQuery.isFetching ? 'loading' : 'ready';
 
-  // Simulated loading of the slots when the date changes.
-  useEffect(() => {
-    if (!date) return;
-    setSlotsState('loading');
-    setTime(undefined);
-    const id = setTimeout(() => setSlotsState(forceSlotsError ? 'error' : 'ready'), 450);
-    return () => clearTimeout(id);
-  }, [date, forceSlotsError]);
+  // A chosen time is only valid for the service and employee it was loaded for.
+  useEffect(() => setStartsAt(undefined), [serviceId, staffId]);
 
   // Move focus to the step title for keyboard and screen reader users.
   useEffect(() => {
@@ -79,12 +103,12 @@ export function BookingFlow({
     mounted.current = true;
   }, [step, done]);
 
-  const canNext = [!!serviceId, !!staffId, !!date && !!time, true][step];
+  const canNext = [!!serviceId, !!staffId, !!date && !!startsAt, true][step];
   const staffName =
     staffId === 'any' ? t('book.anyone') : data.staff.find((m) => m.id === staffId)?.displayName;
 
   async function submit() {
-    const parsed = customerDetailsSchema.safeParse(values);
+    const parsed = bookingCustomerSchema.safeParse(values);
     if (!parsed.success) {
       const next: Errors = {};
       for (const issue of parsed.error.issues) {
@@ -94,11 +118,34 @@ export function BookingFlow({
       setErrors(next);
       return;
     }
+    if (!serviceId || !startsAt) return;
     setErrors({});
+    setFormError(undefined);
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900)); // mock: no backend yet
-    setSubmitting(false);
-    setDone(true);
+    const body: CreateBookingInput = {
+      businessSlug: data.slug,
+      serviceId,
+      staffId: staffId === 'any' ? null : staffId,
+      startsAt,
+      customer: parsed.data,
+      locale,
+    };
+    try {
+      setBooked(await api<PublicBookingView>('/public/bookings', { method: 'POST', body }));
+      setDone(true);
+    } catch (e) {
+      if (e instanceof ApiError && e.code === 'SLOT_TAKEN') {
+        // Someone was faster: go back to the slots, refreshed.
+        toast.error(t('apiErrors.SLOT_TAKEN'));
+        setStartsAt(undefined);
+        setStep(2);
+        void slotsQuery.refetch();
+      } else {
+        setFormError(errorMessage(t, e));
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const summary = (
@@ -160,8 +207,31 @@ export function BookingFlow({
         >
           {t('book.successTitle')}
         </h1>
-        <p className="text-muted-foreground">{t('book.successDesc')}</p>
+        <p className="text-muted-foreground">
+          {booked?.status === 'PENDING' ? t('book.pendingDesc') : t('book.successDesc')}
+        </p>
         <div className="w-full text-start">{summary}</div>
+        {booked && (
+          <div className="flex w-full flex-col gap-2">
+            <p className="flex items-center justify-center gap-2 text-sm font-medium">
+              <CalendarPlus aria-hidden className="size-4" />
+              {t('book.addToCalendar')}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button asChild variant="outline">
+                <a href={booked.icsUrl}>{t('book.icsFile')}</a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href={booked.googleCalendarUrl} target="_blank" rel="noopener noreferrer">
+                  Google
+                </a>
+              </Button>
+            </div>
+            <Button asChild variant="ghost">
+              <Link href={`/booking/${booked.cancelToken}`}>{t('book.manageLink')}</Link>
+            </Button>
+          </div>
+        )}
         <Button asChild className="w-full">
           <Link href={`/b/${data.slug}`}>{t('book.backToBusiness')}</Link>
         </Button>
@@ -190,7 +260,7 @@ export function BookingFlow({
           </h2>
 
           {step === 0 && (
-            <div className="grid gap-3">
+            <div className="grid grid-cols-1 gap-3">
               {data.services.map((s) => (
                 <ServiceCard
                   key={s.id}
@@ -215,7 +285,7 @@ export function BookingFlow({
           )}
 
           {step === 1 && (
-            <div role="radiogroup" aria-label={t('steps.staff')} className="grid gap-3">
+            <div role="radiogroup" aria-label={t('steps.staff')} className="grid grid-cols-1 gap-3">
               <StaffCard
                 name={t('book.anyone')}
                 role={t('book.anyoneDesc')}
@@ -242,7 +312,10 @@ export function BookingFlow({
                 <Label>{t('booking.dateLabel')}</Label>
                 <DatePicker
                   value={date}
-                  onChange={setDate}
+                  onChange={(d) => {
+                    setDate(d);
+                    setStartsAt(undefined);
+                  }}
                   placeholder={t('booking.datePlaceholder')}
                   label={t('booking.dateLabel')}
                 />
@@ -263,7 +336,7 @@ export function BookingFlow({
                   <ErrorState
                     title={t('book.slotsError')}
                     action={
-                      <Button variant="outline" onClick={() => setDate(new Date(date))}>
+                      <Button variant="outline" onClick={() => void slotsQuery.refetch()}>
                         {t('common.retry')}
                       </Button>
                     }
@@ -277,7 +350,7 @@ export function BookingFlow({
                     <SlotPicker
                       slots={slots}
                       value={time}
-                      onChange={setTime}
+                      onChange={(tm) => setStartsAt(slots.find((x) => x.time === tm)?.start)}
                       label={t('booking.slotsLabel')}
                     />
                     <p className="text-xs text-muted-foreground">{t('booking.slotsHint')}</p>
@@ -323,6 +396,11 @@ export function BookingFlow({
                   )}
                 </div>
               ))}
+              {formError && (
+                <p role="alert" className="text-sm text-destructive">
+                  {formError}
+                </p>
+              )}
             </Card>
           )}
         </section>
