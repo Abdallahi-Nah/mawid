@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +12,7 @@ export function ServiceCard({
   bookLabel,
   selected,
   onBook,
+  href,
 }: {
   name: string;
   description?: string;
@@ -19,6 +21,7 @@ export function ServiceCard({
   bookLabel: string;
   selected?: boolean;
   onBook?: () => void;
+  href?: string;
 }) {
   return (
     <Card
@@ -37,9 +40,15 @@ export function ServiceCard({
       </div>
       <div className="flex shrink-0 flex-col items-end gap-2">
         <span className="font-semibold">{price}</span>
-        <Button size="sm" variant={selected ? 'secondary' : 'default'} onClick={onBook}>
-          {bookLabel}
-        </Button>
+        {href ? (
+          <Button asChild size="sm">
+            <Link href={href}>{bookLabel}</Link>
+          </Button>
+        ) : (
+          <Button size="sm" variant={selected ? 'secondary' : 'default'} onClick={onBook}>
+            {bookLabel}
+          </Button>
+        )}
       </div>
     </Card>
   );

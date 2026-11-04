@@ -13,12 +13,78 @@
     "next": "Next",
     "back": "Back",
     "retry": "Retry",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "errorTitle": "Something went wrong",
+    "errorDesc": "We could not load this page. Please try again."
   },
   "home": {
     "title": "Mawid: simple bookings for your business",
     "subtitle": "Phase 1: the design system. Screens are coming.",
-    "designLink": "Open the design page"
+    "designLink": "Open the design page",
+    "nav": {
+      "features": "Features",
+      "demo": "Demo",
+      "pricing": "Pricing",
+      "login": "Log in"
+    },
+    "hero": {
+      "badge": "AI assistant built in",
+      "title": "Bookings without phone calls",
+      "subtitle": "Mawid gives your business a beautiful booking page open 24/7 and an AI assistant that answers your customers.",
+      "cta": "Create my business",
+      "secondary": "See the demo"
+    },
+    "benefits": {
+      "title": "Why Mawid?",
+      "one": {
+        "title": "Booking around the clock",
+        "desc": "Your customers book in under a minute, even at night."
+      },
+      "two": {
+        "title": "AI assistant",
+        "desc": "It answers questions, suggests free slots and confirms the booking."
+      },
+      "three": {
+        "title": "Fewer no-shows",
+        "desc": "Automatic email reminders before every appointment."
+      }
+    },
+    "demo": {
+      "title": "See a business page",
+      "desc": "A fictional salon to try the customer journey from booking to confirmation.",
+      "cta": "Open the demo"
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "subtitle": "Start free, upgrade as you grow.",
+      "perMonth": "per month",
+      "popular": "Popular",
+      "choose": "Choose plan",
+      "plans": {
+        "starter": {
+          "name": "Starter",
+          "f1": "50 bookings per month",
+          "f2": "Public booking page",
+          "f3": "Confirmation emails"
+        },
+        "pro": {
+          "name": "Pro",
+          "f1": "Unlimited bookings",
+          "f2": "AI assistant",
+          "f3": "Reports and revenue"
+        },
+        "business": {
+          "name": "Multi-site",
+          "f1": "Several locations",
+          "f2": "Team roles",
+          "f3": "Priority support"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to take bookings?"
+    },
+    "footer": "© 2026 Mawid. All rights reserved."
   },
   "design": {
     "title": "Design system",
@@ -77,14 +143,28 @@
     "servicePlaceholder": "Choose a service",
     "terms": "I accept the terms",
     "notifications": "Email notifications",
-    "disabledField": "Disabled field"
+    "disabledField": "Disabled field",
+    "phone": "Phone",
+    "phonePlaceholder": "+222 22 00 00 00",
+    "emailOptional": "Email (optional)",
+    "errors": {
+      "required": "This field is required",
+      "invalidPhone": "Enter a valid phone number",
+      "invalidEmail": "Enter a valid email",
+      "passwordShort": "At least 8 characters",
+      "termsRequired": "You must accept the terms"
+    }
   },
   "mock": {
     "services": {
       "cut": "Haircut",
       "cutDesc": "Cut and style with wash.",
       "beard": "Beard trim",
-      "beardDesc": "Shaping with a hot towel."
+      "beardDesc": "Shaping with a hot towel.",
+      "color": "Hair color",
+      "colorDesc": "Full color with care.",
+      "care": "Facial care",
+      "careDesc": "Deep cleansing and hydration."
     },
     "staff": {
       "one": "Sidi Mohamed",
@@ -98,17 +178,59 @@
     "clients": {
       "one": "Omar Ould Salem",
       "two": "Aminetou Mint Mohamed",
-      "three": "Youssef Ould Cheikh"
+      "three": "Youssef Ould Cheikh",
+      "four": "Mariem Mint Cheikh",
+      "five": "Brahim Ould Mahmoud",
+      "six": "Zeinebou Mint Ali"
     },
     "chat": {
       "user": "I want a haircut appointment tomorrow evening.",
       "assistant": "Sure. Here are the free slots tomorrow:"
-    }
+    },
+    "business": {
+      "name": "Salon Nour",
+      "tagline": "Hair and care for everyone",
+      "description": "A family salon in Nouakchott. By appointment so you never wait.",
+      "address": "Nouakchott, Tevragh Zeina"
+    },
+    "team": {
+      "one": {
+        "name": "Sidi Mohamed",
+        "role": "Senior barber"
+      },
+      "two": {
+        "name": "Mariem Mint Ahmed",
+        "role": "Stylist"
+      },
+      "three": {
+        "name": "Ahmed Ould Baba",
+        "role": "Colorist"
+      }
+    },
+    "rev": {
+      "1": {
+        "name": "Fatimetou Mint Abdallahi",
+        "text": "Excellent service and on time. Highly recommended.",
+        "date": "2 days ago"
+      },
+      "2": {
+        "name": "Mohamed Ould Sidi",
+        "text": "Great haircut and a very friendly team.",
+        "date": "1 week ago"
+      },
+      "3": {
+        "name": "Khadija Mint Salem",
+        "text": "Clean place, and online booking made everything easy.",
+        "date": "2 weeks ago"
+      }
+    },
+    "owner": "Mohamed"
   },
   "service": {
     "duration": "{minutes} min",
     "book": "Book",
-    "selected": "Selected"
+    "selected": "Selected",
+    "choose": "Choose"
   },
   "staff": {
     "rating": "Rated {rating} out of 5"
@@ -139,7 +261,9 @@
   "stat": {
     "bookings": "Bookings",
     "revenue": "Revenue",
-    "vsLastWeek": "vs last week"
+    "vsLastWeek": "vs last week",
+    "newClients": "New clients",
+    "occupancy": "Occupancy"
   },
   "empty": {
     "title": "No bookings yet",
@@ -157,6 +281,168 @@
     "assistant": "Mawid assistant",
     "typing": "The assistant is typing",
     "you": "You",
-    "confirmSlot": "Confirm this slot"
+    "confirmSlot": "Confirm this slot",
+    "subtitle": "Book by chatting with the assistant.",
+    "greeting": "Hello! I'm the Salon Nour assistant. How can I help you?",
+    "chipBook": "I want a haircut tomorrow",
+    "chipHours": "What are your opening hours?",
+    "suggestions": "Suggestions",
+    "placeholder": "Write your message",
+    "send": "Send",
+    "slotsLabel": "Suggested slots",
+    "replyBook": "Sure! For a haircut with Sidi Mohamed, here are tomorrow's free slots. Which one works for you?",
+    "replyHours": "We are open from 09:00 to 18:00, except on Friday.",
+    "pickedSlot": "Tomorrow at {time}",
+    "replyConfirm": "Perfect. Haircut tomorrow at {time} with Sidi Mohamed. Shall I confirm?",
+    "replyDone": "It's booked! See you tomorrow at {time}. You will get a reminder.",
+    "booked": "Booking confirmed",
+    "errorTitle": "The assistant isn't responding",
+    "errorDesc": "Try again in a moment.",
+    "retry": "Try again"
+  },
+  "b": {
+    "book": "Book now",
+    "about": "About",
+    "services": "Services",
+    "team": "Team",
+    "reviews": "Reviews",
+    "openToday": "Open today · {hours}",
+    "rating": "({count} reviews)",
+    "noServicesTitle": "No services yet",
+    "noServicesDesc": "This business will add services soon.",
+    "noReviewsTitle": "No reviews yet",
+    "noReviewsDesc": "Be the first to leave a review.",
+    "chatOpen": "Open the AI assistant",
+    "chatGreeting": "Hi! I'm the Salon Nour assistant. How can I help?",
+    "chatSoon": "The full chat comes in the next step."
+  },
+  "book": {
+    "title": "Book your appointment",
+    "at": "at {business}",
+    "anyone": "Anyone available",
+    "anyoneDesc": "We pick the fastest slot.",
+    "serviceTitle": "Choose a service",
+    "staffTitle": "With whom?",
+    "dateTitle": "Pick a day and time",
+    "detailsTitle": "Your details",
+    "pickDateFirst": "Pick a date to see the times.",
+    "noSlotsTitle": "No slots this day",
+    "noSlotsDesc": "Try another day.",
+    "slotsError": "Could not load the times.",
+    "summary": "Summary",
+    "total": "Total",
+    "when": "When",
+    "with": "With",
+    "confirm": "Confirm booking",
+    "confirming": "Confirming",
+    "successTitle": "Your appointment is booked!",
+    "successDesc": "We sent you a confirmation. See you soon.",
+    "backToBusiness": "Back to the page",
+    "notSelected": "Not chosen yet"
+  },
+  "dash": {
+    "nav": {
+      "aria": "Dashboard navigation",
+      "dashboard": "Dashboard",
+      "calendar": "Calendar",
+      "publicPage": "My public page"
+    },
+    "greeting": "Hello, {name}",
+    "chart": {
+      "title": "Bookings, last 7 days",
+      "aria": "Bar chart of bookings per day",
+      "series": "Bookings"
+    },
+    "appointments": {
+      "title": "Today's appointments",
+      "emptyTitle": "No appointments today",
+      "emptyDesc": "Enjoy a quiet day or share your page link.",
+      "viewCalendar": "Open calendar"
+    },
+    "ai": {
+      "title": "AI weekly summary",
+      "badge": "AI generated",
+      "text": "A strong week: bookings grew 12% versus last week. Haircut is still the most requested service.",
+      "p1": "Booking peak on Saturday afternoon.",
+      "p2": "Only 2 cancellations this week.",
+      "p3": "Consider opening extra slots on Thursday evening.",
+      "empty": "Not enough data yet. The summary appears after a week of bookings."
+    }
+  },
+  "cal": {
+    "title": "Calendar",
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "viewsAria": "Calendar view",
+    "today": "Today",
+    "prev": "Previous",
+    "next": "Next",
+    "allStaff": "Whole team",
+    "filterStaff": "Filter by staff",
+    "emptyTitle": "No appointments in this period",
+    "emptyDesc": "Try another period or another staff member.",
+    "more": "+{count} more",
+    "price": "Price",
+    "duration": "Duration",
+    "openDay": "Open {date}"
+  },
+  "auth": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Sign in",
+    "loginDesc": "Access your dashboard.",
+    "loginCta": "Sign in",
+    "registerTitle": "Create an account",
+    "registerDesc": "Launch your booking page in minutes.",
+    "registerCta": "Sign up",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "errorTitle": "Unable to sign in",
+    "errorDesc": "The service is not responding. Try again."
+  },
+  "onb": {
+    "steps": {
+      "business": "Your business",
+      "services": "Services",
+      "hours": "Hours",
+      "team": "Team"
+    },
+    "bizName": "Business name",
+    "category": "Business type",
+    "categoryPlaceholder": "Choose a type",
+    "categories": {
+      "salon": "Salon",
+      "clinic": "Clinic",
+      "garage": "Garage",
+      "restaurant": "Restaurant"
+    },
+    "servicesHint": "Choose the services you offer. You can change them later.",
+    "minutes": "{count} min",
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "opens": "Opens",
+    "closes": "Closes",
+    "teamHint": "Add the people who welcome customers.",
+    "memberName": "Staff member name",
+    "addMember": "Add staff member",
+    "removeMember": "Remove {name}",
+    "teamEmpty": "No staff yet. You can continue on your own.",
+    "finish": "Finish",
+    "doneTitle": "You're all set!",
+    "doneDesc": "{name} can now receive bookings.",
+    "goDashboard": "Go to dashboard",
+    "errorTitle": "Unable to load the setup",
+    "errorDesc": "Try again in a moment."
   }
 }
