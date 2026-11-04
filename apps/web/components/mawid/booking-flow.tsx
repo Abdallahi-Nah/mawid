@@ -20,21 +20,35 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { formatDate, formatPrice } from '@/lib/format';
-import { business, slotsFor } from '@/lib/mock';
+import type { PublicBusiness } from '@mawid/shared';
+import { slotsFor } from '@/lib/mock';
 
 type SlotsState = 'idle' | 'loading' | 'ready' | 'error';
 type Errors = Partial<Record<'name' | 'phone' | 'email', string>>;
 
-const initials = (name: string) => name.split(' ').slice(0, 2).map((w) => w[0]).join('');
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('');
 
-export function BookingFlow({ initialService, forceSlotsError }: { initialService?: string; forceSlotsError?: boolean }) {
+export function BookingFlow({
+  data,
+  initialService,
+  forceSlotsError,
+}: {
+  data: Pick<PublicBusiness, 'slug' | 'services' | 'staff'>;
+  initialService?: string;
+  forceSlotsError?: boolean;
+}) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [serviceId, setServiceId] = useState<string | undefined>(
-    business.services.some((s) => s.id === initialService) ? initialService : undefined,
+    data.services.some((s) => s.id === initialService) ? initialService : undefined,
   );
   const [staffId, setStaffId] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>();
@@ -46,7 +60,8 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
   const mounted = useRef(false);
 
   const steps = (['service', 'staff', 'datetime', 'details'] as const).map((k) => t(`steps.${k}`));
-  const service = business.services.find((s) => s.id === serviceId);
+  const service = data.services.find((s) => s.id === serviceId);
+  const team = data.staff.filter((m) => !serviceId || m.serviceIds.includes(serviceId));
   const slots = useMemo(() => (date ? slotsFor(date) : []), [date]);
 
   // Simulated loading of the slots when the date changes.
@@ -65,7 +80,8 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
   }, [step, done]);
 
   const canNext = [!!serviceId, !!staffId, !!date && !!time, true][step];
-  const staffName = staffId === 'any' ? t('book.anyone') : staffId ? t(`mock.team.${staffId}.name`) : undefined;
+  const staffName =
+    staffId === 'any' ? t('book.anyone') : data.staff.find((m) => m.id === staffId)?.displayName;
 
   async function submit() {
     const parsed = customerDetailsSchema.safeParse(values);
@@ -91,7 +107,7 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
       <dl className="space-y-3 text-sm">
         <div>
           <dt className="text-muted-foreground">{t('steps.service')}</dt>
-          <dd className="font-medium">{service ? t(`mock.services.${service.id}`) : t('book.notSelected')}</dd>
+          <dd className="font-medium">{service ? service.name : t('book.notSelected')}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">{t('book.with')}</dt>
@@ -112,7 +128,9 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
       </dl>
       <div className="flex items-center justify-between border-t pt-3">
         <span className="text-sm text-muted-foreground">{t('book.total')}</span>
-        <span className="text-lg font-semibold">{service ? formatPrice(service.price, locale) : '—'}</span>
+        <span className="text-lg font-semibold">
+          {service ? formatPrice(service.price, locale) : '—'}
+        </span>
       </div>
     </Card>
   );
@@ -121,27 +139,50 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
     return (
       <Card className="mx-auto flex max-w-md flex-col items-center gap-4 p-8 text-center shadow-lifted">
         <span className="pop-in flex size-20 items-center justify-center rounded-full bg-success-soft text-success">
-          <svg aria-hidden viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            aria-hidden
+            viewBox="0 0 24 24"
+            className="size-10"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path className="check-draw" d="M5 12.5l4.5 4.5L19 7.5" />
           </svg>
         </span>
-        <h1 ref={headingRef} tabIndex={-1} role="status" className="text-2xl font-bold outline-none">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          role="status"
+          className="text-2xl font-bold outline-none"
+        >
           {t('book.successTitle')}
         </h1>
         <p className="text-muted-foreground">{t('book.successDesc')}</p>
         <div className="w-full text-start">{summary}</div>
         <Button asChild className="w-full">
-          <Link href={`/b/${business.slug}`}>{t('book.backToBusiness')}</Link>
+          <Link href={`/b/${data.slug}`}>{t('book.backToBusiness')}</Link>
         </Button>
       </Card>
     );
   }
 
-  const titles = ['book.serviceTitle', 'book.staffTitle', 'book.dateTitle', 'book.detailsTitle'] as const;
+  const titles = [
+    'book.serviceTitle',
+    'book.staffTitle',
+    'book.dateTitle',
+    'book.detailsTitle',
+  ] as const;
 
   return (
     <div className="space-y-6 pb-24 lg:pb-0">
-      <Stepper steps={steps} current={step} progressLabel={t('steps.progress', { current: step + 1, total: steps.length })} />
+      <Stepper
+        steps={steps}
+        current={step}
+        progressLabel={t('steps.progress', { current: step + 1, total: steps.length })}
+      />
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <section className="space-y-4">
           <h2 ref={headingRef} tabIndex={-1} className="text-xl font-semibold outline-none">
@@ -150,16 +191,24 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
 
           {step === 0 && (
             <div className="grid gap-3">
-              {business.services.map((s) => (
+              {data.services.map((s) => (
                 <ServiceCard
                   key={s.id}
-                  name={t(`mock.services.${s.id}`)}
-                  description={t(`mock.services.${s.id}Desc`)}
-                  duration={t('service.duration', { minutes: s.minutes })}
+                  name={s.name}
+                  description={s.description ?? undefined}
+                  duration={t('service.duration', { minutes: s.durationMin })}
                   price={formatPrice(s.price, locale)}
                   selected={serviceId === s.id}
                   bookLabel={serviceId === s.id ? t('service.selected') : t('service.choose')}
-                  onBook={() => setServiceId(s.id)}
+                  onBook={() => {
+                    setServiceId(s.id);
+                    setStaffId((prev) =>
+                      prev === 'any' ||
+                      data.staff.find((m) => m.id === prev)?.serviceIds.includes(s.id)
+                        ? prev
+                        : undefined,
+                    );
+                  }}
                 />
               ))}
             </div>
@@ -174,14 +223,12 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
                 selected={staffId === 'any'}
                 onSelect={() => setStaffId('any')}
               />
-              {business.team.map((m) => (
+              {team.map((m) => (
                 <StaffCard
                   key={m.id}
-                  name={t(`mock.team.${m.id}.name`)}
-                  role={t(`mock.team.${m.id}.role`)}
-                  initials={initials(t(`mock.team.${m.id}.name`))}
-                  rating={m.rating}
-                  ratingLabel={t('staff.rating', { rating: m.rating })}
+                  name={m.displayName}
+                  initials={initials(m.displayName)}
+                  photoUrl={m.photoUrl ?? undefined}
                   selected={staffId === m.id}
                   onSelect={() => setStaffId(m.id)}
                 />
@@ -193,20 +240,33 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
             <Card className="space-y-5 p-5 shadow-soft">
               <div className="space-y-1.5">
                 <Label>{t('booking.dateLabel')}</Label>
-                <DatePicker value={date} onChange={setDate} placeholder={t('booking.datePlaceholder')} label={t('booking.dateLabel')} />
+                <DatePicker
+                  value={date}
+                  onChange={setDate}
+                  placeholder={t('booking.datePlaceholder')}
+                  label={t('booking.dateLabel')}
+                />
               </div>
               <div className="space-y-2" aria-live="polite">
                 <Label>{t('booking.slotsLabel')}</Label>
-                {!date && <p className="text-sm text-muted-foreground">{t('book.pickDateFirst')}</p>}
+                {!date && (
+                  <p className="text-sm text-muted-foreground">{t('book.pickDateFirst')}</p>
+                )}
                 {date && slotsState === 'loading' && (
                   <div aria-busy="true" className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                    {Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="h-11" />)}
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <Skeleton key={i} className="h-11" />
+                    ))}
                   </div>
                 )}
                 {date && slotsState === 'error' && (
                   <ErrorState
                     title={t('book.slotsError')}
-                    action={<Button variant="outline" onClick={() => setDate(new Date(date))}>{t('common.retry')}</Button>}
+                    action={
+                      <Button variant="outline" onClick={() => setDate(new Date(date))}>
+                        {t('common.retry')}
+                      </Button>
+                    }
                   />
                 )}
                 {date && slotsState === 'ready' && slots.length === 0 && (
@@ -214,7 +274,12 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
                 )}
                 {date && slotsState === 'ready' && slots.length > 0 && (
                   <>
-                    <SlotPicker slots={slots} value={time} onChange={setTime} label={t('booking.slotsLabel')} />
+                    <SlotPicker
+                      slots={slots}
+                      value={time}
+                      onChange={setTime}
+                      label={t('booking.slotsLabel')}
+                    />
                     <p className="text-xs text-muted-foreground">{t('booking.slotsHint')}</p>
                   </>
                 )}
@@ -226,17 +291,29 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
             <Card className="space-y-4 p-5 shadow-soft">
               {(['name', 'phone', 'email'] as const).map((field) => (
                 <div key={field} className="space-y-1.5">
-                  <Label htmlFor={`d-${field}`}>{field === 'email' ? t('form.emailOptional') : t(`form.${field}`)}</Label>
+                  <Label htmlFor={`d-${field}`}>
+                    {field === 'email' ? t('form.emailOptional') : t(`form.${field}`)}
+                  </Label>
                   <Input
                     id={`d-${field}`}
                     value={values[field]}
                     inputMode={field === 'phone' ? 'tel' : field === 'email' ? 'email' : 'text'}
                     autoComplete={field === 'name' ? 'name' : field === 'phone' ? 'tel' : 'email'}
                     dir={field === 'name' ? undefined : 'ltr'}
-                    placeholder={field === 'name' ? t('form.namePlaceholder') : field === 'phone' ? t('form.phonePlaceholder') : undefined}
+                    placeholder={
+                      field === 'name'
+                        ? t('form.namePlaceholder')
+                        : field === 'phone'
+                          ? t('form.phonePlaceholder')
+                          : undefined
+                    }
                     aria-invalid={!!errors[field]}
                     aria-describedby={errors[field] ? `d-${field}-err` : undefined}
-                    className={errors[field] ? 'border-destructive focus-visible:ring-destructive' : undefined}
+                    className={
+                      errors[field]
+                        ? 'border-destructive focus-visible:ring-destructive'
+                        : undefined
+                    }
                     onChange={(e) => setValues((v) => ({ ...v, [field]: e.target.value }))}
                   />
                   {errors[field] && (
@@ -254,16 +331,34 @@ export function BookingFlow({ initialService, forceSlotsError }: { initialServic
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t bg-background/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-        <Button variant="outline" disabled={step === 0 || submitting} onClick={() => setStep((s) => s - 1)}>
+        <Button
+          variant="outline"
+          disabled={step === 0 || submitting}
+          onClick={() => setStep((s) => s - 1)}
+        >
           {t('common.back')}
         </Button>
         {step < 3 ? (
-          <Button className="flex-1 lg:flex-none" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>
+          <Button
+            className="flex-1 lg:flex-none"
+            disabled={!canNext}
+            onClick={() => setStep((s) => s + 1)}
+          >
             {t('common.next')}
           </Button>
         ) : (
           <Button className="flex-1 lg:flex-none" disabled={submitting} onClick={submit}>
-            {submitting ? (<><Spinner />{t('book.confirming')}</>) : (<><Check aria-hidden className="size-4" />{t('book.confirm')}</>)}
+            {submitting ? (
+              <>
+                <Spinner />
+                {t('book.confirming')}
+              </>
+            ) : (
+              <>
+                <Check aria-hidden className="size-4" />
+                {t('book.confirm')}
+              </>
+            )}
           </Button>
         )}
       </div>

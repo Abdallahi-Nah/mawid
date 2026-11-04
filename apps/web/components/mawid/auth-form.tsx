@@ -1,7 +1,8 @@
 'use client';
 
 import { loginSchema, registerSchema } from '@mawid/shared';
-import { useTranslations } from 'next-intl';
+import { useQueryClient } from '@tanstack/react-query';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ErrorState } from '@/components/mawid/error-state';
 import { Spinner } from '@/components/mawid/spinner';
@@ -12,6 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useRouter } from '@/i18n/navigation';
+import { api } from '@/lib/api';
+import { errorMessage, fieldErrors } from '@/lib/errors';
+import type { User } from '@/lib/types';
 
 type Mode = 'login' | 'register';
 type Field = 'name' | 'email' | 'password' | 'terms';
@@ -19,6 +23,9 @@ type Field = 'name' | 'email' | 'password' | 'terms';
 export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'error' | 'empty' }) {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale();
+  const qc = useQueryClient();
+  const [apiError, setApiError] = useState<string>();
   const [values, setValues] = useState({ name: '', email: '', password: '' });
   const [terms, setTerms] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
@@ -49,10 +56,23 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
       return;
     }
     setErrors({});
+    setApiError(undefined);
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 700)); // fake request
-    setSubmitting(false);
-    router.push(register ? '/onboarding' : '/dashboard');
+    try {
+      const user = await api<User>(register ? '/auth/register' : '/auth/login', {
+        method: 'POST',
+        body: register
+          ? { ...values, terms, locale }
+          : { email: values.email, password: values.password },
+      });
+      qc.setQueryData(['me'], user);
+      router.push(register ? '/onboarding' : '/dashboard');
+    } catch (e) {
+      setApiError(errorMessage(t, e));
+      setErrors(fieldErrors(e));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const err = (f: Field) => (errors[f] ? t(`form.errors.${errors[f]}`) : undefined);
@@ -82,7 +102,11 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
         <ErrorState
           title={t('auth.errorTitle')}
           description={t('auth.errorDesc')}
-          action={<Button variant="outline" onClick={() => setFailed(false)}>{t('common.retry')}</Button>}
+          action={
+            <Button variant="outline" onClick={() => setFailed(false)}>
+              {t('common.retry')}
+            </Button>
+          }
         />
       </Card>
     );
@@ -90,8 +114,12 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
 
   return (
     <Card className="w-full max-w-md p-6">
-      <h1 className="text-2xl font-bold">{t(register ? 'auth.registerTitle' : 'auth.loginTitle')}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t(register ? 'auth.registerDesc' : 'auth.loginDesc')}</p>
+      <h1 className="text-2xl font-bold">
+        {t(register ? 'auth.registerTitle' : 'auth.loginTitle')}
+      </h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {t(register ? 'auth.registerDesc' : 'auth.loginDesc')}
+      </p>
       <form onSubmit={submit} noValidate className="mt-6 space-y-4">
         {register && field('name', 'text', 'name')}
         {field('email', 'email', 'email')}
@@ -102,8 +130,28 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
               <Checkbox id="terms" checked={terms} onCheckedChange={(c) => setTerms(c === true)} />
               <Label htmlFor="terms">{t('form.terms')}</Label>
             </div>
-            {errors.terms && <p role="alert" className="mt-1 text-sm text-destructive">{err('terms')}</p>}
+            {errors.terms && (
+              <p role="alert" className="mt-1 text-sm text-destructive">
+                {err('terms')}
+              </p>
+            )}
           </div>
+        )}
+        {apiError && (
+          <p
+            role="alert"
+            className="rounded-lg bg-destructive-soft px-3 py-2 text-sm text-destructive"
+          >
+            {apiError}
+          </p>
+        )}
+        {!register && (
+          <Link
+            href="/forgot-password"
+            className="block text-sm font-medium text-primary hover:underline"
+          >
+            {t('auth.forgot')}
+          </Link>
         )}
         <Button type="submit" className="w-full" disabled={submitting}>
           {submitting && <Spinner />}
@@ -112,7 +160,10 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
       </form>
       <p className="mt-4 text-center text-sm text-muted-foreground">
         {t(register ? 'auth.haveAccount' : 'auth.noAccount')}{' '}
-        <Link href={register ? '/login' : '/register'} className="font-medium text-primary hover:underline">
+        <Link
+          href={register ? '/login' : '/register'}
+          className="font-medium text-primary hover:underline"
+        >
           {t(register ? 'auth.loginCta' : 'auth.registerCta')}
         </Link>
       </p>

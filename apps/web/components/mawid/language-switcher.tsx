@@ -17,7 +17,11 @@ export function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <div role="group" aria-label={t('language')} className="inline-flex rounded-lg border bg-card p-0.5">
+    <div
+      role="group"
+      aria-label={t('language')}
+      className="inline-flex rounded-lg border bg-card p-0.5"
+    >
       {locales.map((l) => (
         <button
           key={l}
@@ -30,7 +34,9 @@ export function LanguageSwitcher() {
           className={cn(
             'h-8 min-w-9 rounded-md px-2 text-sm font-medium transition-colors',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-            l === locale ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary',
+            l === locale
+              ? 'bg-primary text-primary-foreground'
+              : 'text-muted-foreground hover:bg-secondary',
           )}
         >
           {names[l].short}

@@ -14,7 +14,10 @@ export function ErrorState({
   className?: string;
 }) {
   return (
-    <div role="alert" className={cn('flex flex-col items-center gap-3 px-6 py-12 text-center', className)}>
+    <div
+      role="alert"
+      className={cn('flex flex-col items-center gap-3 px-6 py-12 text-center', className)}
+    >
       <span className="flex size-14 items-center justify-center rounded-full bg-destructive-soft text-destructive">
         <TriangleAlert aria-hidden className="size-7" />
       </span>

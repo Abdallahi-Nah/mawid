@@ -34,9 +34,15 @@ export default function HomePage({ params }: { params: { locale: string } }) {
       <SiteHeader
         nav={
           <>
-            <a href="#features" className="hover:text-foreground">{t('nav.features')}</a>
-            <a href="#demo" className="hover:text-foreground">{t('nav.demo')}</a>
-            <a href="#pricing" className="hover:text-foreground">{t('nav.pricing')}</a>
+            <a href="#features" className="hover:text-foreground">
+              {t('nav.features')}
+            </a>
+            <a href="#demo" className="hover:text-foreground">
+              {t('nav.demo')}
+            </a>
+            <a href="#pricing" className="hover:text-foreground">
+              {t('nav.pricing')}
+            </a>
           </>
         }
         actions={
@@ -47,14 +53,19 @@ export default function HomePage({ params }: { params: { locale: string } }) {
       />
       <main>
         <section className="relative overflow-hidden">
-          <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(var(--primary)/0.14),transparent)]" />
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(var(--primary)/0.14),transparent)]"
+          />
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:py-24">
             <div className="space-y-6">
               <Badge variant="secondary" className="gap-1.5 rounded-full px-3 py-1">
                 <Sparkles aria-hidden className="size-3.5" />
                 {t('hero.badge')}
               </Badge>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{t('hero.title')}</h1>
+              <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+                {t('hero.title')}
+              </h1>
               <p className="max-w-xl text-lg text-muted-foreground">{t('hero.subtitle')}</p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg">
@@ -70,7 +81,9 @@ export default function HomePage({ params }: { params: { locale: string } }) {
         </section>
 
         <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14">
-          <h2 className="mb-8 text-center text-3xl font-bold tracking-tight">{t('benefits.title')}</h2>
+          <h2 className="mb-8 text-center text-3xl font-bold tracking-tight">
+            {t('benefits.title')}
+          </h2>
           <div className="grid gap-4 md:grid-cols-3">
             {benefits.map(({ key, Icon }) => (
               <Card key={key} className="space-y-3 p-6 shadow-soft">
@@ -101,7 +114,13 @@ export default function HomePage({ params }: { params: { locale: string } }) {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {plans.map((p) => (
-              <Card key={p.key} className={cn('flex flex-col gap-5 p-6 shadow-soft', p.popular && 'border-primary ring-1 ring-primary')}>
+              <Card
+                key={p.key}
+                className={cn(
+                  'flex flex-col gap-5 p-6 shadow-soft',
+                  p.popular && 'border-primary ring-1 ring-primary',
+                )}
+              >
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold">{t(`pricing.plans.${p.key}.name`)}</h3>
                   {p.popular && <Badge>{t('pricing.popular')}</Badge>}
@@ -133,7 +152,9 @@ export default function HomePage({ params }: { params: { locale: string } }) {
           </Button>
         </section>
       </main>
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">{t('footer')}</footer>
+      <footer className="border-t py-8 text-center text-sm text-muted-foreground">
+        {t('footer')}
+      </footer>
     </>
   );
 }

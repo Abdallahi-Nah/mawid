@@ -7,12 +7,350 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Foundation model. Every business table will carry business_id (see CLAUDE.md).
+// Every business table carries business_id and every query must be filtered by it
+// (enforced by the tenant extension in src/prisma/tenant.extension.ts). See CLAUDE.md.
+// All dates are stored in UTC. Booking overlap constraint comes in phase 3.
+
+enum Role {
+  CLIENT
+  STAFF
+  OWNER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum BookingMode {
+  AUTO
+  MANUAL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum BookingSource {
+  WEB
+  AI
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum NotificationChannel {
+  EMAIL
+  WHATSAPP
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
 model Business {
-  id        String   @id @default(uuid())
-  name      String
-  timezone  String   @default("UTC")
-  createdAt DateTime @default(now()) @map("created_at")
+  id               String      @id @default(uuid())
+  name             String
+  slug             String      @unique
+  logoUrl          String?     @map("logo_url")
+  description      String?
+  address          String?
+  phone            String?
+  category         String?
+  timezone         String      @default("Africa/Nouakchott")
+  defaultLocale    String      @default("ar") @map("default_locale")
+  brandColor       String?     @map("brand_color")
+  plan             Plan        @default(FREE)
+  bookingMode      BookingMode @default(AUTO) @map("booking_mode")
+  cancelLimitHours Int         @default(24) @map("cancel_limit_hours")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  users         User[]
+  staff         Staff[]
+  services      Service[]
+  staffServices StaffService[]
+  workingHours  WorkingHours[]
+  timeOff       TimeOff[]
+  customers     Customer[]
+  bookings      Booking[]
+  payments      Payment[]
+  reviews       Review[]
+  notifications Notification[]
+  aiLogs        AiLog[]
 
   @@map("businesses")
+}
+
+// businessId is null for CLIENT and ADMIN accounts.
+model User {
+  id           String   @id @default(uuid())
+  businessId   String?  @map("business_id")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  name         String
+  phone        String?
+  locale       String   @default("ar")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  business            Business?            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staff               Staff?
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([businessId])
+  @@map("users")
+}
+
+// Refresh tokens are rotated on every use. A reused (already revoked) token revokes the whole family.
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  familyId  String    @map("family_id")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+// Only the SHA-256 hash of the token is stored.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Staff {
+  id          String   @id @default(uuid())
+  businessId  String   @map("business_id")
+  userId      String?  @unique @map("user_id")
+  displayName String   @map("display_name")
+  photoUrl    String?  @map("photo_url")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  business     Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user         User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  services     StaffService[]
+  workingHours WorkingHours[]
+  timeOff      TimeOff[]
+  bookings     Booking[]
+
+  @@index([businessId])
+  @@map("staff")
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  businessId  String   @map("business_id")
+  name        String
+  description String?
+  durationMin Int      @map("duration_min")
+  price       Decimal  @db.Decimal(10, 2)
+  category    String?
+  bufferMin   Int      @default(0) @map("buffer_min")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  business Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staff    StaffService[]
+  bookings Booking[]
+
+  @@index([businessId])
+  @@map("services")
+}
+
+model StaffService {
+  staffId    String @map("staff_id")
+  serviceId  String @map("service_id")
+  businessId String @map("business_id")
+
+  staff    Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, serviceId])
+  @@index([businessId])
+  @@map("staff_services")
+}
+
+// weekday: 0 = Sunday ... 6 = Saturday. Times are local "HH:mm" in the business timezone.
+model WorkingHours {
+  id         String  @id @default(uuid())
+  businessId String  @map("business_id")
+  staffId    String  @map("staff_id")
+  weekday    Int
+  startTime  String  @map("start_time")
+  endTime    String  @map("end_time")
+  breakStart String? @map("break_start")
+  breakEnd   String? @map("break_end")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staff    Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([staffId, weekday])
+  @@map("working_hours")
+}
+
+// staffId is null for a closing day of the whole business.
+model TimeOff {
+  id         String   @id @default(uuid())
+  businessId String   @map("business_id")
+  staffId    String?  @map("staff_id")
+  startsAt   DateTime @map("starts_at")
+  endsAt     DateTime @map("ends_at")
+  reason     String?
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  staff    Staff?   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, startsAt])
+  @@index([staffId])
+  @@map("time_off")
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  businessId  String   @map("business_id")
+  name        String
+  phone       String
+  email       String?
+  notes       String?
+  visitsCount Int      @default(0) @map("visits_count")
+  noShowCount Int      @default(0) @map("no_show_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  business Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@unique([businessId, phone])
+  @@map("customers")
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  businessId  String        @map("business_id")
+  customerId  String        @map("customer_id")
+  staffId     String        @map("staff_id")
+  serviceId   String        @map("service_id")
+  startsAt    DateTime      @map("starts_at")
+  endsAt      DateTime      @map("ends_at")
+  status      BookingStatus @default(PENDING)
+  source      BookingSource @default(WEB)
+  price       Decimal       @db.Decimal(10, 2)
+  notes       String?
+  cancelToken String        @unique @default(uuid()) @map("cancel_token")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  business      Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer      Customer       @relation(fields: [customerId], references: [id])
+  staff         Staff          @relation(fields: [staffId], references: [id])
+  service       Service        @relation(fields: [serviceId], references: [id])
+  payments      Payment[]
+  review        Review?
+  notifications Notification[]
+
+  @@index([businessId, startsAt])
+  @@index([staffId, startsAt])
+  @@index([customerId])
+  @@map("bookings")
+}
+
+model Payment {
+  id         String        @id @default(uuid())
+  businessId String        @map("business_id")
+  bookingId  String        @map("booking_id")
+  method     String
+  amount     Decimal       @db.Decimal(10, 2)
+  status     PaymentStatus @default(PENDING)
+  reference  String?
+  proofUrl   String?       @map("proof_url")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([bookingId])
+  @@map("payments")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  businessId String   @map("business_id")
+  bookingId  String   @unique @map("booking_id")
+  rating     Int
+  comment    String?
+  reply      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("reviews")
+}
+
+model Notification {
+  id         String              @id @default(uuid())
+  businessId String              @map("business_id")
+  bookingId  String              @map("booking_id")
+  channel    NotificationChannel
+  type       String
+  status     NotificationStatus  @default(PENDING)
+  sentAt     DateTime?           @map("sent_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([bookingId])
+  @@map("notifications")
+}
+
+model AiLog {
+  id         String   @id @default(uuid())
+  businessId String   @map("business_id")
+  feature    String
+  model      String
+  tokensIn   Int      @map("tokens_in")
+  tokensOut  Int      @map("tokens_out")
+  latencyMs  Int      @map("latency_ms")
+  error      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, createdAt])
+  @@map("ai_logs")
 }

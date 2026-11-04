@@ -17,7 +17,9 @@ const WORD_MS = 45;
 // Mock AI chat: scripted replies streamed word by word. Real Groq streaming comes in a later phase.
 export function ChatWidget({ forceError }: { forceError?: boolean }) {
   const t = useTranslations('chat');
-  const [messages, setMessages] = useState<Msg[]>([{ id: 0, role: 'assistant', text: t('greeting') }]);
+  const [messages, setMessages] = useState<Msg[]>([
+    { id: 0, role: 'assistant', text: t('greeting') },
+  ]);
   const [typing, setTyping] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -48,26 +50,47 @@ export function ChatWidget({ forceError }: { forceError?: boolean }) {
       const id = idRef.current++;
       const words = reply.split(' ');
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      setMessages((m) => [...m, { id, role: 'assistant', text: reduce ? reply : '', extra: reduce ? extra : undefined, time }]);
+      setMessages((m) => [
+        ...m,
+        {
+          id,
+          role: 'assistant',
+          text: reduce ? reply : '',
+          extra: reduce ? extra : undefined,
+          time,
+        },
+      ]);
       if (reduce) return setBusy(false);
       words.forEach((_, i) =>
-        later(() => {
-          const last = i === words.length - 1;
-          setMessages((m) =>
-            m.map((x) => (x.id === id ? { ...x, text: words.slice(0, i + 1).join(' '), extra: last ? extra : undefined } : x)),
-          );
-          if (last) setBusy(false);
-        }, (i + 1) * WORD_MS),
+        later(
+          () => {
+            const last = i === words.length - 1;
+            setMessages((m) =>
+              m.map((x) =>
+                x.id === id
+                  ? { ...x, text: words.slice(0, i + 1).join(' '), extra: last ? extra : undefined }
+                  : x,
+              ),
+            );
+            if (last) setBusy(false);
+          },
+          (i + 1) * WORD_MS,
+        ),
       );
     }, 700);
   }, []);
 
-  const userSay = (value: string) => setMessages((m) => [...m, { id: idRef.current++, role: 'user', text: value }]);
+  const userSay = (value: string) =>
+    setMessages((m) => [...m, { id: idRef.current++, role: 'user', text: value }]);
 
   const ask = (kind: 'book' | 'hours', label: string) => {
     if (busy) return;
     userSay(label);
-    lastAction.current = () => assistantSay(kind === 'book' ? t('replyBook') : t('replyHours'), kind === 'book' ? 'slots' : undefined);
+    lastAction.current = () =>
+      assistantSay(
+        kind === 'book' ? t('replyBook') : t('replyHours'),
+        kind === 'book' ? 'slots' : undefined,
+      );
     lastAction.current();
   };
 
@@ -104,7 +127,12 @@ export function ChatWidget({ forceError }: { forceError?: boolean }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div role="log" aria-live="polite" aria-label={t('assistant')} className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pe-1">
+      <div
+        role="log"
+        aria-live="polite"
+        aria-label={t('assistant')}
+        className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pe-1"
+      >
         {messages.map((m) => (
           <div key={m.id} className="flex flex-col gap-2">
             <ChatBubble role={m.role}>{m.text}</ChatBubble>
@@ -126,7 +154,11 @@ export function ChatWidget({ forceError }: { forceError?: boolean }) {
               </ul>
             )}
             {m.extra === 'confirm' && m.time && (
-              <Button className="self-start gap-2" disabled={busy || m.id !== lastId} onClick={() => confirm(m.time!)}>
+              <Button
+                className="self-start gap-2"
+                disabled={busy || m.id !== lastId}
+                onClick={() => confirm(m.time!)}
+              >
                 <CalendarCheck aria-hidden className="size-4" />
                 {t('confirmSlot')}
               </Button>
@@ -145,13 +177,21 @@ export function ChatWidget({ forceError }: { forceError?: boolean }) {
             className="py-6"
             title={t('errorTitle')}
             description={t('errorDesc')}
-            action={<Button variant="outline" onClick={retry}>{t('retry')}</Button>}
+            action={
+              <Button variant="outline" onClick={retry}>
+                {t('retry')}
+              </Button>
+            }
           />
         )}
         {empty && (
           <div className="flex flex-wrap gap-2" aria-label={t('suggestions')}>
-            <Button variant="secondary" size="sm" onClick={() => ask('book', t('chipBook'))}>{t('chipBook')}</Button>
-            <Button variant="secondary" size="sm" onClick={() => ask('hours', t('chipHours'))}>{t('chipHours')}</Button>
+            <Button variant="secondary" size="sm" onClick={() => ask('book', t('chipBook'))}>
+              {t('chipBook')}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => ask('hours', t('chipHours'))}>
+              {t('chipHours')}
+            </Button>
           </div>
         )}
         <div ref={endRef} />

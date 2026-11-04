@@ -25,6 +25,8 @@ docker-compose.yml PostgreSQL (host port 5434) + Redis (6379)
 - Dev: `pnpm dev` (web :3000, api :4000)
 - Lint / types / tests / build: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 - Migrations: `pnpm --filter api prisma:migrate`
+- Browser checks (need API + web running): `node apps/web/scripts/flow-check.mjs` (real flow), `node apps/web/scripts/screenshots.mjs` (screens at 360/768/1280 px, ar and fr)
+- Demo data: `pnpm --filter api db:seed` (password for all demo accounts: `Demo1234!`)
 - API docs: http://localhost:4000/docs, health: http://localhost:4000/health
 
 ## RULES (apply to every phase)

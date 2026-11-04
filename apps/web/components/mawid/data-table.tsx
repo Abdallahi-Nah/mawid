@@ -1,6 +1,13 @@
 import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export interface Column<T> {
   key: string;
@@ -21,7 +28,12 @@ export function DataTable<T extends { id: string }>({
   error?: ReactNode;
   empty?: ReactNode;
 }) {
-  if (error) return <div role="alert" className="p-6 text-center text-sm text-destructive">{error}</div>;
+  if (error)
+    return (
+      <div role="alert" className="p-6 text-center text-sm text-destructive">
+        {error}
+      </div>
+    );
   if (!loading && rows.length === 0) return <>{empty}</>;
   return (
     <Table>

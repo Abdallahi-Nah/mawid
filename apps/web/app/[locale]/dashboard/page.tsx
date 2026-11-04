@@ -36,7 +36,9 @@ export default function DashboardPage({
       <div aria-busy="true" className="space-y-6">
         <Skeleton className="h-9 w-64" />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => <StatCard key={i} label="" value="" loading />)}
+          {[0, 1, 2, 3].map((i) => (
+            <StatCard key={i} label="" value="" loading />
+          ))}
         </div>
         <Skeleton className="h-80 rounded-xl" />
       </div>
@@ -48,7 +50,11 @@ export default function DashboardPage({
         className="py-24"
         title={t('common.errorTitle')}
         description={t('common.errorDesc')}
-        action={<Button asChild variant="outline"><Link href="/dashboard">{t('common.retry')}</Link></Button>}
+        action={
+          <Button asChild variant="outline">
+            <Link href="/dashboard">{t('common.retry')}</Link>
+          </Button>
+        }
       />
     );
   }
@@ -59,7 +65,9 @@ export default function DashboardPage({
     const d = addDays(today, i - 6);
     return {
       label: wd.format(d),
-      value: empty ? 0 : appointmentsFor(d, todayISO).filter((a) => a.status !== 'cancelled').length,
+      value: empty
+        ? 0
+        : appointmentsFor(d, todayISO).filter((a) => a.status !== 'cancelled').length,
     };
   });
   const todays = empty ? [] : appointmentsFor(today, todayISO);
@@ -67,25 +75,61 @@ export default function DashboardPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">{t('dash.greeting', { name: t('mock.owner') })}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t('dash.greeting', { name: t('mock.owner') })}
+        </h1>
         <p className="text-muted-foreground">{formatDate(today, locale)}</p>
       </header>
 
-      <section aria-label={t('dash.nav.dashboard')} className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label={t('stat.bookings')} value={empty ? '0' : '128'} icon={<CalendarCheck aria-hidden className="size-4" />} delta={empty ? undefined : 12} deltaLabel={t('stat.vsLastWeek')} />
-        <StatCard label={t('stat.revenue')} value={formatPrice(empty ? 0 : 42500, locale)} icon={<Wallet aria-hidden className="size-4" />} delta={empty ? undefined : 8} deltaLabel={t('stat.vsLastWeek')} />
-        <StatCard label={t('stat.newClients')} value={empty ? '0' : '23'} icon={<UserPlus aria-hidden className="size-4" />} delta={empty ? undefined : 5} deltaLabel={t('stat.vsLastWeek')} />
-        <StatCard label={t('stat.occupancy')} value={empty ? '0%' : '78%'} icon={<Percent aria-hidden className="size-4" />} delta={empty ? undefined : -3} deltaLabel={t('stat.vsLastWeek')} />
+      <section
+        aria-label={t('dash.nav.dashboard')}
+        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <StatCard
+          label={t('stat.bookings')}
+          value={empty ? '0' : '128'}
+          icon={<CalendarCheck aria-hidden className="size-4" />}
+          delta={empty ? undefined : 12}
+          deltaLabel={t('stat.vsLastWeek')}
+        />
+        <StatCard
+          label={t('stat.revenue')}
+          value={formatPrice(empty ? 0 : 42500, locale)}
+          icon={<Wallet aria-hidden className="size-4" />}
+          delta={empty ? undefined : 8}
+          deltaLabel={t('stat.vsLastWeek')}
+        />
+        <StatCard
+          label={t('stat.newClients')}
+          value={empty ? '0' : '23'}
+          icon={<UserPlus aria-hidden className="size-4" />}
+          delta={empty ? undefined : 5}
+          deltaLabel={t('stat.vsLastWeek')}
+        />
+        <StatCard
+          label={t('stat.occupancy')}
+          value={empty ? '0%' : '78%'}
+          icon={<Percent aria-hidden className="size-4" />}
+          delta={empty ? undefined : -3}
+          deltaLabel={t('stat.vsLastWeek')}
+        />
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[1fr_22rem]">
         <Card className="shadow-soft">
-          <CardHeader><CardTitle className="text-base">{t('dash.chart.title')}</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">{t('dash.chart.title')}</CardTitle>
+          </CardHeader>
           <CardContent>
             {empty ? (
               <EmptyState title={t('empty.title')} description={t('empty.description')} />
             ) : (
-              <BookingsChart data={chart} rtl={locale === 'ar'} ariaLabel={t('dash.chart.aria')} seriesLabel={t('dash.chart.series')} />
+              <BookingsChart
+                data={chart}
+                rtl={locale === 'ar'}
+                ariaLabel={t('dash.chart.aria')}
+                seriesLabel={t('dash.chart.series')}
+              />
             )}
           </CardContent>
         </Card>
@@ -118,11 +162,16 @@ export default function DashboardPage({
       <Card className="shadow-soft">
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">{t('dash.appointments.title')}</CardTitle>
-          <Button asChild variant="ghost" size="sm"><Link href="/dashboard/calendar">{t('dash.appointments.viewCalendar')}</Link></Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/calendar">{t('dash.appointments.viewCalendar')}</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           {todays.length === 0 ? (
-            <EmptyState title={t('dash.appointments.emptyTitle')} description={t('dash.appointments.emptyDesc')} />
+            <EmptyState
+              title={t('dash.appointments.emptyTitle')}
+              description={t('dash.appointments.emptyDesc')}
+            />
           ) : (
             <ul className="divide-y">
               {todays.map((a) => (
@@ -131,7 +180,9 @@ export default function DashboardPage({
                     {fmtTime(a.start)} – {fmtTime(a.start + a.duration)}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{t(`mock.clients.${a.client}`)}</span>
+                    <span className="block truncate font-medium">
+                      {t(`mock.clients.${a.client}`)}
+                    </span>
                     <span className="block truncate text-sm text-muted-foreground">
                       {t(`mock.services.${a.service}`)} · {t(`mock.team.${a.staff}.name`)}
                     </span>

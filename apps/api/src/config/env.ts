@@ -17,6 +17,7 @@ export const envSchema = z.object({
   GROQ_MODEL_STT: optionalStr,
   RESEND_API_KEY: optionalStr,
   MAIL_FROM: z.string().min(1),
+  UPLOAD_DIR: z.string().default('uploads'),
 });
 export type Env = z.infer<typeof envSchema>;
 

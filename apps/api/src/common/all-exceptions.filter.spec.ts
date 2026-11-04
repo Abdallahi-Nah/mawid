@@ -18,7 +18,9 @@ describe('AllExceptionsFilter', () => {
   it('puts validation messages in details', () => {
     const { json } = run(new BadRequestException(['a must be a string']));
     expect(json).toHaveBeenCalledWith({
-      code: 'BAD_REQUEST', message: 'Validation failed', details: ['a must be a string'],
+      code: 'BAD_REQUEST',
+      message: 'Validation failed',
+      details: ['a must be a string'],
     });
   });
 });
