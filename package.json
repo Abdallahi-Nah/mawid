@@ -1,0 +1,22 @@
+{
+  "name": "mawid",
+  "private": true,
+  "packageManager": "pnpm@8.15.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter ./apps/* dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "prepare": "husky",
+    "postinstall": "pnpm --filter @mawid/shared build"
+  },
+  "devDependencies": {
+    "husky": "^9.1.0",
+    "prettier": "^3.3.0"
+  }
+}
