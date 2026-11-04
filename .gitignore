@@ -7,3 +7,4 @@ dist
 coverage
 .turbo
 docs
+apps/api/uploads

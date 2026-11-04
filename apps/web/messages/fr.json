@@ -15,7 +15,10 @@
     "retry": "Réessayer",
     "skipToContent": "Aller au contenu",
     "errorTitle": "Une erreur est survenue",
-    "errorDesc": "Impossible de charger cette page. Réessayez."
+    "errorDesc": "Impossible de charger cette page. Réessayez.",
+    "saved": "Enregistré",
+    "deleted": "Supprimé",
+    "delete": "Supprimer"
   },
   "home": {
     "title": "Mawid : des réservations simples pour votre commerce",
@@ -152,7 +155,17 @@
       "invalidPhone": "Entrez un numéro valide",
       "invalidEmail": "Entrez un email valide",
       "passwordShort": "8 caractères minimum",
-      "termsRequired": "Vous devez accepter les conditions"
+      "termsRequired": "Vous devez accepter les conditions",
+      "tooLong": "Texte trop long",
+      "slugInvalid": "3 à 40 caractères : lettres minuscules, chiffres et tirets",
+      "invalidTimezone": "Fuseau horaire invalide",
+      "invalidColor": "Couleur invalide",
+      "durationInvalid": "Entre 5 et 480 minutes",
+      "priceInvalid": "Prix invalide",
+      "timeInvalid": "Heure invalide",
+      "endBeforeStart": "La fin doit être après le début",
+      "breakInvalid": "La pause doit être dans la journée de travail",
+      "hoursOverlap": "Les plages se chevauchent"
     }
   },
   "mock": {
@@ -314,7 +327,8 @@
     "noReviewsDesc": "Soyez le premier à donner votre avis.",
     "chatOpen": "Ouvrir l'assistant IA",
     "chatGreeting": "Bonjour ! Je suis l'assistant du Salon Nour. Comment puis-je vous aider ?",
-    "chatSoon": "La conversation complète arrive à la prochaine étape."
+    "chatSoon": "La conversation complète arrive à la prochaine étape.",
+    "closedToday": "Fermé aujourd'hui"
   },
   "book": {
     "title": "Réservez votre rendez-vous",
@@ -345,7 +359,10 @@
       "aria": "Navigation du tableau de bord",
       "dashboard": "Tableau de bord",
       "calendar": "Calendrier",
-      "publicPage": "Ma page publique"
+      "publicPage": "Ma page publique",
+      "services": "Services",
+      "staff": "Équipe",
+      "settings": "Réglages"
     },
     "greeting": "Bonjour, {name}",
     "chart": {
@@ -402,7 +419,23 @@
     "noAccount": "Pas encore de compte ?",
     "haveAccount": "Déjà un compte ?",
     "errorTitle": "Connexion impossible",
-    "errorDesc": "Le service ne répond pas. Réessayez."
+    "errorDesc": "Le service ne répond pas. Réessayez.",
+    "logout": "Se déconnecter",
+    "forgot": "Mot de passe oublié ?",
+    "forgotTitle": "Mot de passe oublié",
+    "forgotDesc": "Entrez votre email. Nous vous envoyons un lien.",
+    "forgotCta": "Envoyer le lien",
+    "forgotSentTitle": "Vérifiez votre email",
+    "forgotSentDesc": "Si un compte existe avec cet email, un lien vient d’être envoyé. Il est valable 1 heure.",
+    "resetTitle": "Nouveau mot de passe",
+    "resetDesc": "Choisissez un mot de passe de 8 caractères minimum.",
+    "resetCta": "Changer le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "resetDoneTitle": "Mot de passe changé",
+    "resetDoneDesc": "Vous pouvez maintenant vous connecter.",
+    "forbiddenTitle": "Accès refusé",
+    "forbiddenDesc": "Votre compte n'a pas le droit de voir cette page.",
+    "goHome": "Retour à l'accueil"
   },
   "onb": {
     "steps": {
@@ -444,5 +477,115 @@
     "goDashboard": "Aller au tableau de bord",
     "errorTitle": "Impossible de charger la configuration",
     "errorDesc": "Réessayez dans un instant."
+  },
+  "apiErrors": {
+    "NETWORK": "Impossible de joindre le serveur. Vérifiez votre connexion.",
+    "UNKNOWN": "Une erreur est survenue. Réessayez.",
+    "INVALID_CREDENTIALS": "Email ou mot de passe incorrect",
+    "EMAIL_TAKEN": "Cet email est déjà utilisé",
+    "UNAUTHORIZED": "Votre session a expiré. Reconnectez-vous.",
+    "FORBIDDEN": "Vous n'avez pas accès à cette page",
+    "NO_BUSINESS": "Ce compte n'a pas de commerce",
+    "VALIDATION_ERROR": "Certains champs sont invalides",
+    "SLUG_TAKEN": "Cette adresse est déjà utilisée",
+    "NOT_FOUND": "Élément introuvable",
+    "IN_USE": "Impossible de supprimer : des réservations l'utilisent. Désactivez-le à la place.",
+    "UNKNOWN_SERVICE": "Un des services n'existe pas",
+    "UNKNOWN_STAFF": "Cet employé n'existe pas",
+    "INVALID_RESET_TOKEN": "Ce lien est invalide ou expiré",
+    "INVALID_IMAGE": "Image PNG, JPEG ou WebP uniquement",
+    "FILE_REQUIRED": "Choisissez une image",
+    "TOO_MANY_REQUESTS": "Trop d’essais. Attendez une minute.",
+    "PAYLOAD_TOO_LARGE": "Fichier trop gros (2 Mo maximum)",
+    "CONFLICT": "Cette valeur existe déjà"
+  },
+  "settings": {
+    "title": "Réglages du commerce",
+    "logo": "Logo",
+    "logoAlt": "Logo du commerce",
+    "logoUpload": "Choisir une image",
+    "logoHint": "PNG, JPEG ou WebP, 2 Mo maximum.",
+    "profile": "Profil",
+    "slug": "Adresse de la page",
+    "slugHint": "Votre page sera sur /b/votre-adresse",
+    "description": "Description",
+    "address": "Adresse",
+    "preferences": "Préférences",
+    "defaultLocale": "Langue par défaut",
+    "locales": {
+      "ar": "العربية",
+      "fr": "Français",
+      "en": "English"
+    },
+    "timezone": "Fuseau horaire",
+    "bookingMode": "Mode de réservation",
+    "bookingModeHint": "Automatique : la réservation est confirmée tout de suite. Manuel : vous confirmez chaque demande.",
+    "modes": {
+      "AUTO": "Automatique",
+      "MANUAL": "Manuel"
+    },
+    "cancelLimit": "Annulation possible jusqu'à (heures avant)",
+    "brandColor": "Couleur de la marque",
+    "brandColorHint": "Utilisée sur votre page publique.",
+    "brandColorReset": "Couleur par défaut",
+    "share": "Lien de votre page",
+    "copyLink": "Copier le lien",
+    "copied": "Lien copié"
+  },
+  "services": {
+    "title": "Services",
+    "add": "Ajouter un service",
+    "edit": "Modifier le service",
+    "dialogDesc": "Nom, durée et prix du service.",
+    "duration": "Durée (min)",
+    "price": "Prix (MRU)",
+    "category": "Catégorie",
+    "buffer": "Préparation (min)",
+    "active": "Visible sur la page publique",
+    "inactive": "Inactif",
+    "emptyTitle": "Aucun service",
+    "emptyDesc": "Ajoutez votre premier service pour recevoir des réservations.",
+    "editAria": "Modifier {name}",
+    "deleteAria": "Supprimer {name}",
+    "deleteTitle": "Supprimer ce service ?",
+    "deleteDesc": "« {name} » sera supprimé. Cette action est définitive."
+  },
+  "staffPage": {
+    "title": "Équipe",
+    "add": "Ajouter un employé",
+    "edit": "Modifier l'employé",
+    "dialogDesc": "Nom, services assurés et horaires de travail.",
+    "photoUpload": "Changer la photo",
+    "active": "Actif (peut recevoir des réservations)",
+    "services": "Services assurés",
+    "noServices": "Ajoutez d'abord des services.",
+    "hours": "Horaires de travail",
+    "closed": "Fermé",
+    "break": "Pause",
+    "breakStart": "Début de la pause",
+    "breakEnd": "Fin de la pause",
+    "emptyTitle": "Aucun employé",
+    "emptyDesc": "Ajoutez les personnes qui reçoivent vos clients.",
+    "servicesCount": "{count, plural, =0 {Aucun service} one {# service} other {# services}}",
+    "deleteTitle": "Supprimer cet employé ?",
+    "deleteDesc": "« {name} » sera supprimé. Cette action est définitive."
+  },
+  "timeOff": {
+    "title": "Congés et jours fermés",
+    "add": "Ajouter un congé",
+    "dialogDesc": "Pendant ces jours, personne ne peut réserver.",
+    "who": "Pour",
+    "everyone": "Tout le commerce",
+    "from": "Du",
+    "to": "Au (inclus)",
+    "reason": "Motif (facultatif)",
+    "emptyTitle": "Aucun congé",
+    "emptyDesc": "Ajoutez les jours fériés et les congés.",
+    "deleteAria": "Supprimer le congé {range}"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "desc": "Cette page n'existe pas ou a été déplacée.",
+    "home": "Retour à l'accueil"
   }
 }

@@ -15,7 +15,10 @@
     "retry": "Retry",
     "skipToContent": "Skip to content",
     "errorTitle": "Something went wrong",
-    "errorDesc": "We could not load this page. Please try again."
+    "errorDesc": "We could not load this page. Please try again.",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "delete": "Delete"
   },
   "home": {
     "title": "Mawid: simple bookings for your business",
@@ -152,7 +155,17 @@
       "invalidPhone": "Enter a valid phone number",
       "invalidEmail": "Enter a valid email",
       "passwordShort": "At least 8 characters",
-      "termsRequired": "You must accept the terms"
+      "termsRequired": "You must accept the terms",
+      "tooLong": "Text too long",
+      "slugInvalid": "3 to 40 characters: lowercase letters, digits and dashes",
+      "invalidTimezone": "Invalid time zone",
+      "invalidColor": "Invalid color",
+      "durationInvalid": "Between 5 and 480 minutes",
+      "priceInvalid": "Invalid price",
+      "timeInvalid": "Invalid time",
+      "endBeforeStart": "The end must be after the start",
+      "breakInvalid": "The break must be inside the working day",
+      "hoursOverlap": "The time ranges overlap"
     }
   },
   "mock": {
@@ -314,7 +327,8 @@
     "noReviewsDesc": "Be the first to leave a review.",
     "chatOpen": "Open the AI assistant",
     "chatGreeting": "Hi! I'm the Salon Nour assistant. How can I help?",
-    "chatSoon": "The full chat comes in the next step."
+    "chatSoon": "The full chat comes in the next step.",
+    "closedToday": "Closed today"
   },
   "book": {
     "title": "Book your appointment",
@@ -345,7 +359,10 @@
       "aria": "Dashboard navigation",
       "dashboard": "Dashboard",
       "calendar": "Calendar",
-      "publicPage": "My public page"
+      "publicPage": "My public page",
+      "services": "Services",
+      "staff": "Team",
+      "settings": "Settings"
     },
     "greeting": "Hello, {name}",
     "chart": {
@@ -402,7 +419,23 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "errorTitle": "Unable to sign in",
-    "errorDesc": "The service is not responding. Try again."
+    "errorDesc": "The service is not responding. Try again.",
+    "logout": "Log out",
+    "forgot": "Forgot your password?",
+    "forgotTitle": "Forgot password",
+    "forgotDesc": "Enter your email. We will send you a link.",
+    "forgotCta": "Send the link",
+    "forgotSentTitle": "Check your email",
+    "forgotSentDesc": "If an account exists with this email, a link has been sent. It is valid for 1 hour.",
+    "resetTitle": "New password",
+    "resetDesc": "Choose a password of at least 8 characters.",
+    "resetCta": "Change password",
+    "newPassword": "New password",
+    "resetDoneTitle": "Password changed",
+    "resetDoneDesc": "You can now log in.",
+    "forbiddenTitle": "Access denied",
+    "forbiddenDesc": "Your account is not allowed to see this page.",
+    "goHome": "Back to home"
   },
   "onb": {
     "steps": {
@@ -444,5 +477,115 @@
     "goDashboard": "Go to dashboard",
     "errorTitle": "Unable to load the setup",
     "errorDesc": "Try again in a moment."
+  },
+  "apiErrors": {
+    "NETWORK": "Cannot reach the server. Check your connection.",
+    "UNKNOWN": "Something went wrong. Try again.",
+    "INVALID_CREDENTIALS": "Wrong email or password",
+    "EMAIL_TAKEN": "This email is already used",
+    "UNAUTHORIZED": "Your session has expired. Log in again.",
+    "FORBIDDEN": "You don't have access to this page",
+    "NO_BUSINESS": "This account has no business",
+    "VALIDATION_ERROR": "Some fields are invalid",
+    "SLUG_TAKEN": "This address is already used",
+    "NOT_FOUND": "Item not found",
+    "IN_USE": "Cannot delete: bookings use it. Deactivate it instead.",
+    "UNKNOWN_SERVICE": "One of the services does not exist",
+    "UNKNOWN_STAFF": "This employee does not exist",
+    "INVALID_RESET_TOKEN": "This link is invalid or expired",
+    "INVALID_IMAGE": "PNG, JPEG or WebP images only",
+    "FILE_REQUIRED": "Choose an image",
+    "TOO_MANY_REQUESTS": "Too many attempts. Wait a minute.",
+    "PAYLOAD_TOO_LARGE": "File too large (2 MB maximum)",
+    "CONFLICT": "This value already exists"
+  },
+  "settings": {
+    "title": "Business settings",
+    "logo": "Logo",
+    "logoAlt": "Business logo",
+    "logoUpload": "Choose an image",
+    "logoHint": "PNG, JPEG or WebP, 2 MB maximum.",
+    "profile": "Profile",
+    "slug": "Page address",
+    "slugHint": "Your page will be at /b/your-address",
+    "description": "Description",
+    "address": "Address",
+    "preferences": "Preferences",
+    "defaultLocale": "Default language",
+    "locales": {
+      "ar": "العربية",
+      "fr": "Français",
+      "en": "English"
+    },
+    "timezone": "Time zone",
+    "bookingMode": "Booking mode",
+    "bookingModeHint": "Automatic: bookings are confirmed right away. Manual: you confirm each request.",
+    "modes": {
+      "AUTO": "Automatic",
+      "MANUAL": "Manual"
+    },
+    "cancelLimit": "Cancellation allowed until (hours before)",
+    "brandColor": "Brand color",
+    "brandColorHint": "Used on your public page.",
+    "brandColorReset": "Default color",
+    "share": "Your page link",
+    "copyLink": "Copy link",
+    "copied": "Link copied"
+  },
+  "services": {
+    "title": "Services",
+    "add": "Add a service",
+    "edit": "Edit service",
+    "dialogDesc": "Name, duration and price of the service.",
+    "duration": "Duration (min)",
+    "price": "Price (MRU)",
+    "category": "Category",
+    "buffer": "Preparation (min)",
+    "active": "Visible on the public page",
+    "inactive": "Inactive",
+    "emptyTitle": "No services",
+    "emptyDesc": "Add your first service to receive bookings.",
+    "editAria": "Edit {name}",
+    "deleteAria": "Delete {name}",
+    "deleteTitle": "Delete this service?",
+    "deleteDesc": "\"{name}\" will be deleted. This cannot be undone."
+  },
+  "staffPage": {
+    "title": "Team",
+    "add": "Add an employee",
+    "edit": "Edit employee",
+    "dialogDesc": "Name, services performed and working hours.",
+    "photoUpload": "Change photo",
+    "active": "Active (can receive bookings)",
+    "services": "Services performed",
+    "noServices": "Add services first.",
+    "hours": "Working hours",
+    "closed": "Closed",
+    "break": "Break",
+    "breakStart": "Break start",
+    "breakEnd": "Break end",
+    "emptyTitle": "No employees",
+    "emptyDesc": "Add the people who welcome your customers.",
+    "servicesCount": "{count, plural, =0 {No services} one {# service} other {# services}}",
+    "deleteTitle": "Delete this employee?",
+    "deleteDesc": "\"{name}\" will be deleted. This cannot be undone."
+  },
+  "timeOff": {
+    "title": "Time off and closed days",
+    "add": "Add time off",
+    "dialogDesc": "During these days nobody can book.",
+    "who": "For",
+    "everyone": "The whole business",
+    "from": "From",
+    "to": "To (included)",
+    "reason": "Reason (optional)",
+    "emptyTitle": "No time off",
+    "emptyDesc": "Add holidays and days off.",
+    "deleteAria": "Delete time off {range}"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "desc": "This page does not exist or has been moved.",
+    "home": "Back to home"
   }
 }

@@ -36,8 +36,17 @@ export function StatCard({
         <p className="text-3xl font-semibold tracking-tight">{value}</p>
       )}
       {delta !== undefined && !loading && (
-        <p className={cn('flex items-center gap-1 text-xs', up ? 'text-success' : 'text-destructive')}>
-          {up ? <TrendingUp aria-hidden className="size-3.5" /> : <TrendingDown aria-hidden className="size-3.5" />}
+        <p
+          className={cn(
+            'flex items-center gap-1 text-xs',
+            up ? 'text-success' : 'text-destructive',
+          )}
+        >
+          {up ? (
+            <TrendingUp aria-hidden className="size-3.5" />
+          ) : (
+            <TrendingDown aria-hidden className="size-3.5" />
+          )}
           <span dir="ltr">
             {up ? '+' : ''}
             {delta}%

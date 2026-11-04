@@ -36,7 +36,10 @@ export function slotsFor(date: Date): { time: string; disabled?: boolean }[] {
   for (let i = 0; i < 18; i++) {
     const h = 9 + Math.floor(i / 2);
     const m = i % 2 === 0 ? '00' : '30';
-    out.push({ time: `${String(h).padStart(2, '0')}:${m}`, disabled: (date.getDate() + i) % 4 === 0 });
+    out.push({
+      time: `${String(h).padStart(2, '0')}:${m}`,
+      disabled: (date.getDate() + i) % 4 === 0,
+    });
   }
   return out;
 }

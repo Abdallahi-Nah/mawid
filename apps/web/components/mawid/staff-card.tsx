@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 export function StaffCard({
@@ -8,11 +8,13 @@ export function StaffCard({
   initials,
   rating,
   ratingLabel,
+  photoUrl,
   selected,
   onSelect,
 }: {
   name: string;
-  role: string;
+  role?: string;
+  photoUrl?: string;
   initials: string;
   rating?: string;
   ratingLabel?: string;
@@ -32,11 +34,14 @@ export function StaffCard({
       )}
     >
       <Avatar className="size-12">
-        <AvatarFallback className="bg-secondary font-semibold text-primary">{initials}</AvatarFallback>
+        {photoUrl && <AvatarImage src={photoUrl} alt="" />}
+        <AvatarFallback className="bg-secondary font-semibold text-primary">
+          {initials}
+        </AvatarFallback>
       </Avatar>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-semibold">{name}</span>
-        <span className="block truncate text-sm text-muted-foreground">{role}</span>
+        {role && <span className="block truncate text-sm text-muted-foreground">{role}</span>}
       </span>
       {rating && (
         <span aria-label={ratingLabel} className="flex items-center gap-1 text-sm font-medium">

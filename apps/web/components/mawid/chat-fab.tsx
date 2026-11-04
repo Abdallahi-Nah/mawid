@@ -4,7 +4,14 @@ import { Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ChatWidget } from '@/components/mawid/chat-widget';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 // Floating AI chat button that opens the chat widget (mock conversation, no backend).
 export function ChatFab({ forceError }: { forceError?: boolean }) {

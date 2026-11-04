@@ -21,7 +21,11 @@ export function SlotPicker({
   className?: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn('grid grid-cols-3 gap-2 sm:grid-cols-4', className)}>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={cn('grid grid-cols-3 gap-2 sm:grid-cols-4', className)}
+    >
       {slots.map((slot) => {
         const selected = value === slot.time;
         return (
@@ -38,7 +42,8 @@ export function SlotPicker({
               selected
                 ? 'border-primary bg-primary text-primary-foreground shadow-soft'
                 : 'border-input bg-card hover:border-primary hover:bg-secondary',
-              slot.disabled && 'cursor-not-allowed bg-muted text-muted-foreground line-through opacity-60 hover:border-input hover:bg-muted',
+              slot.disabled &&
+                'cursor-not-allowed bg-muted text-muted-foreground line-through opacity-60 hover:border-input hover:bg-muted',
             )}
           >
             <span dir="ltr">{slot.time}</span>

@@ -22,7 +22,9 @@ export function ReviewCard({
     <Card className="space-y-3 p-5 shadow-soft">
       <div className="flex items-center gap-3">
         <Avatar>
-          <AvatarFallback className="bg-secondary font-semibold text-primary">{initials}</AvatarFallback>
+          <AvatarFallback className="bg-secondary font-semibold text-primary">
+            {initials}
+          </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{name}</p>

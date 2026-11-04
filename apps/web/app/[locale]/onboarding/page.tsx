@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import { AuthGate } from '@/components/mawid/auth-gate';
 import { OnboardingWizard } from '@/components/mawid/onboarding-wizard';
 import { SiteHeader } from '@/components/mawid/site-header';
 import { parseState } from '@/lib/mock';
@@ -16,7 +17,9 @@ export default function OnboardingPage({
     <>
       <SiteHeader />
       <main id="main" className="mx-auto flex max-w-6xl justify-center px-4 py-8">
-        <OnboardingWizard state={state === 'empty' ? undefined : state} />
+        <AuthGate roles={['OWNER']}>
+          <OnboardingWizard state={state === 'empty' ? undefined : state} />
+        </AuthGate>
       </main>
     </>
   );

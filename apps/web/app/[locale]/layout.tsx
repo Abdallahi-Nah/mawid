@@ -4,6 +4,7 @@ import { Inter, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
+import { QueryProvider } from '@/components/mawid/query-provider';
 import { ThemeProvider } from '@/components/mawid/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { isLocale, locales } from '@/i18n/routing';
@@ -21,7 +22,11 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
   const t = await getTranslations({ locale: params.locale, namespace: 'common' });
   return { title: t('appName'), description: t('tagline') };
 }
@@ -40,11 +45,21 @@ export default async function LocaleLayout({
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning className={`${inter.variable} ${plexArabic.variable}`}>
+    <html
+      lang={locale}
+      dir={dir}
+      suppressHydrationWarning
+      className={`${inter.variable} ${plexArabic.variable}`}
+    >
       <body className="min-h-screen font-sans">
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-            {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <QueryProvider>{children}</QueryProvider>
             <Toaster dir={dir} />
           </ThemeProvider>
         </NextIntlClientProvider>

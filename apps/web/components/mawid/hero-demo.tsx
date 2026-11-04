@@ -6,7 +6,12 @@ import { ChatBubble } from '@/components/mawid/chat-bubble';
 import { SlotPicker } from '@/components/mawid/slot-picker';
 import { Card } from '@/components/ui/card';
 
-const SLOTS = [{ time: '17:00' }, { time: '17:30' }, { time: '18:00', disabled: true }, { time: '18:30' }];
+const SLOTS = [
+  { time: '17:00' },
+  { time: '17:30' },
+  { time: '18:00', disabled: true },
+  { time: '18:30' },
+];
 
 export function HeroDemo() {
   const t = useTranslations();

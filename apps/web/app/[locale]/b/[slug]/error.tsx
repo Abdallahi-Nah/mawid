@@ -12,7 +12,11 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
         className="py-24"
         title={t('errorTitle')}
         description={t('errorDesc')}
-        action={<Button variant="outline" onClick={reset}>{t('retry')}</Button>}
+        action={
+          <Button variant="outline" onClick={reset}>
+            {t('retry')}
+          </Button>
+        }
       />
     </main>
   );

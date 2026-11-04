@@ -24,7 +24,9 @@ export default function CalendarPage({
         <Skeleton className="h-9 w-48" />
         <Skeleton className="h-10 w-full" />
         <div className="grid gap-3 md:grid-cols-7">
-          {Array.from({ length: 7 }, (_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+          {Array.from({ length: 7 }, (_, i) => (
+            <Skeleton key={i} className="h-40 rounded-xl" />
+          ))}
         </div>
       </div>
     );
@@ -35,7 +37,11 @@ export default function CalendarPage({
         className="py-24"
         title={t('common.errorTitle')}
         description={t('common.errorDesc')}
-        action={<Button asChild variant="outline"><Link href="/dashboard/calendar">{t('common.retry')}</Link></Button>}
+        action={
+          <Button asChild variant="outline">
+            <Link href="/dashboard/calendar">{t('common.retry')}</Link>
+          </Button>
+        }
       />
     );
   }

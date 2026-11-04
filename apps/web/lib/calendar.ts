@@ -5,7 +5,8 @@ export const parseISO = (iso: string): Date => {
 };
 export const toISO = (d: Date): string =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-export const addDays = (d: Date, n: number): Date => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+export const addDays = (d: Date, n: number): Date =>
+  new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 export const sameDay = (a: Date, b: Date): boolean => toISO(a) === toISO(b);
 export const startOfWeek = (d: Date, weekStartsOn: number): Date =>
   addDays(d, -((d.getDay() - weekStartsOn + 7) % 7));
@@ -17,7 +18,7 @@ export const monthGrid = (d: Date, weekStartsOn: number): Date[] => {
   const first = new Date(d.getFullYear(), d.getMonth(), 1);
   const start = startOfWeek(first, weekStartsOn);
   const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-  const weeks = Math.ceil(((first.getDay() - weekStartsOn + 7) % 7 + daysInMonth) / 7);
+  const weeks = Math.ceil((((first.getDay() - weekStartsOn + 7) % 7) + daysInMonth) / 7);
   return Array.from({ length: weeks * 7 }, (_, i) => addDays(start, i));
 };
 export const intlLocale = (locale: string): string => (locale === 'ar' ? 'ar-u-nu-latn' : locale);

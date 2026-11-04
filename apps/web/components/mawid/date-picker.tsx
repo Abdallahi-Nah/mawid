@@ -30,7 +30,10 @@ export function DatePicker({
         <Button
           variant="outline"
           aria-label={label}
-          className={cn('w-full justify-start gap-2 font-normal', !value && 'text-muted-foreground')}
+          className={cn(
+            'w-full justify-start gap-2 font-normal',
+            !value && 'text-muted-foreground',
+          )}
         >
           <CalendarDays aria-hidden className="size-4" />
           {value ? formatDate(value, locale) : placeholder}
