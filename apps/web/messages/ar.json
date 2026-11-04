@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appName": "موعد",
+    "tagline": "احجز موعدك في أقل من دقيقة",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "light": "فاتح",
+    "dark": "داكن",
+    "loading": "جارٍ التحميل",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "next": "التالي",
+    "back": "رجوع",
+    "retry": "إعادة المحاولة",
+    "skipToContent": "انتقل إلى المحتوى"
+  },
+  "home": {
+    "title": "موعد: حجوزات بسيطة لعملك",
+    "subtitle": "المرحلة 1: نظام التصميم. الشاشات قادمة.",
+    "designLink": "افتح صفحة التصميم"
+  },
+  "design": {
+    "title": "نظام التصميم",
+    "subtitle": "كل المكونات وحالاتها. بدّل اللغة والمظهر من الأعلى.",
+    "sections": {
+      "buttons": "الأزرار",
+      "forms": "النماذج",
+      "display": "العرض",
+      "feedback": "التفاعل",
+      "booking": "الحجز",
+      "data": "البيانات",
+      "chat": "الدردشة",
+      "matrix": "المظهر × الاتجاه"
+    },
+    "states": {
+      "default": "افتراضي",
+      "hover": "تمرير",
+      "focus": "تركيز",
+      "disabled": "معطّل",
+      "loading": "تحميل",
+      "error": "خطأ"
+    },
+    "frames": {
+      "lightLtr": "فاتح · LTR",
+      "lightRtl": "فاتح · RTL",
+      "darkLtr": "داكن · LTR",
+      "darkRtl": "داكن · RTL"
+    },
+    "buttons": {
+      "primary": "أساسي",
+      "secondary": "ثانوي",
+      "outline": "محدّد",
+      "ghost": "شفاف",
+      "destructive": "حذف"
+    },
+    "dialog": {
+      "open": "افتح نافذة",
+      "title": "تأكيد الحجز",
+      "description": "سيصلك تأكيد بالبريد الإلكتروني."
+    },
+    "sheet": {
+      "open": "افتح لوحة جانبية"
+    },
+    "toast": {
+      "show": "أظهر إشعارًا",
+      "saved": "تم الحفظ بنجاح"
+    }
+  },
+  "form": {
+    "name": "الاسم",
+    "namePlaceholder": "مثال: محمد ولد أحمد",
+    "email": "البريد الإلكتروني",
+    "emailError": "أدخل بريدًا إلكترونيًا صحيحًا",
+    "message": "ملاحظة",
+    "service": "الخدمة",
+    "servicePlaceholder": "اختر خدمة",
+    "terms": "أوافق على الشروط",
+    "notifications": "إشعارات البريد",
+    "disabledField": "حقل معطّل"
+  },
+  "mock": {
+    "services": {
+      "cut": "قصّ الشعر",
+      "cutDesc": "قصّ وتصفيف مع غسل.",
+      "beard": "تهذيب اللحية",
+      "beardDesc": "تحديد وتهذيب بالمنشفة الساخنة."
+    },
+    "staff": {
+      "one": "سيدي محمد",
+      "two": "مريم منت أحمد",
+      "roleSenior": "حلاق أول",
+      "roleStylist": "مصففة"
+    },
+    "reviewer": "فاطمة بنت عبد الله",
+    "review": "خدمة ممتازة وموعد في وقته. أنصح بها.",
+    "reviewDate": "قبل يومين",
+    "clients": {
+      "one": "عمر ولد سالم",
+      "two": "آمنة بنت محمد",
+      "three": "يوسف ولد الشيخ"
+    },
+    "chat": {
+      "user": "أريد موعدًا لقصّ الشعر غدًا مساءً.",
+      "assistant": "بالتأكيد. هذه الأوقات المتاحة غدًا:"
+    }
+  },
+  "service": {
+    "duration": "{minutes} دقيقة",
+    "book": "احجز",
+    "selected": "محدد"
+  },
+  "staff": {
+    "rating": "التقييم {rating} من 5"
+  },
+  "review": {
+    "rating": "{rating} من 5 نجوم"
+  },
+  "booking": {
+    "dateLabel": "التاريخ",
+    "datePlaceholder": "اختر تاريخًا",
+    "slotsLabel": "اختر الوقت",
+    "slotsHint": "الأوقات الرمادية محجوزة."
+  },
+  "steps": {
+    "service": "الخدمة",
+    "staff": "الموظف",
+    "datetime": "الوقت",
+    "details": "بياناتك",
+    "progress": "الخطوة {current} من {total}"
+  },
+  "status": {
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكد",
+    "completed": "مكتمل",
+    "cancelled": "ملغى",
+    "noShow": "لم يحضر"
+  },
+  "stat": {
+    "bookings": "الحجوزات",
+    "revenue": "الإيرادات",
+    "vsLastWeek": "مقارنة بالأسبوع الماضي"
+  },
+  "empty": {
+    "title": "لا توجد حجوزات بعد",
+    "description": "شارك رابط صفحتك لتستقبل أول حجز.",
+    "action": "انسخ الرابط"
+  },
+  "table": {
+    "client": "العميل",
+    "service": "الخدمة",
+    "time": "الوقت",
+    "status": "الحالة",
+    "error": "تعذّر تحميل البيانات."
+  },
+  "chat": {
+    "assistant": "مساعد موعد",
+    "typing": "المساعد يكتب",
+    "you": "أنت",
+    "confirmSlot": "تأكيد هذا الوقت"
+  }
+}
