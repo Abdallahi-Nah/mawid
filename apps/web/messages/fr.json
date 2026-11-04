@@ -13,12 +13,78 @@
     "next": "Suivant",
     "back": "Retour",
     "retry": "Réessayer",
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "errorTitle": "Une erreur est survenue",
+    "errorDesc": "Impossible de charger cette page. Réessayez."
   },
   "home": {
     "title": "Mawid : des réservations simples pour votre commerce",
     "subtitle": "Phase 1 : le système de design. Les écrans arrivent.",
-    "designLink": "Ouvrir la page design"
+    "designLink": "Ouvrir la page design",
+    "nav": {
+      "features": "Fonctionnalités",
+      "demo": "Démo",
+      "pricing": "Tarifs",
+      "login": "Connexion"
+    },
+    "hero": {
+      "badge": "Assistant IA intégré",
+      "title": "Des réservations sans coups de fil",
+      "subtitle": "Mawid donne à votre commerce une belle page de réservation ouverte 24 h/24 et un assistant IA qui répond à vos clients.",
+      "cta": "Créer mon commerce",
+      "secondary": "Voir la démo"
+    },
+    "benefits": {
+      "title": "Pourquoi Mawid ?",
+      "one": {
+        "title": "Réservation 24 h/24",
+        "desc": "Vos clients réservent en moins d'une minute, même la nuit."
+      },
+      "two": {
+        "title": "Assistant IA",
+        "desc": "Il répond aux questions, propose des créneaux et confirme la réservation."
+      },
+      "three": {
+        "title": "Moins d'absences",
+        "desc": "Rappels automatiques par email avant chaque rendez-vous."
+      }
+    },
+    "demo": {
+      "title": "Découvrez la page d'un commerce",
+      "desc": "Un salon fictif pour essayer le parcours client, de la réservation à la confirmation.",
+      "cta": "Ouvrir la démo"
+    },
+    "pricing": {
+      "title": "Des tarifs simples",
+      "subtitle": "Commencez gratuitement, évoluez avec votre activité.",
+      "perMonth": "par mois",
+      "popular": "Populaire",
+      "choose": "Choisir ce plan",
+      "plans": {
+        "starter": {
+          "name": "Démarrage",
+          "f1": "50 réservations par mois",
+          "f2": "Page de réservation publique",
+          "f3": "Emails de confirmation"
+        },
+        "pro": {
+          "name": "Pro",
+          "f1": "Réservations illimitées",
+          "f2": "Assistant IA",
+          "f3": "Rapports et revenus"
+        },
+        "business": {
+          "name": "Multi-sites",
+          "f1": "Plusieurs établissements",
+          "f2": "Rôles d'équipe",
+          "f3": "Support prioritaire"
+        }
+      }
+    },
+    "cta": {
+      "title": "Prêt à recevoir vos réservations ?"
+    },
+    "footer": "© 2026 Mawid. Tous droits réservés."
   },
   "design": {
     "title": "Système de design",
@@ -77,14 +143,28 @@
     "servicePlaceholder": "Choisissez un service",
     "terms": "J'accepte les conditions",
     "notifications": "Notifications par email",
-    "disabledField": "Champ désactivé"
+    "disabledField": "Champ désactivé",
+    "phone": "Téléphone",
+    "phonePlaceholder": "+222 22 00 00 00",
+    "emailOptional": "Email (facultatif)",
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "invalidPhone": "Entrez un numéro valide",
+      "invalidEmail": "Entrez un email valide",
+      "passwordShort": "8 caractères minimum",
+      "termsRequired": "Vous devez accepter les conditions"
+    }
   },
   "mock": {
     "services": {
       "cut": "Coupe de cheveux",
       "cutDesc": "Coupe et coiffage avec shampoing.",
       "beard": "Taille de barbe",
-      "beardDesc": "Contours et soin à la serviette chaude."
+      "beardDesc": "Contours et soin à la serviette chaude.",
+      "color": "Coloration",
+      "colorDesc": "Coloration complète avec soin.",
+      "care": "Soin du visage",
+      "careDesc": "Nettoyage et hydratation profonde."
     },
     "staff": {
       "one": "Sidi Mohamed",
@@ -98,17 +178,59 @@
     "clients": {
       "one": "Omar Ould Salem",
       "two": "Aminetou Mint Mohamed",
-      "three": "Youssef Ould Cheikh"
+      "three": "Youssef Ould Cheikh",
+      "four": "Mariem Mint Cheikh",
+      "five": "Brahim Ould Mahmoud",
+      "six": "Zeinebou Mint Ali"
     },
     "chat": {
       "user": "Je veux un rendez-vous coupe demain soir.",
       "assistant": "Bien sûr. Voici les créneaux libres demain :"
-    }
+    },
+    "business": {
+      "name": "Salon Nour",
+      "tagline": "Coiffure et soins pour tous",
+      "description": "Un salon familial à Nouakchott. Sur rendez-vous pour ne jamais attendre.",
+      "address": "Nouakchott, Tevragh Zeina"
+    },
+    "team": {
+      "one": {
+        "name": "Sidi Mohamed",
+        "role": "Coiffeur senior"
+      },
+      "two": {
+        "name": "Mariem Mint Ahmed",
+        "role": "Styliste"
+      },
+      "three": {
+        "name": "Ahmed Ould Baba",
+        "role": "Coloriste"
+      }
+    },
+    "rev": {
+      "1": {
+        "name": "Fatimetou Mint Abdallahi",
+        "text": "Service excellent et rendez-vous à l'heure. Je recommande.",
+        "date": "Il y a 2 jours"
+      },
+      "2": {
+        "name": "Mohamed Ould Sidi",
+        "text": "Super coupe et équipe très accueillante.",
+        "date": "Il y a 1 semaine"
+      },
+      "3": {
+        "name": "Khadija Mint Salem",
+        "text": "Lieu propre, et la réservation en ligne a tout facilité.",
+        "date": "Il y a 2 semaines"
+      }
+    },
+    "owner": "Mohamed"
   },
   "service": {
     "duration": "{minutes} min",
     "book": "Réserver",
-    "selected": "Choisi"
+    "selected": "Choisi",
+    "choose": "Choisir"
   },
   "staff": {
     "rating": "Note {rating} sur 5"
@@ -139,7 +261,9 @@
   "stat": {
     "bookings": "Réservations",
     "revenue": "Revenus",
-    "vsLastWeek": "vs semaine dernière"
+    "vsLastWeek": "vs semaine dernière",
+    "newClients": "Nouveaux clients",
+    "occupancy": "Taux d'occupation"
   },
   "empty": {
     "title": "Aucune réservation pour l'instant",
@@ -157,6 +281,168 @@
     "assistant": "Assistant Mawid",
     "typing": "L'assistant écrit",
     "you": "Vous",
-    "confirmSlot": "Confirmer ce créneau"
+    "confirmSlot": "Confirmer ce créneau",
+    "subtitle": "Réservez en discutant avec l'assistant.",
+    "greeting": "Bonjour ! Je suis l'assistant du Salon Nour. Comment puis-je vous aider ?",
+    "chipBook": "Je veux une coupe demain",
+    "chipHours": "Quels sont vos horaires ?",
+    "suggestions": "Suggestions",
+    "placeholder": "Écrivez votre message",
+    "send": "Envoyer",
+    "slotsLabel": "Créneaux proposés",
+    "replyBook": "Bien sûr ! Pour une coupe de cheveux avec Sidi Mohamed, voici les créneaux libres demain. Lequel vous convient ?",
+    "replyHours": "Nous sommes ouverts de 09:00 à 18:00, sauf le vendredi.",
+    "pickedSlot": "Demain à {time}",
+    "replyConfirm": "Parfait. Coupe de cheveux demain à {time} avec Sidi Mohamed. Je confirme ?",
+    "replyDone": "C'est réservé ! Rendez-vous demain à {time}. Vous recevrez un rappel.",
+    "booked": "Réservation confirmée",
+    "errorTitle": "L'assistant ne répond pas",
+    "errorDesc": "Réessayez dans un instant.",
+    "retry": "Réessayer"
+  },
+  "b": {
+    "book": "Réserver",
+    "about": "À propos",
+    "services": "Services",
+    "team": "Équipe",
+    "reviews": "Avis clients",
+    "openToday": "Ouvert aujourd'hui · {hours}",
+    "rating": "({count} avis)",
+    "noServicesTitle": "Aucun service pour l'instant",
+    "noServicesDesc": "Ce commerce ajoutera bientôt ses services.",
+    "noReviewsTitle": "Pas encore d'avis",
+    "noReviewsDesc": "Soyez le premier à donner votre avis.",
+    "chatOpen": "Ouvrir l'assistant IA",
+    "chatGreeting": "Bonjour ! Je suis l'assistant du Salon Nour. Comment puis-je vous aider ?",
+    "chatSoon": "La conversation complète arrive à la prochaine étape."
+  },
+  "book": {
+    "title": "Réservez votre rendez-vous",
+    "at": "chez {business}",
+    "anyone": "Peu importe",
+    "anyoneDesc": "Nous choisissons le créneau le plus rapide.",
+    "serviceTitle": "Choisissez un service",
+    "staffTitle": "Avec qui ?",
+    "dateTitle": "Choisissez le jour et l'heure",
+    "detailsTitle": "Vos informations",
+    "pickDateFirst": "Choisissez une date pour voir les horaires.",
+    "noSlotsTitle": "Aucun créneau ce jour-là",
+    "noSlotsDesc": "Essayez un autre jour.",
+    "slotsError": "Impossible de charger les horaires.",
+    "summary": "Résumé",
+    "total": "Total",
+    "when": "Quand",
+    "with": "Avec",
+    "confirm": "Confirmer la réservation",
+    "confirming": "Confirmation en cours",
+    "successTitle": "Votre rendez-vous est réservé !",
+    "successDesc": "Nous vous avons envoyé une confirmation. À bientôt.",
+    "backToBusiness": "Retour à la page",
+    "notSelected": "Pas encore choisi"
+  },
+  "dash": {
+    "nav": {
+      "aria": "Navigation du tableau de bord",
+      "dashboard": "Tableau de bord",
+      "calendar": "Calendrier",
+      "publicPage": "Ma page publique"
+    },
+    "greeting": "Bonjour, {name}",
+    "chart": {
+      "title": "Réservations des 7 derniers jours",
+      "aria": "Graphique en barres du nombre de réservations par jour",
+      "series": "Réservations"
+    },
+    "appointments": {
+      "title": "Rendez-vous du jour",
+      "emptyTitle": "Aucun rendez-vous aujourd'hui",
+      "emptyDesc": "Profitez d'une journée calme ou partagez le lien de votre page.",
+      "viewCalendar": "Voir le calendrier"
+    },
+    "ai": {
+      "title": "Résumé IA de la semaine",
+      "badge": "Généré par l'IA",
+      "text": "Belle semaine : les réservations ont augmenté de 12 % par rapport à la semaine dernière. La coupe reste la prestation la plus demandée.",
+      "p1": "Pic de réservations le samedi après-midi.",
+      "p2": "Seulement 2 annulations cette semaine.",
+      "p3": "Pensez à ouvrir des créneaux le jeudi soir.",
+      "empty": "Pas encore assez de données. Le résumé apparaît après une semaine de réservations."
+    }
+  },
+  "cal": {
+    "title": "Calendrier",
+    "views": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "viewsAria": "Affichage du calendrier",
+    "today": "Aujourd'hui",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "allStaff": "Toute l'équipe",
+    "filterStaff": "Filtrer par employé",
+    "emptyTitle": "Aucun rendez-vous sur cette période",
+    "emptyDesc": "Essayez une autre période ou un autre employé.",
+    "more": "+{count} autres",
+    "price": "Prix",
+    "duration": "Durée",
+    "openDay": "Ouvrir le {date}"
+  },
+  "auth": {
+    "name": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "loginTitle": "Connexion",
+    "loginDesc": "Accédez à votre tableau de bord.",
+    "loginCta": "Se connecter",
+    "registerTitle": "Créer un compte",
+    "registerDesc": "Lancez votre page de réservation en quelques minutes.",
+    "registerCta": "S'inscrire",
+    "noAccount": "Pas encore de compte ?",
+    "haveAccount": "Déjà un compte ?",
+    "errorTitle": "Connexion impossible",
+    "errorDesc": "Le service ne répond pas. Réessayez."
+  },
+  "onb": {
+    "steps": {
+      "business": "Votre activité",
+      "services": "Services",
+      "hours": "Horaires",
+      "team": "Équipe"
+    },
+    "bizName": "Nom de l'activité",
+    "category": "Type d'activité",
+    "categoryPlaceholder": "Choisissez un type",
+    "categories": {
+      "salon": "Salon",
+      "clinic": "Clinique",
+      "garage": "Garage",
+      "restaurant": "Restaurant"
+    },
+    "servicesHint": "Choisissez les services que vous proposez. Vous pourrez les modifier plus tard.",
+    "minutes": "{count} min",
+    "days": {
+      "mon": "Lundi",
+      "tue": "Mardi",
+      "wed": "Mercredi",
+      "thu": "Jeudi",
+      "fri": "Vendredi",
+      "sat": "Samedi",
+      "sun": "Dimanche"
+    },
+    "opens": "Ouverture",
+    "closes": "Fermeture",
+    "teamHint": "Ajoutez les personnes qui reçoivent les clients.",
+    "memberName": "Nom de l'employé",
+    "addMember": "Ajouter l'employé",
+    "removeMember": "Retirer {name}",
+    "teamEmpty": "Aucun employé pour l'instant. Vous pouvez continuer seul.",
+    "finish": "Terminer",
+    "doneTitle": "C'est prêt !",
+    "doneDesc": "{name} peut maintenant recevoir des réservations.",
+    "goDashboard": "Aller au tableau de bord",
+    "errorTitle": "Impossible de charger la configuration",
+    "errorDesc": "Réessayez dans un instant."
   }
 }
