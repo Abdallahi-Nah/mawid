@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appName": "Mawid",
+    "tagline": "Book in under a minute",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "loading": "Loading",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "next": "Next",
+    "back": "Back",
+    "retry": "Retry",
+    "skipToContent": "Skip to content"
+  },
+  "home": {
+    "title": "Mawid: simple bookings for your business",
+    "subtitle": "Phase 1: the design system. Screens are coming.",
+    "designLink": "Open the design page"
+  },
+  "design": {
+    "title": "Design system",
+    "subtitle": "Every component and its states. Switch language and theme at the top.",
+    "sections": {
+      "buttons": "Buttons",
+      "forms": "Forms",
+      "display": "Display",
+      "feedback": "Feedback",
+      "booking": "Booking",
+      "data": "Data",
+      "chat": "Chat",
+      "matrix": "Theme × direction"
+    },
+    "states": {
+      "default": "Default",
+      "hover": "Hover",
+      "focus": "Focus",
+      "disabled": "Disabled",
+      "loading": "Loading",
+      "error": "Error"
+    },
+    "frames": {
+      "lightLtr": "Light · LTR",
+      "lightRtl": "Light · RTL",
+      "darkLtr": "Dark · LTR",
+      "darkRtl": "Dark · RTL"
+    },
+    "buttons": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "outline": "Outline",
+      "ghost": "Ghost",
+      "destructive": "Delete"
+    },
+    "dialog": {
+      "open": "Open dialog",
+      "title": "Confirm the booking",
+      "description": "You will receive a confirmation email."
+    },
+    "sheet": {
+      "open": "Open sheet"
+    },
+    "toast": {
+      "show": "Show toast",
+      "saved": "Saved successfully"
+    }
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "e.g. Mohamed Ould Ahmed",
+    "email": "Email",
+    "emailError": "Enter a valid email",
+    "message": "Note",
+    "service": "Service",
+    "servicePlaceholder": "Choose a service",
+    "terms": "I accept the terms",
+    "notifications": "Email notifications",
+    "disabledField": "Disabled field"
+  },
+  "mock": {
+    "services": {
+      "cut": "Haircut",
+      "cutDesc": "Cut and style with wash.",
+      "beard": "Beard trim",
+      "beardDesc": "Shaping with a hot towel."
+    },
+    "staff": {
+      "one": "Sidi Mohamed",
+      "two": "Mariem Mint Ahmed",
+      "roleSenior": "Senior barber",
+      "roleStylist": "Stylist"
+    },
+    "reviewer": "Fatimetou Mint Abdallahi",
+    "review": "Excellent service and on time. Highly recommended.",
+    "reviewDate": "2 days ago",
+    "clients": {
+      "one": "Omar Ould Salem",
+      "two": "Aminetou Mint Mohamed",
+      "three": "Youssef Ould Cheikh"
+    },
+    "chat": {
+      "user": "I want a haircut appointment tomorrow evening.",
+      "assistant": "Sure. Here are the free slots tomorrow:"
+    }
+  },
+  "service": {
+    "duration": "{minutes} min",
+    "book": "Book",
+    "selected": "Selected"
+  },
+  "staff": {
+    "rating": "Rated {rating} out of 5"
+  },
+  "review": {
+    "rating": "{rating} out of 5 stars"
+  },
+  "booking": {
+    "dateLabel": "Date",
+    "datePlaceholder": "Pick a date",
+    "slotsLabel": "Choose a time",
+    "slotsHint": "Greyed times are taken."
+  },
+  "steps": {
+    "service": "Service",
+    "staff": "Staff",
+    "datetime": "Time",
+    "details": "Your details",
+    "progress": "Step {current} of {total}"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "noShow": "No-show"
+  },
+  "stat": {
+    "bookings": "Bookings",
+    "revenue": "Revenue",
+    "vsLastWeek": "vs last week"
+  },
+  "empty": {
+    "title": "No bookings yet",
+    "description": "Share your page link to get your first booking.",
+    "action": "Copy link"
+  },
+  "table": {
+    "client": "Client",
+    "service": "Service",
+    "time": "Time",
+    "status": "Status",
+    "error": "Could not load the data."
+  },
+  "chat": {
+    "assistant": "Mawid assistant",
+    "typing": "The assistant is typing",
+    "you": "You",
+    "confirmSlot": "Confirm this slot"
+  }
+}

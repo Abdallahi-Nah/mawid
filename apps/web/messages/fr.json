@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appName": "Mawid",
+    "tagline": "Réservez en moins d'une minute",
+    "language": "Langue",
+    "theme": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "loading": "Chargement",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "next": "Suivant",
+    "back": "Retour",
+    "retry": "Réessayer",
+    "skipToContent": "Aller au contenu"
+  },
+  "home": {
+    "title": "Mawid : des réservations simples pour votre commerce",
+    "subtitle": "Phase 1 : le système de design. Les écrans arrivent.",
+    "designLink": "Ouvrir la page design"
+  },
+  "design": {
+    "title": "Système de design",
+    "subtitle": "Tous les composants et leurs états. Changez la langue et le thème en haut.",
+    "sections": {
+      "buttons": "Boutons",
+      "forms": "Formulaires",
+      "display": "Affichage",
+      "feedback": "Retours",
+      "booking": "Réservation",
+      "data": "Données",
+      "chat": "Chat",
+      "matrix": "Thème × direction"
+    },
+    "states": {
+      "default": "Défaut",
+      "hover": "Survol",
+      "focus": "Focus",
+      "disabled": "Désactivé",
+      "loading": "Chargement",
+      "error": "Erreur"
+    },
+    "frames": {
+      "lightLtr": "Clair · LTR",
+      "lightRtl": "Clair · RTL",
+      "darkLtr": "Sombre · LTR",
+      "darkRtl": "Sombre · RTL"
+    },
+    "buttons": {
+      "primary": "Principal",
+      "secondary": "Secondaire",
+      "outline": "Contour",
+      "ghost": "Discret",
+      "destructive": "Supprimer"
+    },
+    "dialog": {
+      "open": "Ouvrir une fenêtre",
+      "title": "Confirmer la réservation",
+      "description": "Vous recevrez une confirmation par email."
+    },
+    "sheet": {
+      "open": "Ouvrir un panneau"
+    },
+    "toast": {
+      "show": "Afficher une notification",
+      "saved": "Enregistré avec succès"
+    }
+  },
+  "form": {
+    "name": "Nom",
+    "namePlaceholder": "Ex. : Mohamed Ould Ahmed",
+    "email": "Email",
+    "emailError": "Entrez un email valide",
+    "message": "Note",
+    "service": "Service",
+    "servicePlaceholder": "Choisissez un service",
+    "terms": "J'accepte les conditions",
+    "notifications": "Notifications par email",
+    "disabledField": "Champ désactivé"
+  },
+  "mock": {
+    "services": {
+      "cut": "Coupe de cheveux",
+      "cutDesc": "Coupe et coiffage avec shampoing.",
+      "beard": "Taille de barbe",
+      "beardDesc": "Contours et soin à la serviette chaude."
+    },
+    "staff": {
+      "one": "Sidi Mohamed",
+      "two": "Mariem Mint Ahmed",
+      "roleSenior": "Coiffeur senior",
+      "roleStylist": "Styliste"
+    },
+    "reviewer": "Fatimetou Mint Abdallahi",
+    "review": "Service excellent et rendez-vous à l'heure. Je recommande.",
+    "reviewDate": "Il y a 2 jours",
+    "clients": {
+      "one": "Omar Ould Salem",
+      "two": "Aminetou Mint Mohamed",
+      "three": "Youssef Ould Cheikh"
+    },
+    "chat": {
+      "user": "Je veux un rendez-vous coupe demain soir.",
+      "assistant": "Bien sûr. Voici les créneaux libres demain :"
+    }
+  },
+  "service": {
+    "duration": "{minutes} min",
+    "book": "Réserver",
+    "selected": "Choisi"
+  },
+  "staff": {
+    "rating": "Note {rating} sur 5"
+  },
+  "review": {
+    "rating": "{rating} étoiles sur 5"
+  },
+  "booking": {
+    "dateLabel": "Date",
+    "datePlaceholder": "Choisir une date",
+    "slotsLabel": "Choisissez l'heure",
+    "slotsHint": "Les heures grisées sont prises."
+  },
+  "steps": {
+    "service": "Service",
+    "staff": "Équipe",
+    "datetime": "Horaire",
+    "details": "Vos infos",
+    "progress": "Étape {current} sur {total}"
+  },
+  "status": {
+    "pending": "En attente",
+    "confirmed": "Confirmé",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "noShow": "Absent"
+  },
+  "stat": {
+    "bookings": "Réservations",
+    "revenue": "Revenus",
+    "vsLastWeek": "vs semaine dernière"
+  },
+  "empty": {
+    "title": "Aucune réservation pour l'instant",
+    "description": "Partagez le lien de votre page pour recevoir la première réservation.",
+    "action": "Copier le lien"
+  },
+  "table": {
+    "client": "Client",
+    "service": "Service",
+    "time": "Heure",
+    "status": "Statut",
+    "error": "Impossible de charger les données."
+  },
+  "chat": {
+    "assistant": "Assistant Mawid",
+    "typing": "L'assistant écrit",
+    "you": "Vous",
+    "confirmSlot": "Confirmer ce créneau"
+  }
+}
