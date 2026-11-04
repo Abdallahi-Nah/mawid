@@ -3,6 +3,7 @@ export interface MailMessage {
   subject: string;
   text: string;
   html?: string;
+  attachments?: { filename: string; content: string; contentType: string }[];
 }
 
 // Abstract class so it can be used as an injection token.

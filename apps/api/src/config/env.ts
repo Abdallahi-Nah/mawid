@@ -18,6 +18,9 @@ export const envSchema = z.object({
   RESEND_API_KEY: optionalStr,
   MAIL_FROM: z.string().min(1),
   UPLOAD_DIR: z.string().default('uploads'),
+  // Notification queue. The prefix keeps several environments (and the tests) apart in one Redis.
+  QUEUE_PREFIX: z.string().default('mawid'),
+  NOTIFY_BACKOFF_MS: z.coerce.number().default(30_000),
 });
 export type Env = z.infer<typeof envSchema>;
 

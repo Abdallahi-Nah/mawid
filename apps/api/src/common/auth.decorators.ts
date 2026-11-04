@@ -36,3 +36,10 @@ export const CurrentTenant = createParamDecorator((_: unknown, ctx: ExecutionCon
     throw new ForbiddenException({ code: 'NO_BUSINESS', message: 'No business for this account' });
   return user.businessId;
 });
+
+/** The logged-in user on a public route, if there is one (guests get undefined). */
+export const OptionalUser = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext): AuthUser | undefined => {
+    return ctx.switchToHttp().getRequest<AuthedRequest>().user;
+  },
+);

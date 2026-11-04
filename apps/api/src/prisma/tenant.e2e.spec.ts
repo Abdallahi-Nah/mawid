@@ -55,6 +55,15 @@ describe('tenant client (integration, needs the database)', () => {
     expect(created.businessId).toBe(a);
   });
 
+  it('stays scoped inside an interactive transaction', async () => {
+    const names = await prisma.forTenant(a).$transaction(async (tx) => {
+      expect((await tx.service.deleteMany({ where: { id: serviceB } })).count).toBe(0);
+      return (await tx.service.findMany()).map((r) => r.name);
+    });
+    expect(names).not.toContain('Service B');
+    expect(await prisma.service.count({ where: { id: serviceB } })).toBe(1);
+  });
+
   it('refuses raw queries and models without business_id', async () => {
     const tenant = prisma.forTenant(a);
     await expect(tenant.$queryRaw`SELECT 1`).rejects.toThrow(/not allowed/);

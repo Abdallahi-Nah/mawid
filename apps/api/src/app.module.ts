@@ -5,10 +5,13 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
+import { BookingsModule } from './bookings/bookings.module';
 import { BusinessesModule } from './businesses/businesses.module';
+import { CustomersModule } from './customers/customers.module';
 import { EnvModule } from './config/env.module';
 import { HealthController } from './health/health.controller';
 import { MailModule } from './mail/mail.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PublicModule } from './public/public.module';
 import { ServicesModule } from './services/services.module';
@@ -42,6 +45,9 @@ import { TimeOffModule } from './time-off/time-off.module';
     StorageModule,
     AuthModule,
     BusinessesModule,
+    NotificationsModule,
+    BookingsModule,
+    CustomersModule,
     ServicesModule,
     StaffModule,
     TimeOffModule,
