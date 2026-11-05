@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 import { Test } from '@nestjs/testing';
-import cookieParser from 'cookie-parser';
 import { AppModule } from '../app.module';
-import { AllExceptionsFilter } from '../common/all-exceptions.filter';
+import { configureApp } from '../app.setup';
 import { LlmClient } from '../ai/llm.client';
 import { loadEnv } from '../config/env';
 import { DemoLlm } from './demo-llm';
@@ -21,9 +20,8 @@ async function main(): Promise<void> {
     .useValue(new DemoLlm())
     .compile();
   const app = moduleRef.createNestApplication();
-  app.enableCors({ origin: env.APP_URL, credentials: true });
-  app.use(cookieParser());
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // The same protections as the real server (headers, CORS, CSRF check, error filter).
+  configureApp(app, env);
   await app.listen(env.PORT);
 }
 main().catch((e: unknown) => {

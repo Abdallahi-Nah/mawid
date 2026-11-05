@@ -11,3 +11,6 @@ docs/SRS.md
 docs/ai-conversations.md
 docs/screenshots/
 apps/api/uploads
+deploy/.env.prod
+# Instructions for the coding assistant: kept on this machine only
+CLAUDE.md

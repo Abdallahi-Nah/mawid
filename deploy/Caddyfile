@@ -1,0 +1,12 @@
+# HTTPS for the API: Caddy gets and renews the certificate by itself.
+# The DNS record of API_DOMAIN must point to this server before the first start.
+{$API_DOMAIN} {
+	encode gzip
+	reverse_proxy api:4000 {
+		# health checks of Caddy itself
+		health_uri /health
+		health_interval 15s
+	}
+	# The API sets its own security headers; keep the server name private.
+	header -Server
+}

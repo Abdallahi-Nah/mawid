@@ -567,7 +567,6 @@ export interface PlanInfo {
   limits: PlanLimits;
   usage: { staff: number; bookingsThisMonth: number; aiMessagesThisMonth: number };
 }
-export const PLAN_LIMIT_CODES = ['PLAN_LIMIT_STAFF', 'PLAN_LIMIT_BOOKINGS'] as const;
 
 // ---------------------------------------------------------------------------------------------
 // Customers and notifications (phase 3)

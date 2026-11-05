@@ -35,6 +35,9 @@ export const envSchema = z.object({
   SENTRY_RELEASE: optionalStr,
   // Log level of the structured logs (pino).
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).optional(),
+  // Number of reverse proxies in front of the API (Railway, Render, Caddy, nginx: 1). 0 = none.
+  // Without it, every visitor looks like the proxy's IP and the rate limits would block everyone together.
+  TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(0),
   UPLOAD_DIR: z.string().default('uploads'),
   // Notification queue. The prefix keeps several environments (and the tests) apart in one Redis.
   QUEUE_PREFIX: z.string().default('mawid'),

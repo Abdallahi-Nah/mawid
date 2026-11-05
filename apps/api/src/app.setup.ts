@@ -1,4 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule, type OpenAPIObject } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import type { RequestHandler } from 'express';
 import helmet from 'helmet';
@@ -30,9 +31,26 @@ export function securityHeaders(env: Env): RequestHandler[] {
 
 /** Everything that protects the API, shared by the real server and the integration tests. */
 export function configureApp(app: INestApplication, env: Env): void {
+  // The real client IP comes from X-Forwarded-For, but only from the proxies we trust.
+  if (env.TRUST_PROXY > 0) app.getHttpAdapter().getInstance().set('trust proxy', env.TRUST_PROXY);
   for (const h of securityHeaders(env)) app.use(h);
   app.enableCors({ origin: env.APP_URL, credentials: true });
   app.use(cookieParser());
   app.use(csrfGuard([env.APP_URL, env.API_URL]));
   app.useGlobalFilters(new AllExceptionsFilter());
+}
+
+/** The OpenAPI description of the API: served at /docs in development and exported to docs/openapi.json. */
+export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
+  return SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder()
+      .setTitle('Mawid API')
+      .setDescription(
+        'Multi-tenant booking API. Authentication uses httpOnly cookies (mawid_at, mawid_rt); public routes are under /public.',
+      )
+      .setVersion('1.0.0')
+      .addCookieAuth('mawid_at')
+      .build(),
+  );
 }

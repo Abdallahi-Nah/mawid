@@ -1,5 +1,5 @@
 // What happens after a booking changes (emails, in-app alerts, reminders). The bookings module only
-// announces the event; the notifications module (next step) listens. The default does nothing.
+// announces the event; the notifications module listens (NotificationsService implements this class).
 export type CancelledBy = 'customer' | 'business';
 
 export abstract class BookingEvents {
@@ -11,25 +11,4 @@ export abstract class BookingEvents {
   abstract completed(bookingId: string): Promise<void>;
   /** The customer sent the proof of the deposit: the owner has something to check. */
   abstract paymentSubmitted(bookingId: string): Promise<void>;
-}
-
-export class NoopBookingEvents extends BookingEvents {
-  created(): Promise<void> {
-    return Promise.resolve();
-  }
-  cancelled(): Promise<void> {
-    return Promise.resolve();
-  }
-  rescheduled(): Promise<void> {
-    return Promise.resolve();
-  }
-  confirmed(): Promise<void> {
-    return Promise.resolve();
-  }
-  completed(): Promise<void> {
-    return Promise.resolve();
-  }
-  paymentSubmitted(): Promise<void> {
-    return Promise.resolve();
-  }
 }

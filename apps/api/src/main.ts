@@ -2,10 +2,10 @@ import 'reflect-metadata';
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
-import { configureApp } from './app.setup';
+import { buildOpenApiDocument, configureApp } from './app.setup';
 import { initSentry } from './common/sentry';
 import { loadEnv } from './config/env';
 import { LocalStorageService } from './storage/local-storage.service';
@@ -26,14 +26,7 @@ async function bootstrap(): Promise<void> {
 
   // The API documentation page is for development; in production it must be switched on on purpose.
   if (env.NODE_ENV !== 'production' || env.API_DOCS) {
-    const doc = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('Mawid API')
-        .setVersion('0.1.0')
-        .addCookieAuth('mawid_at')
-        .build(),
-    );
+    const doc = buildOpenApiDocument(app);
     SwaggerModule.setup('docs', app, doc);
   }
 
