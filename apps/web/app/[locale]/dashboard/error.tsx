@@ -8,7 +8,9 @@ import { ErrorState } from '@/components/mawid/error-state';
 import { Button } from '@/components/ui/button';
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
-  useEffect(() => reportError(error), [error]);
+  useEffect(() => {
+    reportError(error);
+  }, [error]);
   const t = useTranslations('common');
   return (
     <ErrorState

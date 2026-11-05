@@ -11,7 +11,9 @@ import { Link } from '@/i18n/navigation';
 
 /** Something broke while showing a page (error 500): a calm message and a way out. */
 export default function ErrorPage({ error, reset }: { error: Error; reset: () => void }) {
-  useEffect(() => reportError(error), [error]);
+  useEffect(() => {
+    reportError(error);
+  }, [error]);
   const t = useTranslations();
   return (
     <>

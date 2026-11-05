@@ -131,8 +131,11 @@ jobs:
           docker network create ci
           docker run -d --name pg --network ci -e POSTGRES_USER=mawid -e POSTGRES_PASSWORD=mawid -e POSTGRES_DB=mawid postgres:16
           docker run -d --name redis --network ci redis:7
-          for i in $(seq 1 30); do docker exec pg pg_isready -U mawid && break; sleep 2; done
-          docker exec pg psql -U mawid -d mawid -c "CREATE EXTENSION IF NOT EXISTS btree_gist"
+          # Wait on TCP (-h 127.0.0.1): during its first start PostgreSQL runs a temporary server that only listens
+          # on a socket and then restarts. pg_isready on the socket says "ready" too early, psql then fails.
+          for i in $(seq 1 40); do docker exec pg pg_isready -h 127.0.0.1 -U mawid && break; sleep 2; done
+          docker exec pg pg_isready -h 127.0.0.1 -U mawid
+          docker exec pg psql -h 127.0.0.1 -U mawid -d mawid -c "CREATE EXTENSION IF NOT EXISTS btree_gist"
           docker run -d --name api --network ci -p 4000:4000 \
             -e DATABASE_URL=postgresql://mawid:mawid@pg:5432/mawid -e REDIS_URL=redis://redis:6379 \
             -e APP_URL=http://localhost:3000 -e API_URL=http://localhost:4000 \
