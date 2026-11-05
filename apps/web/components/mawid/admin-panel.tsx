@@ -306,7 +306,13 @@ export function AdminPanel() {
           ) : usage.data.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t('admin.aiEmpty')}</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div
+              className="overflow-x-auto"
+              role="region"
+              aria-label={t('admin.aiTitle')}
+              // A scrollable area must be reachable with the keyboard.
+              tabIndex={0}
+            >
               <table className="w-full min-w-[34rem] text-sm">
                 <caption className="sr-only">{t('admin.aiTitle')}</caption>
                 <thead>

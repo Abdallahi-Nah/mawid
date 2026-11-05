@@ -23,7 +23,7 @@ On Railway or Render, use `/health/ready` as the health check path. Use `/health
 ## Graceful shutdown
 `SIGTERM`/`SIGINT` (a deploy, a restart) stop the API cleanly: it stops accepting requests, the email worker
 finishes the jobs it is running, then Redis and the database are closed. Checked on the built server: the
-process exits in about 0.5 s with code 0. An unhandled promise rejection is logged and does not kill the process.
+process exits in about 0.5 s (exit code 143, which is the normal end after a SIGTERM; 137 would mean it was killed). An unhandled promise rejection is logged and does not kill the process.
 
 ## Emails: retries and dead-letter list
 1. Every email is a BullMQ job in Redis. If sending fails it is **retried 3 times** with exponential backoff

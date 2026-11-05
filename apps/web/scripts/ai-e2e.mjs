@@ -1,6 +1,6 @@
 // Browser check of the AI features at 360 px, in Arabic (RTL) and French.
 // Needs the web app AND an API started WITHOUT a Groq key but with the scripted model:
-//   node apps/api/dist/dev/e2e-server.js     (same env as the API; see CLAUDE.md)
+//   node apps/api/dist/dev/e2e-server.js     (same env as the API; see README.md)
 // Usage: node scripts/ai-e2e.mjs [webUrl] [apiUrl]
 import { chromium } from 'playwright';
 import { mkdirSync, readFileSync } from 'node:fs';

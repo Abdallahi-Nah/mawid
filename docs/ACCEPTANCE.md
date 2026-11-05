@@ -27,7 +27,7 @@ Result of the check of AC-01 to AC-10, run in phase 6. "Evidence" is something y
 
 ## Run everything again
 ```bash
-pnpm lint && pnpm typecheck && pnpm test          # unit + integration, 280+ tests
-node apps/web/scripts/booking-e2e.mjs              # needs the API + web running and a fresh seed
-node apps/web/scripts/a11y.mjs                     # axe on every page
+pnpm lint && pnpm typecheck && pnpm test          # unit + integration, about 290 tests
+bash scripts/e2e-ci.sh                             # all browser tests on a fresh build (AC-01, AC-04, AC-05, AC-06...)
+                                                   # also runs in CI (job "e2e")
 ```
