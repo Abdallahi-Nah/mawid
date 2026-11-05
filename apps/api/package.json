@@ -23,6 +23,7 @@
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/throttler": "^6.7.1",
     "@prisma/client": "^5.20.0",
+    "@sentry/node": "^11.11.0",
     "argon2": "^0.45.2",
     "bullmq": "^6.7.0",
     "cookie-parser": "^1.4.7",

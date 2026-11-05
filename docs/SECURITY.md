@@ -97,7 +97,7 @@ command you can run again. The tests are in `apps/api/src/security/` and in the 
 
 ### A09 Logging and monitoring failures
 - Structured JSON logs (pino) with `Authorization`, cookies and `Set-Cookie` redacted.
-- Failed notifications are kept with a `FAILED` status (see RELIABILITY in `docs/DEPLOY.md`).
+- Failed notifications are kept with a `FAILED` status and their last error, in an admin dead-letter list with a retry button (see `docs/OPERATIONS.md`). Errors (5xx) go to Sentry when a DSN is set, with cookies, bodies and personal data removed.
 
 ### A10 Server-side request forgery
 - The API calls only Groq and Resend, with fixed hosts. No user-supplied URL is ever fetched.

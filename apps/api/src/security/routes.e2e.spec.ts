@@ -23,6 +23,7 @@ interface Route {
  */
 const PUBLIC_ROUTES = [
   'GET /health',
+  'GET /health/ready',
   'GET /public/bookings/:token',
   'GET /public/bookings/:token/calendar.ics',
   'GET /public/businesses/:slug',

@@ -1,10 +1,20 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { Response } from 'express';
 import type { ErrorResponse } from '@mawid/shared';
+import { captureServerError } from './sentry';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger('Exception');
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const res = host.switchToHttp().getResponse<Response>();
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -33,6 +43,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status = hit[0];
         body = { code: hit[1], message: hit[2] };
       }
+    }
+    // A 5xx is OUR bug: keep the stack in the logs and send it to Sentry. A 4xx is the caller's mistake.
+    if (status >= 500) {
+      this.logger.error(
+        exception instanceof Error ? (exception.stack ?? exception.message) : String(exception),
+      );
+      captureServerError(exception);
     }
     res.status(status).json(body);
   }

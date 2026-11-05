@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   adminListBusinessesSchema,
   adminMonthSchema,
   adminPlanSchema,
+  paginationSchema,
   adminSuspendSchema,
   type AdminAiUsage,
   type AdminBusiness,
@@ -12,12 +13,15 @@ import {
   type AdminPlanInput,
   type AdminStats,
   type AdminSuspendInput,
+  type FailedNotification,
+  type Pagination,
   type Page,
 } from '@mawid/shared';
 import { z } from 'zod';
 import { Roles } from '../common/auth.decorators';
 import { ZodPipe } from '../common/zod.pipe';
 import { AdminService } from './admin.service';
+import { DeadLetterService } from './dead-letter.service';
 
 const idPipe = new ZodPipe(z.string().uuid());
 
@@ -26,7 +30,10 @@ const idPipe = new ZodPipe(z.string().uuid());
 @Roles('ADMIN')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly admin: AdminService) {}
+  constructor(
+    private readonly admin: AdminService,
+    private readonly deadLetter: DeadLetterService,
+  ) {}
 
   @Get('businesses')
   @ApiOperation({ summary: 'All businesses (search, plan, suspended)' })
@@ -58,6 +65,19 @@ export class AdminController {
   @ApiOperation({ summary: 'Global statistics' })
   stats(): Promise<AdminStats> {
     return this.admin.stats();
+  }
+
+  @Get('failed-notifications')
+  @ApiOperation({ summary: 'Dead-letter list: emails that failed after all their retries' })
+  failed(@Query(new ZodPipe(paginationSchema)) p: Pagination): Promise<Page<FailedNotification>> {
+    return this.deadLetter.list(p);
+  }
+
+  @Post('failed-notifications/:id/retry')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Send a failed email again (3 new attempts)' })
+  retry(@Param('id', idPipe) id: string) {
+    return this.deadLetter.retry(id);
   }
 
   @Get('ai-usage')

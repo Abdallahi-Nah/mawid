@@ -30,6 +30,11 @@ export const envSchema = z.object({
     .string()
     .default('false')
     .transform((v) => v.trim().toLowerCase() === 'true'),
+  // Error tracking (optional): without a DSN, Sentry is not started.
+  SENTRY_DSN: optionalStr,
+  SENTRY_RELEASE: optionalStr,
+  // Log level of the structured logs (pino).
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).optional(),
   UPLOAD_DIR: z.string().default('uploads'),
   // Notification queue. The prefix keeps several environments (and the tests) apart in one Redis.
   QUEUE_PREFIX: z.string().default('mawid'),
