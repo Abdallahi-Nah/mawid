@@ -6,5 +6,8 @@ dist
 *.log
 coverage
 .turbo
-docs
+# docs/ is committed (README, SECURITY, DEPLOY...) except the private requirements and big captures
+docs/SRS.md
+docs/ai-conversations.md
+docs/screenshots/
 apps/api/uploads

@@ -1,10 +1,10 @@
 import 'dotenv/config';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { LlmClient } from './ai/llm.client';
-import { AllExceptionsFilter } from './common/all-exceptions.filter';
+import { configureApp } from './app.setup';
+import { loadEnv } from './config/env';
 import { MailMessage, MailService } from './mail/mail.service';
 import { PrismaService } from './prisma/prisma.service';
 
@@ -49,8 +49,7 @@ export async function createTestApp(
   if (opts.llm) builder = builder.overrideProvider(LlmClient).useValue(opts.llm);
   const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication();
-  app.use(cookieParser());
-  app.useGlobalFilters(new AllExceptionsFilter());
+  configureApp(app, loadEnv());
   await app.init();
   return { app, prisma: app.get(PrismaService), mail };
 }

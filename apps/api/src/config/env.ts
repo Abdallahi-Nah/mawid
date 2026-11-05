@@ -25,6 +25,11 @@ export const envSchema = z.object({
   AI_MONTHLY_QUOTA: z.coerce.number().default(1000),
   RESEND_API_KEY: optionalStr,
   MAIL_FROM: z.string().min(1),
+  // Swagger page (/docs): always on in development, off in production unless API_DOCS=true.
+  API_DOCS: z
+    .string()
+    .default('false')
+    .transform((v) => v.trim().toLowerCase() === 'true'),
   UPLOAD_DIR: z.string().default('uploads'),
   // Notification queue. The prefix keeps several environments (and the tests) apart in one Redis.
   QUEUE_PREFIX: z.string().default('mawid'),

@@ -11,7 +11,8 @@
     "test": "jest",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "mail:check": "node dist/dev/mail-check.js"
   },
   "dependencies": {
     "@mawid/shared": "workspace:*",
