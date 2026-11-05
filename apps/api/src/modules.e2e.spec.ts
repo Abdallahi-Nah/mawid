@@ -406,6 +406,11 @@ describe('modules (integration, needs the database)', () => {
           'PATCH /notifications/:id/read',
           'PATCH /bookings/:id',
           'PATCH /bookings/:id/status',
+          'POST /payments/:id/validate', // isolation: phase5.e2e.spec.ts
+          'POST /payments/:id/reject',
+          'PATCH /reviews/:id/reply',
+          'PATCH /admin/businesses/:id/suspension', // admin only: admin.e2e.spec.ts
+          'PATCH /admin/businesses/:id/plan',
           'PATCH /time-off/:id',
           'DELETE /time-off/:id',
         ].sort(),

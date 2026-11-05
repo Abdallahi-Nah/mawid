@@ -48,7 +48,7 @@ const watch = (page, tag) => {
 async function pickDayAndSlot(page, m, tryFrom = 3) {
   for (let i = tryFrom; i < tryFrom + 12; i++) {
     await page
-      .getByRole('button', { name: get(m, 'booking.dateLabel'), exact: true })
+      .getByRole('button', { name: get(m, 'booking.dateLabel') })
       .first()
       .click();
     const days = page.locator('td[data-day] button:not([disabled])');

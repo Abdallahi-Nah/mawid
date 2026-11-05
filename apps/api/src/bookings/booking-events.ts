@@ -7,6 +7,10 @@ export abstract class BookingEvents {
   abstract cancelled(bookingId: string, by: CancelledBy): Promise<void>;
   abstract rescheduled(bookingId: string, by: CancelledBy): Promise<void>;
   abstract confirmed(bookingId: string): Promise<void>;
+  /** The visit took place: the customer gets the link to rate it. */
+  abstract completed(bookingId: string): Promise<void>;
+  /** The customer sent the proof of the deposit: the owner has something to check. */
+  abstract paymentSubmitted(bookingId: string): Promise<void>;
 }
 
 export class NoopBookingEvents extends BookingEvents {
@@ -20,6 +24,12 @@ export class NoopBookingEvents extends BookingEvents {
     return Promise.resolve();
   }
   confirmed(): Promise<void> {
+    return Promise.resolve();
+  }
+  completed(): Promise<void> {
+    return Promise.resolve();
+  }
+  paymentSubmitted(): Promise<void> {
     return Promise.resolve();
   }
 }

@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/mawid/confirm-dialog';
 import { DatePicker } from '@/components/mawid/date-picker';
+import { DepositSection } from '@/components/mawid/deposit-section';
 import { EmptyState } from '@/components/mawid/empty-state';
 import { SlotPicker } from '@/components/mawid/slot-picker';
 import { Spinner } from '@/components/mawid/spinner';
@@ -128,6 +129,8 @@ export function ManageBooking({ initial, token }: { initial: PublicBookingView; 
           </div>
         </dl>
       </Card>
+
+      <DepositSection view={view} token={token} onChange={setView} />
 
       {!closed && (
         <div className="grid grid-cols-2 gap-2">

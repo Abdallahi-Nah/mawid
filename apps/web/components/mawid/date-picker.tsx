@@ -29,7 +29,7 @@ export function DatePicker({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          aria-label={label}
+          aria-label={`${label}: ${value ? formatDate(value, locale) : placeholder}`}
           className={cn(
             'w-full justify-start gap-2 font-normal',
             !value && 'text-muted-foreground',

@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { AuthGate } from '@/components/mawid/auth-gate';
 import { DashboardShell } from '@/components/mawid/dashboard-shell';
 import { LogoutButton } from '@/components/mawid/logout-button';
 import { SiteHeader } from '@/components/mawid/site-header';
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default function DashboardLayout({
   children,

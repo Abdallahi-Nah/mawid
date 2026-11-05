@@ -87,7 +87,42 @@
     "cta": {
       "title": "Prêt à recevoir vos réservations ?"
     },
-    "footer": "© 2026 Mawid. Tous droits réservés."
+    "footer": "© 2026 Mawid. Tous droits réservés.",
+    "range": "Période",
+    "range7": "7 jours",
+    "range30": "30 jours",
+    "range90": "90 jours",
+    "export": "Exporter en CSV",
+    "exporting": "Export en cours",
+    "exportError": "L'export n'a pas marché. Réessayez.",
+    "today": "Aujourd'hui",
+    "week": "Cette semaine",
+    "bookingsUnit": "réservations",
+    "revenue": "Revenu estimé",
+    "cancelRate": "Taux d'annulation",
+    "noShowRate": "Taux d'absence",
+    "rating": "Note moyenne",
+    "ratingNone": "Pas encore d'avis",
+    "reviewsCount": "{count} avis",
+    "revenueHint": "Réservations confirmées et terminées",
+    "perDay": {
+      "title": "Réservations par jour",
+      "aria": "Nombre de réservations par jour",
+      "series": "Réservations"
+    },
+    "top": {
+      "title": "Services les plus demandés",
+      "bookings": "{count} réservations",
+      "empty": "Aucune réservation sur cette période."
+    },
+    "peak": {
+      "title": "Heures de pointe",
+      "aria": "Nombre de réservations par heure",
+      "series": "Réservations"
+    },
+    "emptyTitle": "Pas encore de réservation",
+    "emptyDesc": "Partagez le lien de votre page pour recevoir vos premières réservations.",
+    "loadError": "Impossible de charger les chiffres."
   },
   "design": {
     "title": "Système de design",
@@ -327,7 +362,10 @@
     "chatOpen": "Ouvrir l'assistant IA",
     "chatGreeting": "Bonjour ! Je suis l'assistant du Salon Nour. Comment puis-je vous aider ?",
     "chatSoon": "La conversation complète arrive à la prochaine étape.",
-    "closedToday": "Fermé aujourd'hui"
+    "closedToday": "Fermé aujourd'hui",
+    "ratingSummary": "{avg} sur 5 · {count} avis",
+    "ownerReply": "Réponse du commerce",
+    "depositBadge": "Acompte {amount}"
   },
   "book": {
     "title": "Réservez votre rendez-vous",
@@ -355,7 +393,9 @@
     "pendingDesc": "Votre demande est envoyée. Le commerce doit la confirmer. Vous recevrez un message.",
     "addToCalendar": "Ajouter à mon calendrier",
     "icsFile": "Fichier .ics",
-    "manageLink": "Voir, déplacer ou annuler"
+    "manageLink": "Voir, déplacer ou annuler",
+    "depositNote": "Un acompte de {amount} est demandé. Vous enverrez votre preuve de paiement sur la page de votre rendez-vous.",
+    "depositCta": "Payer l'acompte"
   },
   "dash": {
     "nav": {
@@ -366,7 +406,12 @@
       "services": "Services",
       "staff": "Équipe",
       "settings": "Réglages",
-      "customers": "Clients"
+      "customers": "Clients",
+      "payments": "Paiements",
+      "reviews": "Avis",
+      "more": "Plus",
+      "admin": "Administration",
+      "suspendedTitle": "Commerce suspendu"
     },
     "greeting": "Bonjour, {name}",
     "chart": {
@@ -529,7 +574,20 @@
     "TOO_EARLY": "Cet horaire est trop proche ou non disponible.",
     "AI_UNAVAILABLE": "L'assistant IA est indisponible pour le moment.",
     "AI_QUOTA_EXCEEDED": "La limite mensuelle de l'IA est atteinte.",
-    "DRAFT_INVALID": "Cette proposition a expiré. Choisissez un créneau à nouveau."
+    "DRAFT_INVALID": "Cette proposition a expiré. Choisissez un créneau à nouveau.",
+    "PLAN_LIMIT_STAFF": "Votre plan est limité en nombre d'employés. Passez au Pro pour en ajouter.",
+    "PLAN_LIMIT_BOOKINGS": "Votre plan a atteint sa limite de réservations ce mois-ci. Passez au Pro pour continuer.",
+    "BUSINESS_SUSPENDED": "Ce commerce est suspendu pour le moment.",
+    "DEPOSIT_TOO_HIGH": "L'acompte ne peut pas dépasser le prix du service.",
+    "DEPOSIT_REQUIRED": "Validez d'abord l'acompte pour confirmer cette réservation.",
+    "PROOF_REQUIRED": "Écrivez la référence du paiement ou ajoutez une capture.",
+    "NO_PROOF": "Le client n'a pas encore envoyé de preuve.",
+    "PAYMENT_DECIDED": "Ce paiement a déjà été traité.",
+    "NO_DEPOSIT_DUE": "Cette réservation n'a pas d'acompte à payer.",
+    "ALREADY_PAID": "L'acompte est déjà payé.",
+    "REVIEW_EXISTS": "Vous avez déjà donné votre avis.",
+    "NOT_COMPLETED": "Vous pourrez donner votre avis après votre rendez-vous.",
+    "RANGE_TOO_LARGE": "La période est trop longue (366 jours au maximum)."
   },
   "settings": {
     "title": "Réglages du commerce",
@@ -569,7 +627,12 @@
     "maxDaysAheadHint": "Combien de jours à l'avance.",
     "slotStep": "Pas des créneaux",
     "slotStepHint": "Les horaires proposés sont espacés de cette durée.",
-    "minutes": "{count} min"
+    "minutes": "{count} min",
+    "buffer": "Temps de préparation par défaut (min)",
+    "bufferHint": "Temps libre gardé après chaque rendez-vous. Un service peut demander plus.",
+    "paymentInstructions": "Comment payer un acompte",
+    "paymentInstructionsHint": "Affiché au client si un service demande un acompte. Exemple : Bankily 22 00 11 22.",
+    "payment": "Paiement"
   },
   "services": {
     "title": "Services",
@@ -587,7 +650,10 @@
     "editAria": "Modifier {name}",
     "deleteAria": "Supprimer {name}",
     "deleteTitle": "Supprimer ce service ?",
-    "deleteDesc": "« {name} » sera supprimé. Cette action est définitive."
+    "deleteDesc": "« {name} » sera supprimé. Cette action est définitive.",
+    "deposit": "Acompte (MRU, optionnel)",
+    "depositHint": "0 ou vide = pas d'acompte. La réservation reste en attente jusqu'à la validation.",
+    "depositBadge": "Acompte {amount}"
   },
   "staffPage": {
     "title": "Équipe",
@@ -661,7 +727,7 @@
   },
   "notif": {
     "aria": "Notifications",
-    "ariaUnread": "Notifications ({count} non lues)",
+    "ariaUnread": "{count} notifications non lues",
     "title": "Notifications",
     "markAll": "Tout marquer comme lu",
     "empty": "Aucune notification",
@@ -669,7 +735,8 @@
     "types": {
       "owner_new_booking": "Nouvelle réservation de {name}",
       "owner_cancelled": "{name} a annulé",
-      "owner_changed": "{name} a changé son horaire"
+      "owner_changed": "{name} a changé son horaire",
+      "owner_payment": "{name} a envoyé une preuve de paiement"
     }
   },
   "aiWrite": {
@@ -719,5 +786,175 @@
     "negative": "Négatifs",
     "themes": "Thèmes",
     "counts": "{positive} positifs, {neutral} neutres, {negative} négatifs"
+  },
+  "plan": {
+    "title": "Mon plan",
+    "names": {
+      "FREE": "Gratuit",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "staff": "Employés actifs",
+    "bookings": "Réservations ce mois",
+    "ai": "Messages IA ce mois",
+    "unlimited": "Illimité",
+    "usage": "{used} sur {limit}",
+    "aria": "{label} : {used} sur {limit}",
+    "upgradeTitle": "Passez au plan Pro",
+    "upgradeText": "Votre plan {plan} est presque plein. Passez au Pro pour accepter plus de réservations et d'employés.",
+    "upgradeCta": "Nous contacter pour passer au Pro",
+    "limitReached": "Limite atteinte",
+    "error": "Impossible de charger votre plan."
+  },
+  "payments": {
+    "title": "Paiements (acomptes)",
+    "desc": "Vérifiez les preuves de paiement envoyées par vos clients.",
+    "filters": {
+      "all": "Tous",
+      "PENDING": "À vérifier",
+      "PAID": "Validés",
+      "FAILED": "Refusés"
+    },
+    "status": {
+      "PENDING": "À vérifier",
+      "PAID": "Validé",
+      "FAILED": "Refusé",
+      "REFUNDED": "Remboursé"
+    },
+    "emptyTitle": "Aucun paiement",
+    "emptyDesc": "Les acomptes apparaissent ici quand un service demande un acompte.",
+    "amount": "Montant",
+    "reference": "Référence",
+    "proof": "Capture",
+    "viewProof": "Voir la capture",
+    "noProof": "Pas encore de preuve",
+    "booking": "Rendez-vous",
+    "validate": "Valider",
+    "reject": "Refuser",
+    "validateTitle": "Valider ce paiement ?",
+    "validateDesc": "La réservation sera confirmée et le client recevra un email.",
+    "rejectTitle": "Refuser cette preuve ?",
+    "rejectDesc": "La réservation reste en attente. Le client pourra envoyer une autre preuve.",
+    "validated": "Paiement validé, réservation confirmée",
+    "rejected": "Preuve refusée",
+    "error": "Impossible de charger les paiements.",
+    "proofAlt": "Capture du paiement de {name}"
+  },
+  "reviewsPage": {
+    "title": "Avis clients",
+    "desc": "Répondez à vos clients : votre réponse est visible sur votre page publique.",
+    "emptyTitle": "Pas encore d'avis",
+    "emptyDesc": "Après chaque rendez-vous terminé, le client reçoit un email pour donner son avis.",
+    "reply": "Répondre",
+    "editReply": "Modifier la réponse",
+    "yourReply": "Votre réponse",
+    "replyLabel": "Votre réponse",
+    "replyPlaceholder": "Merci pour votre retour...",
+    "send": "Publier la réponse",
+    "replied": "Réponse publiée",
+    "error": "Impossible de charger les avis.",
+    "forService": "{service}",
+    "stars": "{rating} sur 5"
+  },
+  "reviewForm": {
+    "title": "Donnez votre avis",
+    "subtitle": "{service} chez {business}",
+    "rating": "Votre note",
+    "ratingStar": "{n} sur 5",
+    "comment": "Votre commentaire (optionnel)",
+    "commentPlaceholder": "Comment s'est passée votre visite ?",
+    "submit": "Envoyer mon avis",
+    "thanksTitle": "Merci pour votre avis !",
+    "thanksDesc": "Il aidera les autres clients à choisir.",
+    "alreadyTitle": "Vous avez déjà donné votre avis",
+    "alreadyDesc": "Merci, il est bien enregistré.",
+    "invalidTitle": "Lien non valide",
+    "invalidDesc": "Ce lien d'avis n'existe pas ou n'est plus valable.",
+    "notReadyTitle": "Pas encore possible",
+    "notReadyDesc": "Vous pourrez donner votre avis après votre rendez-vous.",
+    "pickRating": "Choisissez une note de 1 à 5."
+  },
+  "deposit": {
+    "title": "Acompte à payer",
+    "amount": "Montant à payer : {amount}",
+    "howTo": "Comment payer",
+    "noInstructions": "Contactez le commerce pour savoir comment payer.",
+    "reference": "Référence du paiement",
+    "referenceHint": "Le numéro de la transaction sur votre téléphone.",
+    "file": "Capture d'écran (optionnel)",
+    "fileHint": "PNG, JPEG ou WebP, 2 Mo maximum.",
+    "send": "Envoyer ma preuve",
+    "sent": "Preuve envoyée",
+    "needProof": "Écrivez la référence ou ajoutez une capture.",
+    "status": {
+      "todo": "Envoyez votre preuve de paiement pour confirmer votre rendez-vous.",
+      "submitted": "Preuve reçue. Le commerce va la vérifier.",
+      "PAID": "Acompte reçu. Votre rendez-vous est confirmé.",
+      "FAILED": "La preuve a été refusée. Envoyez-en une autre."
+    },
+    "resend": "Envoyer une autre preuve"
+  },
+  "shareCard": {
+    "title": "Partager ma page",
+    "desc": "Imprimez le QR code ou envoyez le lien à vos clients.",
+    "qrAlt": "QR code de votre page publique",
+    "download": "Télécharger le QR code",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "error": "Le QR code n'a pas pu être créé."
+  },
+  "admin": {
+    "title": "Administration",
+    "desc": "Tous les commerces de Mawid.",
+    "forbidden": "Cette zone est réservée aux administrateurs.",
+    "stats": {
+      "businesses": "Commerces",
+      "active": "Actifs",
+      "suspended": "Suspendus",
+      "users": "Utilisateurs",
+      "bookings": "Réservations",
+      "thisMonth": "ce mois",
+      "aiCalls": "Appels IA ce mois",
+      "aiCost": "Coût IA estimé"
+    },
+    "search": "Rechercher (nom, adresse, email)",
+    "allPlans": "Tous les plans",
+    "allStates": "Tous",
+    "onlyActive": "Actifs",
+    "onlySuspended": "Suspendus",
+    "columns": {
+      "business": "Commerce",
+      "owner": "Propriétaire",
+      "plan": "Plan",
+      "staff": "Employés",
+      "bookings": "Réservations (mois)",
+      "ai": "IA (mois)",
+      "state": "État",
+      "actions": "Actions"
+    },
+    "active": "Actif",
+    "suspendedBadge": "Suspendu",
+    "suspend": "Suspendre",
+    "reactivate": "Réactiver",
+    "suspendTitle": "Suspendre {name} ?",
+    "suspendDesc": "La page publique et les réservations seront bloquées. Le propriétaire ne pourra plus utiliser son tableau de bord.",
+    "reactivateTitle": "Réactiver {name} ?",
+    "reactivateDesc": "Le commerce pourra de nouveau recevoir des réservations.",
+    "planLabel": "Plan de {name}",
+    "planChanged": "Plan modifié",
+    "suspended": "Commerce suspendu",
+    "reactivated": "Commerce réactivé",
+    "emptyTitle": "Aucun commerce",
+    "emptyDesc": "Aucun résultat pour cette recherche.",
+    "error": "Impossible de charger les données.",
+    "aiTitle": "Usage de l'IA ce mois",
+    "aiColumns": {
+      "calls": "Appels",
+      "errors": "Erreurs",
+      "tokens": "Tokens (entrée / sortie)",
+      "cost": "Coût estimé"
+    },
+    "aiEmpty": "Aucun appel IA ce mois.",
+    "costNote": "Coût estimé avec les prix publics de Groq, à titre indicatif."
   }
 }

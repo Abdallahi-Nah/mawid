@@ -1,7 +1,18 @@
 'use client';
 
 import type {
+  AdminAiUsage,
+  AdminBusiness,
+  AdminStats,
+  BookingsPerDayPoint,
   InAppNotification,
+  OwnerPayment,
+  OwnerReview,
+  PaymentStatus,
+  PeakHour,
+  PlanInfo,
+  ReportSummary,
+  TopService,
   ManualBookingInput,
   MoveBookingInput,
   ServiceInput,
@@ -216,4 +227,110 @@ export const useReadNotifications = () =>
         ? api<void>(`/notifications/${id}/read`, { method: 'PATCH' })
         : api<void>('/notifications/read-all', { method: 'POST' }),
     [['notifications']],
+  );
+
+// ---------------------------------------------------------------------------------------------
+// Phase 5: reports, plan, deposits, reviews, admin
+// ---------------------------------------------------------------------------------------------
+export interface DayRange {
+  from: string;
+  to: string;
+}
+const rangeQs = (r: DayRange) => `from=${r.from}&to=${r.to}`;
+
+export const useReportSummary = (r: DayRange) =>
+  useQuery({
+    queryKey: ['report', 'summary', r],
+    queryFn: () => api<ReportSummary>(`/reports/summary?${rangeQs(r)}`),
+    placeholderData: (prev) => prev,
+  });
+export const useBookingsPerDay = (r: DayRange) =>
+  useQuery({
+    queryKey: ['report', 'per-day', r],
+    queryFn: () => api<BookingsPerDayPoint[]>(`/reports/bookings-per-day?${rangeQs(r)}`),
+    placeholderData: (prev) => prev,
+  });
+export const useTopServices = (r: DayRange) =>
+  useQuery({
+    queryKey: ['report', 'top', r],
+    queryFn: () => api<TopService[]>(`/reports/top-services?${rangeQs(r)}`),
+    placeholderData: (prev) => prev,
+  });
+export const usePeakHours = (r: DayRange) =>
+  useQuery({
+    queryKey: ['report', 'peak', r],
+    queryFn: () => api<PeakHour[]>(`/reports/peak-hours?${rangeQs(r)}`),
+    placeholderData: (prev) => prev,
+  });
+
+export const usePlan = () =>
+  useQuery({ queryKey: ['plan'], queryFn: () => api<PlanInfo>('/businesses/me/plan') });
+
+export const usePayments = (status: PaymentStatus | undefined, page: number) =>
+  useQuery({
+    queryKey: ['payments', status ?? 'all', page],
+    queryFn: () =>
+      api<Page<OwnerPayment>>(
+        `/payments?page=${page}&pageSize=20${status ? `&status=${status}` : ''}`,
+      ),
+    refetchInterval: 30_000,
+    placeholderData: (prev) => prev,
+  });
+const REFRESH_PAYMENTS = [['payments'], ['bookings'], ['notifications'], ['plan']];
+export const useDecidePayment = () =>
+  useApiMutation(
+    (v: { id: string; action: 'validate' | 'reject' }) =>
+      api<OwnerPayment>(`/payments/${v.id}/${v.action}`, { method: 'POST' }),
+    REFRESH_PAYMENTS,
+  );
+
+export const useOwnerReviews = (page: number) =>
+  useQuery({
+    queryKey: ['reviews', page],
+    queryFn: () => api<Page<OwnerReview>>(`/reviews?page=${page}&pageSize=20`),
+    placeholderData: (prev) => prev,
+  });
+export const useReplyReview = () =>
+  useApiMutation(
+    (v: { id: string; reply: string }) =>
+      api<OwnerReview>(`/reviews/${v.id}/reply`, { method: 'PATCH', body: { reply: v.reply } }),
+    [['reviews']],
+  );
+
+export const useAdminBusinesses = (q: string, plan: string, suspended: string, page: number) =>
+  useQuery({
+    queryKey: ['admin', 'businesses', q, plan, suspended, page],
+    queryFn: () => {
+      const p = new URLSearchParams({ page: String(page), pageSize: '20' });
+      if (q) p.set('q', q);
+      if (plan) p.set('plan', plan);
+      if (suspended) p.set('suspended', suspended);
+      return api<Page<AdminBusiness>>(`/admin/businesses?${p}`);
+    },
+    placeholderData: (prev) => prev,
+  });
+export const useAdminStats = () =>
+  useQuery({ queryKey: ['admin', 'stats'], queryFn: () => api<AdminStats>('/admin/stats') });
+export const useAdminAiUsage = () =>
+  useQuery({
+    queryKey: ['admin', 'ai-usage'],
+    queryFn: () => api<AdminAiUsage[]>('/admin/ai-usage'),
+  });
+export const useAdminSuspend = () =>
+  useApiMutation(
+    (v: { id: string; suspended: boolean }) =>
+      api<AdminBusiness>(`/admin/businesses/${v.id}/suspension`, {
+        method: 'PATCH',
+        body: { suspended: v.suspended },
+      }),
+    [['admin']],
+  );
+export const useAdminPlan = () =>
+  useApiMutation(
+    (v: { id: string; plan: string }) =>
+      api<AdminBusiness>(`/admin/businesses/${v.id}/plan`, {
+        method: 'PATCH',
+        body: { plan: v.plan },
+      }),
+    [['admin']],
   );

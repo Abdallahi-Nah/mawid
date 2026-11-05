@@ -75,7 +75,11 @@ export class AvailabilityService {
       date: q.date,
       timezone: business.timezone,
       now: opts.now ?? new Date(),
-      service: { durationMin: service.durationMin, bufferMin: service.bufferMin },
+      // The business default and the service's own need: the longer one wins.
+      service: {
+        durationMin: service.durationMin,
+        bufferMin: Math.max(service.bufferMin, business.bufferMin),
+      },
       staff: staffRows.map((s) => ({
         id: s.id,
         workingHours: s.workingHours,

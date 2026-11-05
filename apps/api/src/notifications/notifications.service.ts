@@ -68,6 +68,30 @@ export class NotificationsService extends BookingEvents implements OnModuleInit 
     });
   }
 
+  completed(bookingId: string): Promise<void> {
+    return this.safe('completed', async () => {
+      const b = await this.load(bookingId);
+      await this.toCustomer(b, 'review_request');
+    });
+  }
+
+  paymentSubmitted(bookingId: string): Promise<void> {
+    return this.safe('paymentSubmitted', async () => {
+      const b = await this.load(bookingId);
+      // Bell only: the owner sees it in the dashboard, no email needed.
+      await this.prisma.forTenant(b.businessId).notification.create({
+        data: {
+          businessId: b.businessId,
+          bookingId: b.id,
+          channel: 'IN_APP',
+          type: 'owner_payment',
+          status: 'SENT',
+          sentAt: new Date(),
+        },
+      });
+    });
+  }
+
   // ---------------------------------------------------------------------------------------------
 
   private async safe(name: string, fn: () => Promise<void>): Promise<void> {

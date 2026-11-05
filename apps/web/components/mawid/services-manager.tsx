@@ -38,6 +38,7 @@ const empty = {
   price: '',
   category: '',
   bufferMin: '0',
+  depositAmount: '',
   active: true,
 };
 
@@ -72,6 +73,7 @@ function ServiceDialog({
             price: String(service.price),
             category: service.category ?? '',
             bufferMin: String(service.bufferMin),
+            depositAmount: service.depositAmount ? String(service.depositAmount) : '',
             active: service.active,
           }
         : empty,
@@ -89,6 +91,7 @@ function ServiceDialog({
       durationMin: Number(v.durationMin),
       price: v.price === '' ? NaN : Number(v.price),
       bufferMin: Number(v.bufferMin),
+      depositAmount: v.depositAmount === '' ? null : Number(v.depositAmount),
     });
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
@@ -177,6 +180,22 @@ function ServiceDialog({
               />
             </Field>
           </div>
+          <Field
+            id="sv-deposit"
+            label={t('services.deposit')}
+            hint={t('services.depositHint')}
+            error={err('depositAmount')}
+          >
+            <Input
+              id="sv-deposit"
+              type="number"
+              min={0}
+              dir="ltr"
+              className="text-start"
+              value={v.depositAmount}
+              onChange={set('depositAmount')}
+            />
+          </Field>
           <div className="flex items-center gap-3">
             <Switch
               id="sv-active"
@@ -272,6 +291,11 @@ export function ServicesManager() {
                 <p className="flex flex-wrap items-center gap-2 font-semibold">
                   {s.name}
                   {!s.active && <Badge variant="secondary">{t('services.inactive')}</Badge>}
+                  {s.depositAmount ? (
+                    <Badge variant="outline">
+                      {t('services.depositBadge', { amount: formatPrice(s.depositAmount, locale) })}
+                    </Badge>
+                  ) : null}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {t('service.duration', { minutes: s.durationMin })} ·{' '}

@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone } from 'lucide-react';
+import { Clock, MapPin, Phone, Star } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -16,7 +16,10 @@ import type { Locale } from '@/i18n/routing';
 import { formatPrice } from '@/lib/format';
 import { hexToHsl } from '@/lib/color';
 import { parseState } from '@/lib/mock';
-import { fetchPublicBusiness, todayHours } from '@/lib/public';
+import { fetchPublicBusiness, fetchPublicReviews, todayHours } from '@/lib/public';
+import { ReviewCard } from '@/components/mawid/review-card';
+import { formatDateTz } from '@/lib/tz';
+import { jsonLd, openingHours, pageUrl, schemaType, alternates, ogLocale } from '@/lib/seo';
 
 const initials = (name: string) =>
   name
@@ -28,10 +31,28 @@ const initials = (name: string) =>
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: { locale: string; slug: string };
 }): Promise<Metadata> {
+  const locale = params.locale as Locale;
   const b = await fetchPublicBusiness(params.slug).catch(() => null);
-  return b ? { title: b.name, description: b.description ?? undefined } : {};
+  if (!b) return { robots: { index: false } };
+  const t = await getTranslations({ locale, namespace: 'b' });
+  const path = `/b/${b.slug}`;
+  const description =
+    b.description?.slice(0, 160) ?? `${t('book')} · ${b.name}${b.address ? ` · ${b.address}` : ''}`;
+  return {
+    title: b.name,
+    description,
+    alternates: alternates(locale, path),
+    openGraph: {
+      title: b.name,
+      description,
+      url: pageUrl(locale, path),
+      locale: ogLocale(locale),
+      type: 'website',
+    },
+    twitter: { card: 'summary_large_image', title: b.name, description },
+  };
 }
 
 export default async function BusinessPage({
@@ -96,6 +117,7 @@ export default async function BusinessPage({
   if (!business) notFound();
 
   const empty = state === 'empty';
+  const reviews = empty ? null : await fetchPublicReviews(params.slug);
   const services = empty ? [] : business.services;
   const hours = todayHours(business);
   const brand = business.brandColor ? hexToHsl(business.brandColor) : null;
@@ -104,6 +126,32 @@ export default async function BusinessPage({
     <div
       style={brand ? ({ '--primary': brand, '--ring': brand } as React.CSSProperties) : undefined}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            '@context': 'https://schema.org',
+            '@type': schemaType(business.category),
+            name: business.name,
+            url: pageUrl(locale, `/b/${business.slug}`),
+            description: business.description ?? undefined,
+            image: business.logoUrl ?? undefined,
+            telephone: business.phone ?? undefined,
+            address: business.address
+              ? { '@type': 'PostalAddress', streetAddress: business.address }
+              : undefined,
+            openingHoursSpecification: openingHours(business.staff),
+            aggregateRating:
+              business.ratingAverage !== null && business.reviewCount > 0
+                ? {
+                    '@type': 'AggregateRating',
+                    ratingValue: business.ratingAverage,
+                    reviewCount: business.reviewCount,
+                  }
+                : undefined,
+          }),
+        }}
+      />
       {header(services.length > 0)}
       <main className="mx-auto max-w-4xl pb-28 lg:pb-12">
         <div
@@ -125,6 +173,12 @@ export default async function BusinessPage({
               </div>
             )}
             <h1 className="text-3xl font-bold tracking-tight">{business.name}</h1>
+            {business.ratingAverage !== null && business.reviewCount > 0 && (
+              <p className="flex items-center gap-1.5 text-sm font-medium">
+                <Star aria-hidden className="size-4 fill-warning text-warning" />
+                {t('b.ratingSummary', { avg: business.ratingAverage, count: business.reviewCount })}
+              </p>
+            )}
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               {business.address && (
                 <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -202,9 +256,29 @@ export default async function BusinessPage({
 
           <section className="space-y-4">
             <h2 className="text-xl font-semibold">{t('b.reviews')}</h2>
-            <Card className="shadow-soft">
-              <EmptyState title={t('b.noReviewsTitle')} description={t('b.noReviewsDesc')} />
-            </Card>
+            {!reviews || reviews.items.length === 0 ? (
+              <Card className="shadow-soft">
+                <EmptyState title={t('b.noReviewsTitle')} description={t('b.noReviewsDesc')} />
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {reviews.items.map((r) => (
+                  <ReviewCard
+                    key={r.id}
+                    name={r.author}
+                    initials={initials(r.author)}
+                    rating={r.rating}
+                    ratingLabel={t('reviewsPage.stars', { rating: r.rating })}
+                    text={r.comment ?? ''}
+                    date={formatDateTz(r.createdAt, business.timezone, locale, {
+                      dateStyle: 'medium',
+                    })}
+                    reply={r.reply}
+                    replyLabel={t('b.ownerReply')}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </main>

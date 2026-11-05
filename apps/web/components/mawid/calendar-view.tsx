@@ -28,7 +28,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import {
@@ -272,7 +271,7 @@ function Calendar({
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           colorOf(b.staff.id).event,
           isOpen(b.status) && 'cursor-grab',
-          b.status === 'CANCELLED' && 'opacity-60 line-through',
+          b.status === 'CANCELLED' && 'text-muted-foreground line-through',
           b.status === 'PENDING' && 'border-dashed',
           opts.className,
         )}
@@ -301,15 +300,24 @@ function Calendar({
           <Plus aria-hidden className="size-4" />
           {t('cal.new')}
         </Button>
-        <Tabs value={view} onValueChange={(v) => setView(v as View)} dir={rtl ? 'rtl' : 'ltr'}>
-          <TabsList aria-label={t('cal.viewsAria')}>
-            {(['day', 'week', 'month'] as const).map((v) => (
-              <TabsTrigger key={v} value={v}>
-                {t(`cal.views.${v}`)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div
+          role="group"
+          aria-label={t('cal.viewsAria')}
+          className="inline-flex rounded-lg border bg-muted p-0.5"
+        >
+          {(['day', 'week', 'month'] as const).map((v) => (
+            <Button
+              key={v}
+              type="button"
+              size="sm"
+              variant={v === view ? 'default' : 'ghost'}
+              aria-pressed={v === view}
+              onClick={() => setView(v)}
+            >
+              {t(`cal.views.${v}`)}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -451,7 +459,6 @@ function Calendar({
                 <button
                   type="button"
                   onClick={() => openDay(d)}
-                  aria-label={t('cal.openDay', { date: weekday(d, 'long') + ' ' + dayNum(d) })}
                   className="flex items-center justify-between gap-2 rounded-md px-1 py-0.5 text-start hover:bg-muted md:flex-col md:items-start md:gap-0"
                 >
                   <span className="text-xs text-muted-foreground">{weekday(d)}</span>
@@ -462,6 +469,9 @@ function Calendar({
                     )}
                   >
                     {dayNum(d)}
+                  </span>
+                  <span className="sr-only">
+                    {t('cal.openDay', { date: weekday(d, 'long') + ' ' + dayNum(d) })}
                   </span>
                 </button>
                 <div className="space-y-1.5">

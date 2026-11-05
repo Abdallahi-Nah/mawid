@@ -28,6 +28,8 @@ export interface BusinessDto {
   minNoticeHours: number;
   maxDaysAhead: number;
   slotStepMin: number;
+  bufferMin: number;
+  paymentInstructions: string | null;
 }
 export interface ServiceDto {
   id: string;
@@ -37,6 +39,7 @@ export interface ServiceDto {
   price: number;
   category: string | null;
   bufferMin: number;
+  depositAmount: number | null;
   active: boolean;
 }
 export interface StaffDto {

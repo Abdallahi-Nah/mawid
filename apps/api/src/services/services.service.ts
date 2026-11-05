@@ -1,13 +1,23 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { Page, Pagination, ServiceInput, ServiceUpdateInput } from '@mawid/shared';
 import type { Service } from '@prisma/client';
 import { skipTake, toPage } from '../common/pagination';
 import { PrismaService } from '../prisma/prisma.service';
 
-export interface ServiceDto extends Omit<Service, 'price'> {
+export interface ServiceDto extends Omit<Service, 'price' | 'depositAmount'> {
   price: number;
+  depositAmount: number | null;
 }
-const toDto = (s: Service): ServiceDto => ({ ...s, price: Number(s.price) });
+const toDto = (s: Service): ServiceDto => ({
+  ...s,
+  price: Number(s.price),
+  depositAmount: s.depositAmount === null ? null : Number(s.depositAmount),
+});
 const notFound = (): NotFoundException =>
   new NotFoundException({ code: 'NOT_FOUND', message: 'Service not found' });
 
@@ -30,15 +40,33 @@ export class ServicesService {
     return toDto(row);
   }
 
+  /** A deposit can never be more than the price. 0 or null means no deposit. */
+  private checkDeposit(price: number, deposit: number | null | undefined): number | null {
+    if (!deposit) return null;
+    if (deposit > price) {
+      throw new BadRequestException({
+        code: 'DEPOSIT_TOO_HIGH',
+        message: 'The deposit cannot be more than the price',
+      });
+    }
+    return deposit;
+  }
+
   async create(businessId: string, input: ServiceInput): Promise<ServiceDto> {
+    input = { ...input, depositAmount: this.checkDeposit(input.price, input.depositAmount) };
     return toDto(await this.prisma.forTenant(businessId).service.create({ data: input as never }));
   }
 
   async update(businessId: string, id: string, input: ServiceUpdateInput): Promise<ServiceDto> {
-    await this.get(businessId, id);
-    return toDto(
-      await this.prisma.forTenant(businessId).service.update({ where: { id }, data: input }),
-    );
+    const current = await this.get(businessId, id);
+    const data = { ...input };
+    if (input.depositAmount !== undefined || input.price !== undefined) {
+      const price = input.price ?? current.price;
+      const deposit =
+        input.depositAmount === undefined ? current.depositAmount : input.depositAmount;
+      data.depositAmount = this.checkDeposit(price, deposit);
+    }
+    return toDto(await this.prisma.forTenant(businessId).service.update({ where: { id }, data }));
   }
 
   async remove(businessId: string, id: string): Promise<void> {

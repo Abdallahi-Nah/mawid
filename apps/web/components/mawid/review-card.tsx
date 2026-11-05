@@ -10,6 +10,8 @@ export function ReviewCard({
   ratingLabel,
   text,
   date,
+  reply,
+  replyLabel,
 }: {
   name: string;
   initials: string;
@@ -17,6 +19,9 @@ export function ReviewCard({
   ratingLabel: string;
   text: string;
   date: string;
+  /** Answer of the business. */
+  reply?: string | null;
+  replyLabel?: string;
 }) {
   return (
     <Card className="space-y-3 p-5 shadow-soft">
@@ -40,7 +45,13 @@ export function ReviewCard({
           ))}
         </div>
       </div>
-      <p className="text-sm leading-relaxed text-foreground/90">{text}</p>
+      {text && <p className="text-sm leading-relaxed text-foreground/90">{text}</p>}
+      {reply && (
+        <div className="rounded-lg bg-secondary/60 p-3 text-sm">
+          {replyLabel && <p className="mb-1 text-xs font-semibold text-primary">{replyLabel}</p>}
+          <p>{reply}</p>
+        </div>
+      )}
     </Card>
   );
 }

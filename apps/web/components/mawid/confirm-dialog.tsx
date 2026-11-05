@@ -20,6 +20,7 @@ export function ConfirmDialog({
   error,
   busy,
   confirmLabel,
+  tone = 'destructive',
   onConfirm,
 }: {
   open: boolean;
@@ -29,6 +30,8 @@ export function ConfirmDialog({
   error?: string;
   busy?: boolean;
   confirmLabel?: string;
+  /** destructive (red, default) or default (for a positive action such as "validate"). */
+  tone?: 'destructive' | 'default';
   onConfirm: () => void;
 }) {
   const t = useTranslations('common');
@@ -51,7 +54,7 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('cancel')}
           </Button>
-          <Button variant="destructive" disabled={busy} onClick={onConfirm}>
+          <Button variant={tone} disabled={busy} onClick={onConfirm}>
             {busy && <Spinner />}
             {confirmLabel ?? t('delete')}
           </Button>

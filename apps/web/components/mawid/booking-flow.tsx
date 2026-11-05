@@ -179,6 +179,11 @@ export function BookingFlow({
           {service ? formatPrice(service.price, locale) : '—'}
         </span>
       </div>
+      {service?.depositAmount ? (
+        <p className="rounded-lg bg-warning-soft p-3 text-sm font-medium text-warning">
+          {t('b.depositBadge', { amount: formatPrice(service.depositAmount, locale) })}
+        </p>
+      ) : null}
     </Card>
   );
 
@@ -210,6 +215,16 @@ export function BookingFlow({
         <p className="text-muted-foreground">
           {booked?.status === 'PENDING' ? t('book.pendingDesc') : t('book.successDesc')}
         </p>
+        {booked?.deposit && booked.deposit.status !== 'PAID' && (
+          <div className="w-full space-y-3 rounded-lg bg-warning-soft p-4 text-start">
+            <p className="text-sm font-medium text-warning">
+              {t('book.depositNote', { amount: formatPrice(booked.deposit.amount, locale) })}
+            </p>
+            <Button asChild className="w-full">
+              <Link href={`/booking/${booked.cancelToken}`}>{t('book.depositCta')}</Link>
+            </Button>
+          </div>
+        )}
         <div className="w-full text-start">{summary}</div>
         {booked && (
           <div className="flex w-full flex-col gap-2">

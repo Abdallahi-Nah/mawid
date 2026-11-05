@@ -64,6 +64,7 @@ export class NotificationProcessor {
   /** A reminder is useless if the booking was cancelled or already happened. */
   private isObsolete(type: EmailType, b: Full): boolean {
     if (type === 'reminder') return b.status !== 'CONFIRMED' || b.startsAt.getTime() < Date.now();
+    if (type === 'review_request') return b.status !== 'COMPLETED';
     if (type === 'confirmation' || type === 'changed') return b.status === 'CANCELLED';
     return false;
   }
@@ -89,6 +90,7 @@ export class NotificationProcessor {
       cancelUrl: `${this.env.APP_URL}/${asLocale(locale)}/booking/${b.cancelToken}`,
       icsUrl: `${this.env.API_URL}/public/bookings/${b.cancelToken}/calendar.ics`,
       googleUrl: googleCalendarUrl(ev),
+      reviewUrl: `${this.env.APP_URL}/${asLocale(locale)}/review/${b.reviewToken}`,
       dashboardUrl: `${this.env.APP_URL}/${asLocale(locale)}/dashboard/calendar`,
     };
   }
