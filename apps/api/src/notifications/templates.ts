@@ -9,6 +9,7 @@ export type EmailType =
   | 'cancelled'
   | 'changed'
   | 'reminder'
+  | 'review_request'
   | 'owner_new_booking'
   | 'owner_cancelled'
   | 'owner_changed';
@@ -28,6 +29,7 @@ export interface EmailContext {
   icsUrl?: string;
   googleUrl?: string;
   dashboardUrl?: string; // owner: calendar
+  reviewUrl?: string; // review_request: the rating page
 }
 
 interface Copy {
@@ -46,6 +48,7 @@ interface Copy {
   heading: Record<EmailType, string>;
   intro: Record<EmailType, (c: { name: string; business: string }) => string>;
   cancelLink: string;
+  rateLink: string;
   addToCalendar: string;
   google: string;
   openCalendar: string;
@@ -68,6 +71,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: (c) => `Réservation annulée : ${c.service}, ${c.when}`,
       changed: (c) => `Réservation modifiée : ${c.service}, ${c.when}`,
       reminder: (c) => `Rappel : ${c.service} demain, ${c.when}`,
+      review_request: (c) => `Comment s'est passée votre visite chez ${c.business} ?`,
       owner_new_booking: (c) => `Nouvelle réservation : ${c.customer}, ${c.when}`,
       owner_cancelled: (c) => `Réservation annulée par ${c.customer}, ${c.when}`,
       owner_changed: (c) => `Réservation déplacée par ${c.customer}, ${c.when}`,
@@ -78,6 +82,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: 'Votre réservation est annulée',
       changed: 'Votre réservation a changé',
       reminder: 'Rappel de votre rendez-vous',
+      review_request: 'Donnez votre avis',
       owner_new_booking: 'Nouvelle réservation',
       owner_cancelled: 'Réservation annulée',
       owner_changed: 'Réservation déplacée',
@@ -90,11 +95,14 @@ const COPY: Record<Locale, Copy> = {
       changed: (c) =>
         `Bonjour ${c.name}, votre rendez-vous chez ${c.business} a été déplacé. Voici le nouvel horaire.`,
       reminder: (c) => `Bonjour ${c.name}, nous vous attendons demain chez ${c.business}.`,
+      review_request: (c) =>
+        `Bonjour ${c.name}, merci de votre visite chez ${c.business}. Notez-la en 1 minute : votre avis aide les autres clients.`,
       owner_new_booking: () => 'Un client vient de réserver.',
       owner_cancelled: () => 'Un client a annulé son rendez-vous.',
       owner_changed: () => 'Un client a déplacé son rendez-vous.',
     },
     cancelLink: 'Annuler ou changer ce rendez-vous',
+    rateLink: 'Donner mon avis',
     addToCalendar: 'Ajouter à mon agenda (.ics)',
     google: 'Ajouter à Google Agenda',
     openCalendar: 'Ouvrir le calendrier',
@@ -115,6 +123,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: (c) => `Booking cancelled: ${c.service}, ${c.when}`,
       changed: (c) => `Booking changed: ${c.service}, ${c.when}`,
       reminder: (c) => `Reminder: ${c.service} tomorrow, ${c.when}`,
+      review_request: (c) => `How was your visit to ${c.business}?`,
       owner_new_booking: (c) => `New booking: ${c.customer}, ${c.when}`,
       owner_cancelled: (c) => `Booking cancelled by ${c.customer}, ${c.when}`,
       owner_changed: (c) => `Booking moved by ${c.customer}, ${c.when}`,
@@ -125,6 +134,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: 'Your booking is cancelled',
       changed: 'Your booking has changed',
       reminder: 'Reminder of your appointment',
+      review_request: 'Share your opinion',
       owner_new_booking: 'New booking',
       owner_cancelled: 'Booking cancelled',
       owner_changed: 'Booking moved',
@@ -137,11 +147,14 @@ const COPY: Record<Locale, Copy> = {
       changed: (c) =>
         `Hello ${c.name}, your appointment at ${c.business} was moved. Here is the new time.`,
       reminder: (c) => `Hello ${c.name}, we expect you tomorrow at ${c.business}.`,
+      review_request: (c) =>
+        `Hello ${c.name}, thank you for visiting ${c.business}. Rate your visit in 1 minute: it helps other customers.`,
       owner_new_booking: () => 'A customer just booked.',
       owner_cancelled: () => 'A customer cancelled their appointment.',
       owner_changed: () => 'A customer moved their appointment.',
     },
     cancelLink: 'Cancel or change this appointment',
+    rateLink: 'Rate my visit',
     addToCalendar: 'Add to my calendar (.ics)',
     google: 'Add to Google Calendar',
     openCalendar: 'Open the calendar',
@@ -162,6 +175,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: (c) => `تم إلغاء الحجز: ${c.service}، ${c.when}`,
       changed: (c) => `تم تعديل الحجز: ${c.service}، ${c.when}`,
       reminder: (c) => `تذكير: ${c.service} غدًا، ${c.when}`,
+      review_request: (c) => `كيف كانت زيارتك إلى ${c.business}؟`,
       owner_new_booking: (c) => `حجز جديد: ${c.customer}، ${c.when}`,
       owner_cancelled: (c) => `ألغى ${c.customer} حجزه، ${c.when}`,
       owner_changed: (c) => `غيّر ${c.customer} موعد حجزه، ${c.when}`,
@@ -172,6 +186,7 @@ const COPY: Record<Locale, Copy> = {
       cancelled: 'تم إلغاء حجزك',
       changed: 'تم تعديل حجزك',
       reminder: 'تذكير بموعدك',
+      review_request: 'شاركنا رأيك',
       owner_new_booking: 'حجز جديد',
       owner_cancelled: 'حجز ملغى',
       owner_changed: 'حجز تم نقله',
@@ -183,11 +198,14 @@ const COPY: Record<Locale, Copy> = {
       cancelled: (c) => `مرحبًا ${c.name}، تم إلغاء موعدك لدى ${c.business}.`,
       changed: (c) => `مرحبًا ${c.name}، تم نقل موعدك لدى ${c.business}. هذا هو الوقت الجديد.`,
       reminder: (c) => `مرحبًا ${c.name}، ننتظرك غدًا لدى ${c.business}.`,
+      review_request: (c) =>
+        `مرحبًا ${c.name}، شكرًا لزيارتك ${c.business}. قيّم زيارتك في دقيقة واحدة: رأيك يساعد العملاء الآخرين.`,
       owner_new_booking: () => 'حجز عميل جديد للتو.',
       owner_cancelled: () => 'ألغى عميل موعده.',
       owner_changed: () => 'نقل عميل موعده.',
     },
     cancelLink: 'إلغاء هذا الموعد أو تغييره',
+    rateLink: 'قيّم زيارتي',
     addToCalendar: 'إضافة إلى تقويمي (.ics)',
     google: 'إضافة إلى تقويم Google',
     openCalendar: 'فتح التقويم',
@@ -237,7 +255,9 @@ export function renderEmail(
     ...(!owner && ctx.address ? ([[c.labels.where, ctx.address]] as [string, string][]) : []),
   ];
   const links: [string, string][] = [];
-  if (!owner && type !== 'cancelled') {
+  if (type === 'review_request') {
+    if (ctx.reviewUrl) links.push([c.rateLink, ctx.reviewUrl]);
+  } else if (!owner && type !== 'cancelled') {
     if (ctx.cancelUrl) links.push([c.cancelLink, ctx.cancelUrl]);
     if (ctx.icsUrl && type !== 'pending') links.push([c.addToCalendar, ctx.icsUrl]);
     if (ctx.googleUrl && type !== 'pending') links.push([c.google, ctx.googleUrl]);

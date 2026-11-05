@@ -13,6 +13,7 @@ import type {
 } from '@mawid/shared';
 import type { Staff } from '@prisma/client';
 import { skipTake, toPage } from '../common/pagination';
+import { PlansService } from '../plans/plans.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 
@@ -40,6 +41,7 @@ export class StaffService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: StorageService,
+    private readonly plans: PlansService,
   ) {}
 
   /** Every id sent by the client is checked with the tenant client: ids of another business do not exist for us. */
@@ -75,6 +77,7 @@ export class StaffService {
 
   async create(businessId: string, input: StaffInput): Promise<StaffDto> {
     await this.assertServices(businessId, input.serviceIds);
+    if (input.active) await this.plans.assertCanAddStaff(businessId);
     const row = await this.prisma.forTenant(businessId).staff.create({
       data: {
         displayName: input.displayName,
@@ -89,8 +92,10 @@ export class StaffService {
   }
 
   async update(businessId: string, id: string, input: StaffUpdateInput): Promise<StaffDto> {
-    await this.get(businessId, id);
+    const current = await this.get(businessId, id);
     if (input.serviceIds) await this.assertServices(businessId, input.serviceIds);
+    // Turning an employee back on counts like adding one.
+    if (input.active && !current.active) await this.plans.assertCanAddStaff(businessId);
     const row = await this.prisma.forTenant(businessId).staff.update({
       where: { id },
       data: {

@@ -15,10 +15,14 @@ export interface AuthUser {
 export type AuthedRequest = Request & { user?: AuthUser };
 
 export const IS_PUBLIC = 'isPublic';
+export const ALLOW_SUSPENDED = 'allowSuspended';
 export const ROLES = 'roles';
 
 /** Route needs no login. Every other route requires a valid access token. */
 export const Public = (): MethodDecorator & ClassDecorator => SetMetadata(IS_PUBLIC, true);
+/** Route still works when the business of the user is suspended (login, logout, who am I). */
+export const AllowSuspended = (): MethodDecorator & ClassDecorator =>
+  SetMetadata(ALLOW_SUSPENDED, true);
 /** Route is allowed only for these roles (exact match, ADMIN is not a super-role). */
 export const Roles = (...roles: Role[]): MethodDecorator & ClassDecorator =>
   SetMetadata(ROLES, roles);

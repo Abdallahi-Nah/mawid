@@ -137,6 +137,17 @@ export const updateBusinessSchema = z
       .int('required')
       .min(0, 'required')
       .max(720, 'required'),
+    // Preparation time after every appointment (a service can ask for more).
+    bufferMin: z
+      .number({ invalid_type_error: 'required' })
+      .int('required')
+      .min(0, 'required')
+      .max(120, 'required'),
+    // How to pay a deposit, shown to the customer.
+    paymentInstructions: z.preprocess(
+      emptyToNull,
+      z.string().trim().max(300, 'tooLong').nullable(),
+    ),
   })
   .partial();
 export type UpdateBusinessInput = z.infer<typeof updateBusinessSchema>;
@@ -163,6 +174,13 @@ export const serviceInputSchema = z.object({
     .min(0, 'required')
     .max(120, 'required')
     .default(0),
+  // Deposit asked at booking time (null = none). Never more than the price (checked by the API).
+  depositAmount: z
+    .number({ invalid_type_error: 'priceInvalid' })
+    .min(0, 'priceInvalid')
+    .max(10_000_000, 'priceInvalid')
+    .nullable()
+    .optional(),
   active: z.boolean().default(true),
 });
 export type ServiceInput = z.infer<typeof serviceInputSchema>;
@@ -266,6 +284,9 @@ export interface PublicBusiness {
   defaultLocale: string;
   brandColor: string | null;
   bookingMode: 'AUTO' | 'MANUAL';
+  /** Average of the reviews (1 decimal) and how many there are. null when there is no review yet. */
+  ratingAverage: number | null;
+  reviewCount: number;
   services: {
     id: string;
     name: string;
@@ -273,6 +294,7 @@ export interface PublicBusiness {
     durationMin: number;
     price: number;
     category: string | null;
+    depositAmount: number | null;
   }[];
   staff: {
     id: string;
@@ -388,7 +410,164 @@ export interface PublicBookingView {
   /** "Add to calendar": an .ics file (Apple, Outlook, Google) and a Google Calendar link. */
   icsUrl: string;
   googleCalendarUrl: string;
+  /** Present when the service asks for a deposit. */
+  deposit: DepositView | null;
 }
+
+// ---------------------------------------------------------------------------------------------
+// Deposit (phase 5, FR-61)
+// ---------------------------------------------------------------------------------------------
+export const PAYMENT_STATUSES = ['PENDING', 'PAID', 'FAILED', 'REFUNDED'] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+
+export interface DepositView {
+  amount: number;
+  status: PaymentStatus;
+  /** The customer already sent a reference or a screenshot (waiting for the owner when PENDING). */
+  submitted: boolean;
+  instructions: string | null;
+}
+
+/** Text part of the proof (the screenshot goes in the multipart field "file"). */
+export const submitPaymentSchema = z.object({
+  reference: z.preprocess(
+    emptyToNull,
+    z.string().trim().min(3, 'required').max(100, 'tooLong').nullable().optional(),
+  ),
+});
+export type SubmitPaymentInput = z.infer<typeof submitPaymentSchema>;
+
+export const listPaymentsSchema = z.object({
+  status: z.enum(PAYMENT_STATUSES).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type ListPaymentsQuery = z.infer<typeof listPaymentsSchema>;
+
+export interface OwnerPayment {
+  id: string;
+  status: PaymentStatus;
+  amount: number;
+  reference: string | null;
+  proofUrl: string | null;
+  createdAt: string;
+  booking: {
+    id: string;
+    status: BookingStatus;
+    startsAt: string;
+    customerName: string;
+    customerPhone: string;
+    serviceName: string;
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Reviews (phase 5, FR-71 and FR-72)
+// ---------------------------------------------------------------------------------------------
+export const createReviewSchema = z.object({
+  rating: z
+    .number({ invalid_type_error: 'required' })
+    .int('required')
+    .min(1, 'required')
+    .max(5, 'required'),
+  comment: z.preprocess(emptyToNull, z.string().trim().max(1000, 'tooLong').nullable().optional()),
+});
+export type CreateReviewInput = z.infer<typeof createReviewSchema>;
+
+export const replyReviewSchema = z.object({
+  reply: z.string().trim().min(1, 'required').max(1000, 'tooLong'),
+});
+export type ReplyReviewInput = z.infer<typeof replyReviewSchema>;
+
+/** What the rating page needs (opened from the email link). */
+export interface ReviewFormView {
+  businessName: string;
+  serviceName: string;
+  startsAt: string;
+  timezone: string;
+  /** already rated: the page shows a thank-you instead of the form. */
+  reviewed: boolean;
+}
+
+export interface PublicReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  /** First name and initial only. */
+  author: string;
+  reply: string | null;
+  createdAt: string;
+}
+export interface PublicReviewsPage extends Page<PublicReview> {
+  ratingAverage: number | null;
+}
+
+export interface OwnerReview extends PublicReview {
+  customerName: string;
+  serviceName: string;
+  repliedAt: string | null;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Reports (phase 5, FR-80 to FR-82). Dates are days in the business time zone (YYYY-MM-DD).
+// ---------------------------------------------------------------------------------------------
+export const reportRangeSchema = z
+  .object({
+    from: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'dateInvalid')
+      .optional(),
+    to: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'dateInvalid')
+      .optional(),
+  })
+  .refine((r) => !r.from || !r.to || r.from <= r.to, { path: ['to'], message: 'endBeforeStart' });
+export type ReportRangeQuery = z.infer<typeof reportRangeSchema>;
+
+export interface ReportSummary {
+  range: { from: string; to: string };
+  today: number;
+  thisWeek: number;
+  total: number;
+  /** Confirmed and completed bookings in the range, price added up. */
+  estimatedRevenue: number;
+  cancellationRate: number; // 0..1 of all bookings of the range
+  noShowRate: number; // 0..1
+  byStatus: Record<BookingStatus, number>;
+  ratingAverage: number | null;
+  reviewCount: number;
+}
+export interface BookingsPerDayPoint {
+  date: string;
+  bookings: number;
+  revenue: number;
+}
+export interface TopService {
+  serviceId: string;
+  name: string;
+  bookings: number;
+  revenue: number;
+}
+export interface PeakHour {
+  hour: number; // 0..23, local time
+  bookings: number;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Plans (phase 5, FR-91)
+// ---------------------------------------------------------------------------------------------
+export interface PlanLimits {
+  staff: number | null; // null = no limit
+  bookingsPerMonth: number | null;
+  aiMessagesPerMonth: number;
+}
+export interface PlanInfo {
+  plan: 'FREE' | 'PRO' | 'BUSINESS';
+  limits: PlanLimits;
+  usage: { staff: number; bookingsThisMonth: number; aiMessagesThisMonth: number };
+}
+export const PLAN_LIMIT_CODES = ['PLAN_LIMIT_STAFF', 'PLAN_LIMIT_BOOKINGS'] as const;
 
 // ---------------------------------------------------------------------------------------------
 // Customers and notifications (phase 3)
@@ -413,6 +592,7 @@ export const NOTIFICATION_TYPES = [
   'owner_new_booking',
   'owner_cancelled',
   'owner_changed',
+  'owner_payment',
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
@@ -530,3 +710,69 @@ export const reviewAnalysisSchema = z.object({
 });
 export type ReviewAnalysis = z.infer<typeof reviewAnalysisSchema>;
 export type ReviewAnalysisResult = ReviewAnalysis & { reviewCount: number };
+
+// ---------------------------------------------------------------------------------------------
+// Admin area (phase 5, FR-90). Only the ADMIN role.
+// ---------------------------------------------------------------------------------------------
+export const PLANS = ['FREE', 'PRO', 'BUSINESS'] as const;
+
+export const adminListBusinessesSchema = z.object({
+  q: z.string().trim().max(80).optional(), // name, slug or owner email
+  plan: z.enum(PLANS).optional(),
+  suspended: z.enum(['true', 'false']).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type AdminListBusinessesQuery = z.infer<typeof adminListBusinessesSchema>;
+
+export const adminSuspendSchema = z.object({ suspended: z.boolean() });
+export type AdminSuspendInput = z.infer<typeof adminSuspendSchema>;
+
+export const adminPlanSchema = z.object({ plan: z.enum(PLANS) });
+export type AdminPlanInput = z.infer<typeof adminPlanSchema>;
+
+export const adminMonthSchema = z.object({
+  month: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'dateInvalid')
+    .optional(), // YYYY-MM (UTC), default: this month
+});
+export type AdminMonthQuery = z.infer<typeof adminMonthSchema>;
+
+export interface AdminBusiness {
+  id: string;
+  name: string;
+  slug: string;
+  plan: 'FREE' | 'PRO' | 'BUSINESS';
+  suspendedAt: string | null;
+  createdAt: string;
+  ownerEmail: string | null;
+  staffCount: number;
+  bookingsThisMonth: number;
+  aiCallsThisMonth: number;
+}
+
+export interface AdminStats {
+  businesses: { total: number; active: number; suspended: number; byPlan: Record<string, number> };
+  users: number;
+  bookings: { total: number; thisMonth: number };
+  ai: {
+    month: string;
+    calls: number;
+    tokensIn: number;
+    tokensOut: number;
+    estimatedCostUsd: number;
+  };
+}
+
+export interface AdminAiUsage {
+  businessId: string;
+  name: string;
+  slug: string;
+  calls: number;
+  errors: number;
+  tokensIn: number;
+  tokensOut: number;
+  /** An estimate from the public Groq price list (see apps/api/src/admin/ai-pricing.ts). */
+  estimatedCostUsd: number;
+}

@@ -135,6 +135,7 @@ async function main(): Promise<void> {
         address: d.address,
         phone: d.phone,
         defaultLocale: 'fr',
+        plan: 'PRO', // demo businesses are not blocked by the Free limits
       },
     });
     await prisma.user.create({

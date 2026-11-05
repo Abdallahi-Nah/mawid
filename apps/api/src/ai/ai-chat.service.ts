@@ -10,6 +10,7 @@ import type {
 import type { AuthUser } from '../common/auth.decorators';
 import { BookingsService } from '../bookings/bookings.service';
 import { ENV, Env } from '../config/env.module';
+import { businessSuspended } from '../common/suspension.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiGateway } from './ai-gateway';
 import { verifyDraft } from './ai-draft';
@@ -45,6 +46,7 @@ export class AiChatService {
     const business = await this.prisma.business.findUnique({ where: { slug: input.businessSlug } });
     if (!business)
       throw new NotFoundException({ code: 'NOT_FOUND', message: 'Business not found' });
+    if (business.suspendedAt) throw businessSuspended();
     await this.gateway.assertUsable(business.id);
     const t = this.prisma.forTenant(business.id);
     const [services, staff] = await Promise.all([
@@ -110,10 +112,11 @@ export class AiChatService {
   async draft(input: AiDraftInput): Promise<AiDraft> {
     const business = await this.prisma.business.findUnique({
       where: { slug: input.businessSlug },
-      select: { id: true },
+      select: { id: true, suspendedAt: true },
     });
     if (!business)
       throw new NotFoundException({ code: 'NOT_FOUND', message: 'Business not found' });
+    if (business.suspendedAt) throw businessSuspended();
     try {
       return await this.tools.makeDraft(business.id, {
         serviceId: input.serviceId,

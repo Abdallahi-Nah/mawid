@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ENV, Env } from '../config/env.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { LlmClient, LlmEvent, LlmRequest, LlmResult } from './llm.client';
+import { PLAN_AI_FACTOR } from '../plans/plans';
 
 export const DEFAULT_MODELS = {
   chat: 'llama-3.3-70b-versatile',
@@ -16,8 +17,6 @@ export interface AiContext {
   feature: AiFeature;
 }
 type Req = Omit<LlmRequest, 'model' | 'signal'> & { model?: 'chat' | 'fast' };
-
-const PLAN_FACTOR = { FREE: 1, PRO: 10, BUSINESS: 50 } as const;
 
 export class AiUnavailableError extends HttpException {
   constructor(reason = 'Groq is not available') {
@@ -74,7 +73,7 @@ export class AiGateway {
     const used = await this.prisma.forTenant(businessId).aiLog.count({
       where: { createdAt: { gte: start } },
     });
-    if (used >= this.env.AI_MONTHLY_QUOTA * PLAN_FACTOR[business?.plan ?? 'FREE'])
+    if (used >= this.env.AI_MONTHLY_QUOTA * PLAN_AI_FACTOR[business?.plan ?? 'FREE'])
       throw new AiQuotaError();
   }
 

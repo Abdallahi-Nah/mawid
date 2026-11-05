@@ -24,6 +24,7 @@ import {
 } from '@mawid/shared';
 import { z } from 'zod';
 import { AuthUser, OptionalUser, Public } from '../common/auth.decorators';
+import { businessSuspended } from '../common/suspension.service';
 import { ZodPipe } from '../common/zod.pipe';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvailabilityService } from './availability.service';
@@ -54,10 +55,11 @@ export class PublicBookingsController {
   ): Promise<SlotsResponse> {
     const business = await this.prisma.business.findUnique({
       where: { slug },
-      select: { id: true },
+      select: { id: true, suspendedAt: true },
     });
     if (!business)
       throw new NotFoundException({ code: 'NOT_FOUND', message: 'Business not found' });
+    if (business.suspendedAt) throw businessSuspended();
     const a = await this.availability.load(business.id, q);
     return {
       date: q.date,

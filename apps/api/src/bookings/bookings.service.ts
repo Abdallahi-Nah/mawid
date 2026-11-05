@@ -7,18 +7,31 @@ import {
 } from '@nestjs/common';
 import type {
   CreateBookingInput,
+  DepositView,
   ListBookingsQuery,
   ManualBookingInput,
   MoveBookingInput,
   Page,
   PublicBookingView,
 } from '@mawid/shared';
-import { Booking, BookingStatus, Business, Customer, Prisma, Service, Staff } from '@prisma/client';
+import {
+  Booking,
+  BookingStatus,
+  Business,
+  Customer,
+  Payment,
+  Prisma,
+  Service,
+  Staff,
+} from '@prisma/client';
 import { DateTime } from 'luxon';
 import type { AuthUser } from '../common/auth.decorators';
+import { businessSuspended } from '../common/suspension.service';
 import { ENV, Env } from '../config/env.module';
 import { buildIcs, googleCalendarUrl } from '../notifications/ics';
 import { calendarEvent } from '../notifications/calendar-event';
+import { PaymentProvider } from '../payments/payment-provider';
+import { PlansService } from '../plans/plans.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvailabilityService } from './availability.service';
 import { BookingEvents } from './booking-events';
@@ -26,8 +39,13 @@ import { assertTransition, OPEN_STATUSES } from './status';
 
 const HOUR = 3_600_000;
 
-type PublicBooking = Booking & { service: Service; staff: Staff; business: Business };
-const publicInclude = { service: true, staff: true, business: true } as const;
+type PublicBooking = Booking & {
+  service: Service;
+  staff: Staff;
+  business: Business;
+  payments: Payment[];
+};
+const publicInclude = { service: true, staff: true, business: true, payments: true } as const;
 const ownerInclude = { customer: true, service: true, staff: true } as const;
 type OwnerBooking = Booking & { customer: Customer; service: Service; staff: Staff };
 
@@ -69,6 +87,8 @@ export class BookingsService {
     private readonly prisma: PrismaService,
     private readonly availability: AvailabilityService,
     private readonly events: BookingEvents,
+    private readonly plans: PlansService,
+    private readonly paymentProvider: PaymentProvider,
     @Inject(ENV) private readonly env: Env,
   ) {}
 
@@ -84,6 +104,7 @@ export class BookingsService {
     const business = await this.prisma.business.findUnique({ where: { slug: input.businessSlug } });
     if (!business)
       throw new NotFoundException({ code: 'NOT_FOUND', message: 'Business not found' });
+    if (business.suspendedAt) throw businessSuspended();
     const startsAt = new Date(input.startsAt);
     const date = DateTime.fromJSDate(startsAt, { zone: business.timezone }).toISODate() as string;
 
@@ -95,6 +116,7 @@ export class BookingsService {
     });
     const slot = avail.slots.find((s) => s.start.getTime() === startsAt.getTime());
     if (!slot) throw slotTaken();
+    await this.plans.assertCanBook(business.id);
     // "Any employee": the least busy one of the day gets it.
     const staffId = [...slot.staffIds].sort(
       (a, b) => (avail.dayLoad.get(a) ?? 0) - (avail.dayLoad.get(b) ?? 0),
@@ -105,8 +127,11 @@ export class BookingsService {
       userId: user?.role === 'CLIENT' ? user.id : undefined,
       staffId,
       service: avail.service,
+      bufferMin: Math.max(avail.service.bufferMin, business.bufferMin),
+      // A deposit keeps the booking PENDING until the owner validates the payment.
+      deposit: deposit(avail.service),
       startsAt,
-      status: business.bookingMode === 'AUTO' ? 'CONFIRMED' : 'PENDING',
+      status: business.bookingMode === 'AUTO' && !deposit(avail.service) ? 'CONFIRMED' : 'PENDING',
       source,
       notes: input.notes ?? null,
       locale: input.locale ?? business.defaultLocale,
@@ -200,10 +225,13 @@ export class BookingsService {
         message: 'This employee does not do this service',
       });
     const business = await t.business.findUnique({ where: { id: businessId } });
+    await this.plans.assertCanBook(businessId);
     const id = await this.persist(businessId, {
       customer: input.customer,
       staffId: staff.id,
       service,
+      bufferMin: Math.max(service.bufferMin, business?.bufferMin ?? 0),
+      deposit: null, // the owner decides for a booking made by phone or at the desk
       startsAt: new Date(input.startsAt),
       status: input.status,
       source: 'MANUAL',
@@ -262,6 +290,16 @@ export class BookingsService {
     const current = await t.booking.findUnique({ where: { id } });
     if (!current) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Booking not found' });
     assertTransition(current.status, status);
+    if (
+      status === 'CONFIRMED' &&
+      (await t.payment.count({ where: { bookingId: id, status: { not: 'PAID' } } })) > 0
+    ) {
+      // The deposit must be validated first (this also confirms the booking).
+      throw new ConflictException({
+        code: 'DEPOSIT_REQUIRED',
+        message: 'Validate the deposit payment to confirm this booking',
+      });
+    }
     if ((status === 'COMPLETED' || status === 'NO_SHOW') && current.startsAt > new Date()) {
       throw new ConflictException({
         code: 'TOO_EARLY',
@@ -285,6 +323,7 @@ export class BookingsService {
     });
     if (status === 'CANCELLED') await this.events.cancelled(id, 'business');
     if (status === 'CONFIRMED') await this.events.confirmed(id);
+    if (status === 'COMPLETED') await this.events.completed(id);
     return this.get(businessId, id);
   }
 
@@ -300,6 +339,10 @@ export class BookingsService {
       userId?: string;
       staffId: string;
       service: Service;
+      /** Preparation time kept after the appointment (business default or service, the longer). */
+      bufferMin: number;
+      /** Deposit to collect (a PENDING payment is created with the booking), or null. */
+      deposit: number | null;
       startsAt: Date;
       status: BookingStatus;
       source: 'WEB' | 'AI' | 'MANUAL';
@@ -333,11 +376,23 @@ export class BookingsService {
               status: d.status,
               source: d.source,
               price: d.service.price,
-              bufferMin: d.service.bufferMin,
+              bufferMin: d.bufferMin,
               notes: d.notes,
               locale: d.locale,
             },
           });
+          if (d.deposit) {
+            await tx.payment.create({
+              data: {
+                businessId,
+                bookingId: booking.id,
+                method: 'MOBILE',
+                amount: d.deposit,
+                status: 'PENDING',
+                provider: this.paymentProvider.name,
+              },
+            });
+          }
           return booking.id;
         });
       } catch (e) {
@@ -424,8 +479,23 @@ export class BookingsService {
       cancelLimitHours: b.business.cancelLimitHours,
       icsUrl: `${this.env.API_URL}/public/bookings/${b.cancelToken}/calendar.ics`,
       googleCalendarUrl: googleCalendarUrl(calendarEvent(b)),
+      deposit: depositView(b),
     };
   }
+}
+
+const deposit = (s: Service): number | null =>
+  s.depositAmount && Number(s.depositAmount) > 0 ? Number(s.depositAmount) : null;
+
+function depositView(b: PublicBooking): DepositView | null {
+  const p = b.payments[0];
+  if (!p) return null;
+  return {
+    amount: Number(p.amount),
+    status: p.status,
+    submitted: !!(p.reference || p.proofUrl),
+    instructions: b.business.paymentInstructions,
+  };
 }
 
 const withinWindow = (b: { startsAt: Date; business: Business }, now = new Date()): boolean =>

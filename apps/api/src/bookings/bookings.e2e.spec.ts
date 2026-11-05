@@ -32,6 +32,8 @@ describe('booking (integration, needs the database)', () => {
       business?: Record<string, unknown>;
       service?: Record<string, unknown>;
       breakAt?: [string, string];
+      /** FREE allows 2 employees; a test with more needs PRO. */
+      plan?: 'PRO';
     } = {},
   ): Promise<Shop> {
     const email = uniqueEmail('owner');
@@ -40,6 +42,11 @@ describe('booking (integration, needs the database)', () => {
     const reg = await agent
       .post('/auth/register')
       .send({ name: 'Owner', email, password: PASSWORD, terms: true });
+    if (opts.plan)
+      await prisma.business.update({
+        where: { id: reg.body.businessId },
+        data: { plan: opts.plan },
+      });
     const slug = `shop-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     await agent
       .patch('/businesses/me')
@@ -264,7 +271,7 @@ describe('booking (integration, needs the database)', () => {
     });
 
     it('20 parallel "any employee" requests with 3 employees: exactly 3 win', async () => {
-      const s = await shop({ staff: 3 });
+      const s = await shop({ staff: 3, plan: 'PRO' });
       const t = iso(day(5), '10:00');
       const rs = await Promise.all(Array.from({ length: 20 }, () => book(s, t, { staffId: null })));
       expect(outcomes(rs)).toEqual({ ok: 3, taken: 17 });

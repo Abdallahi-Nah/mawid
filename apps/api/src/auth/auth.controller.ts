@@ -12,7 +12,7 @@ import {
   type ResetPasswordInput,
 } from '@mawid/shared';
 import type { Request, Response } from 'express';
-import { AuthUser, CurrentUser, Public } from '../common/auth.decorators';
+import { AllowSuspended, AuthUser, CurrentUser, Public } from '../common/auth.decorators';
 import { ZodPipe } from '../common/zod.pipe';
 import { ENV, Env } from '../config/env.module';
 import { AuthService, PublicUser } from './auth.service';
@@ -26,6 +26,7 @@ const strings = (...keys: string[]) => ({
 });
 
 @ApiTags('auth')
+@AllowSuspended()
 @Controller('auth')
 export class AuthController {
   constructor(

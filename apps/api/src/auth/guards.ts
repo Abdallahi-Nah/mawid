@@ -9,7 +9,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import type { Role } from '@prisma/client';
-import { AuthedRequest, IS_PUBLIC, ROLES } from '../common/auth.decorators';
+import { ALLOW_SUSPENDED, AuthedRequest, IS_PUBLIC, ROLES } from '../common/auth.decorators';
+import { businessSuspended, SuspensionService } from '../common/suspension.service';
 import { ENV, Env } from '../config/env.module';
 import { ACCESS_COOKIE } from './cookies';
 
@@ -70,6 +71,27 @@ export class RolesGuard implements CanActivate {
         message: 'You do not have access to this resource',
       });
     }
+    return true;
+  }
+}
+
+/** A logged-in user of a suspended business can do nothing, except log out and see who they are. */
+@Injectable()
+export class SuspendedGuard implements CanActivate {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly suspension: SuspensionService,
+  ) {}
+
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
+    const user = ctx.switchToHttp().getRequest<AuthedRequest>().user;
+    if (!user?.businessId) return true;
+    const allowed = this.reflector.getAllAndOverride<boolean>(ALLOW_SUSPENDED, [
+      ctx.getHandler(),
+      ctx.getClass(),
+    ]);
+    if (allowed) return true;
+    if (await this.suspension.isSuspended(user.businessId)) throw businessSuspended();
     return true;
   }
 }
