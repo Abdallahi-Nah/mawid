@@ -11,6 +11,9 @@ const PASSWORD = 'Password123';
 const day = (n: number): string => DateTime.utc().plus({ days: n }).toISODate() as string;
 const iso = (date: string, time: string): string => `${date}T${time}:00.000Z`;
 
+// The parallel-booking tests queue up for the few database connections of a small CI machine: give them time.
+jest.setTimeout(30_000);
+
 describe('booking (integration, needs the database)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -277,13 +280,27 @@ describe('booking (integration, needs the database)', () => {
       expect(outcomes(rs)).toEqual({ ok: 3, taken: 17 });
     });
 
-    it('overlapping (not identical) parallel requests also give one winner', async () => {
+    it('overlapping (not identical) parallel requests never produce two overlapping bookings', async () => {
       const s = await shop();
       const date = day(5);
+      // Each booking lasts 30 min. 09:45-10:15 and 10:15-10:45 touch but do not overlap, so both may win
+      // (and the two 10:00 requests then lose); if a 10:00 request wins first, it blocks the other two.
+      // So the number of winners is 1 or 2 depending on the order: what must always hold is the rule itself.
       const rs = await Promise.all(
         ['10:00', '10:15', '10:00', '10:15', '09:45'].map((t) => book(s, iso(date, t))),
       );
-      expect(outcomes(rs).ok).toBe(1);
+      const { ok, taken } = outcomes(rs);
+      expect(ok).toBeGreaterThanOrEqual(1);
+      expect(ok).toBeLessThanOrEqual(2);
+      expect(ok + taken).toBe(5); // every other request got a clean SLOT_TAKEN, never a 500
+      const rows = await prisma.booking.findMany({
+        where: { staffId: s.staffIds[0], status: { not: 'CANCELLED' } },
+        orderBy: { startsAt: 'asc' },
+      });
+      expect(rows).toHaveLength(ok);
+      for (let i = 1; i < rows.length; i++) {
+        expect(rows[i].startsAt.getTime()).toBeGreaterThanOrEqual(rows[i - 1].endsAt.getTime());
+      }
     });
 
     it('the database itself refuses an overlap, even when the code is bypassed', async () => {

@@ -8,7 +8,7 @@ datasource db {
 }
 
 // Every business table carries business_id and every query must be filtered by it
-// (enforced by the tenant extension in src/prisma/tenant.extension.ts). See CLAUDE.md.
+// (enforced by the tenant extension in src/prisma/tenant.extension.ts). See docs/SECURITY.md.
 // All dates are stored in UTC. Booking overlap constraint comes in phase 3.
 
 enum Role {

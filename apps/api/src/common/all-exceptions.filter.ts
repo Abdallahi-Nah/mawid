@@ -37,6 +37,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         P2025: [HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found'],
         P2002: [HttpStatus.CONFLICT, 'CONFLICT', 'This value already exists'],
         P2003: [HttpStatus.CONFLICT, 'IN_USE', 'This item is used elsewhere'],
+        // No database connection became free in time: a short overload, the caller can simply try again.
+        P2028: [
+          HttpStatus.SERVICE_UNAVAILABLE,
+          'BUSY',
+          'The server is busy, try again in a moment',
+        ],
       };
       const hit = map[exception.code];
       if (hit) {
