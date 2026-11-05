@@ -117,25 +117,38 @@ export class BookingsService {
     const slot = avail.slots.find((s) => s.start.getTime() === startsAt.getTime());
     if (!slot) throw slotTaken();
     await this.plans.assertCanBook(business.id);
-    // "Any employee": the least busy one of the day gets it.
-    const staffId = [...slot.staffIds].sort(
+    // "Any employee": try the least busy one first. If another request takes that employee at the same
+    // moment (the database refuses the overlap), try the next free employee before giving up.
+    const candidates = [...slot.staffIds].sort(
       (a, b) => (avail.dayLoad.get(a) ?? 0) - (avail.dayLoad.get(b) ?? 0),
-    )[0];
-
-    const id = await this.persist(business.id, {
-      customer: input.customer,
-      userId: user?.role === 'CLIENT' ? user.id : undefined,
-      staffId,
-      service: avail.service,
-      bufferMin: Math.max(avail.service.bufferMin, business.bufferMin),
-      // A deposit keeps the booking PENDING until the owner validates the payment.
-      deposit: deposit(avail.service),
-      startsAt,
-      status: business.bookingMode === 'AUTO' && !deposit(avail.service) ? 'CONFIRMED' : 'PENDING',
-      source,
-      notes: input.notes ?? null,
-      locale: input.locale ?? business.defaultLocale,
-    });
+    );
+    let id: string | undefined;
+    for (const staffId of candidates) {
+      try {
+        id = await this.persist(business.id, {
+          customer: input.customer,
+          userId: user?.role === 'CLIENT' ? user.id : undefined,
+          staffId,
+          service: avail.service,
+          bufferMin: Math.max(avail.service.bufferMin, business.bufferMin),
+          // A deposit keeps the booking PENDING until the owner validates the payment.
+          deposit: deposit(avail.service),
+          startsAt,
+          status:
+            business.bookingMode === 'AUTO' && !deposit(avail.service) ? 'CONFIRMED' : 'PENDING',
+          source,
+          notes: input.notes ?? null,
+          locale: input.locale ?? business.defaultLocale,
+        });
+        break;
+      } catch (e) {
+        const taken =
+          e instanceof ConflictException &&
+          (e.getResponse() as { code?: string }).code === 'SLOT_TAKEN';
+        if (!taken) throw e;
+      }
+    }
+    if (!id) throw slotTaken();
     await this.events.created(id);
     return this.viewByToken((await this.getPublicById(id)).cancelToken);
   }
