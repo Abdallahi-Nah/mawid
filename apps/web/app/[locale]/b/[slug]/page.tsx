@@ -215,7 +215,11 @@ export default async function BusinessPage({
           </Button>
         </div>
       )}
-      <ChatFab forceError={searchParams.chat === 'error'} />
+      <ChatFab
+        slug={business.slug}
+        businessName={business.name}
+        forceUnavailable={searchParams.chat === 'error'}
+      />
     </div>
   );
 }

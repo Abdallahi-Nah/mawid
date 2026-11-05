@@ -25,7 +25,8 @@ docker-compose.yml PostgreSQL (host port 5434) + Redis (6379)
 - Dev: `pnpm dev` (web :3000, api :4000)
 - Lint / types / tests / build: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 - Migrations: `pnpm --filter api prisma:migrate`
-- Browser checks (need API + web running): `node apps/web/scripts/flow-check.mjs` (real flow), `node apps/web/scripts/booking-e2e.mjs` (booking ar+fr at 360 px, owner calendar), `node apps/web/scripts/screenshots.mjs` (screens at 360/768/1280 px, ar and fr)
+- Browser checks (need API + web running): `node apps/web/scripts/flow-check.mjs` (real flow), `node apps/web/scripts/booking-e2e.mjs` (booking ar+fr at 360 px, owner calendar), `node apps/web/scripts/ai-e2e.mjs` (AI chat ar+fr, fallback, owner AI tools; needs the API started with `node apps/api/dist/dev/e2e-server.js`, a scripted model, no Groq key), `node apps/web/scripts/screenshots.mjs` (screens at 360/768/1280 px, ar and fr)
+- AI with a real key (optional): `LIVE_GROQ=1 pnpm --filter api exec jest src/ai/ai-live`; kill switch `AI_ENABLED=false`; replay scenarios in `docs/ai-conversations.md`
 - Demo data: `pnpm --filter api db:seed` (password for all demo accounts: `Demo1234!`)
 - API docs: http://localhost:4000/docs, health: http://localhost:4000/health
 

@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { AiWriteDialog, SERVICE_KINDS } from '@/components/mawid/ai-write-dialog';
 import { ConfirmDialog } from '@/components/mawid/confirm-dialog';
 import { EmptyState } from '@/components/mawid/empty-state';
 import { ErrorState } from '@/components/mawid/error-state';
@@ -52,6 +53,7 @@ function ServiceDialog({
   const t = useTranslations();
   const create = useCreateService();
   const update = useUpdateService();
+  const ui = useLocale() as 'ar' | 'fr' | 'en';
   const [v, setV] = useState(empty);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string>();
@@ -124,7 +126,16 @@ function ServiceDialog({
             />
           </Field>
           <Field id="sv-desc" label={t('settings.description')} error={err('description')}>
-            <Textarea id="sv-desc" rows={2} value={v.description} onChange={set('description')} />
+            <div className="space-y-2">
+              <Textarea id="sv-desc" rows={2} value={v.description} onChange={set('description')} />
+              <AiWriteDialog
+                kinds={SERVICE_KINDS}
+                defaultLocale={ui}
+                serviceId={service?.id}
+                seed={v.name}
+                onUse={(text) => setV((x) => ({ ...x, description: text }))}
+              />
+            </div>
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field id="sv-dur" label={t('services.duration')} error={err('durationMin')}>

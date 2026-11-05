@@ -296,22 +296,21 @@
     "you": "Vous",
     "confirmSlot": "Confirmer ce créneau",
     "subtitle": "Réservez en discutant avec l'assistant.",
-    "greeting": "Bonjour ! Je suis l'assistant du Salon Nour. Comment puis-je vous aider ?",
+    "greeting": "Bonjour ! Je suis l'assistant de {business}. Comment puis-je vous aider ?",
     "chipBook": "Je veux une coupe demain",
     "chipHours": "Quels sont vos horaires ?",
     "suggestions": "Suggestions",
     "placeholder": "Écrivez votre message",
     "send": "Envoyer",
     "slotsLabel": "Créneaux proposés",
-    "replyBook": "Bien sûr ! Pour une coupe de cheveux avec Sidi Mohamed, voici les créneaux libres demain. Lequel vous convient ?",
-    "replyHours": "Nous sommes ouverts de 09:00 à 18:00, sauf le vendredi.",
-    "pickedSlot": "Demain à {time}",
-    "replyConfirm": "Parfait. Coupe de cheveux demain à {time} avec Sidi Mohamed. Je confirme ?",
-    "replyDone": "C'est réservé ! Rendez-vous demain à {time}. Vous recevrez un rappel.",
     "booked": "Réservation confirmée",
-    "errorTitle": "L'assistant ne répond pas",
-    "errorDesc": "Réessayez dans un instant.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "unavailableTitle": "L'assistant est indisponible",
+    "unavailableDesc": "Vous pouvez réserver avec le formulaire habituel, il fonctionne toujours.",
+    "openForm": "Ouvrir le formulaire de réservation",
+    "draftTitle": "Votre proposition",
+    "draftNote": "Rien n'est réservé tant que vous n'avez pas confirmé.",
+    "confirmBooking": "Confirmer la réservation"
   },
   "b": {
     "book": "Réserver",
@@ -527,7 +526,10 @@
     "SERVICE_NOT_FOUND": "Ce service n'existe pas.",
     "STAFF_NOT_FOUND": "Cet employé ne fait pas ce service.",
     "INVALID_TRANSITION": "Ce changement de statut n'est pas possible.",
-    "TOO_EARLY": "Cet horaire est trop proche ou non disponible."
+    "TOO_EARLY": "Cet horaire est trop proche ou non disponible.",
+    "AI_UNAVAILABLE": "L'assistant IA est indisponible pour le moment.",
+    "AI_QUOTA_EXCEEDED": "La limite mensuelle de l'IA est atteinte.",
+    "DRAFT_INVALID": "Cette proposition a expiré. Choisissez un créneau à nouveau."
   },
   "settings": {
     "title": "Réglages du commerce",
@@ -669,5 +671,53 @@
       "owner_cancelled": "{name} a annulé",
       "owner_changed": "{name} a changé son horaire"
     }
+  },
+  "aiWrite": {
+    "button": "Écrire avec l'IA",
+    "title": "Écrire avec l'IA",
+    "desc": "Choisissez le type de texte. Relisez et modifiez avant de l'utiliser.",
+    "kind": "Type de texte",
+    "kinds": {
+      "reminder": "Rappel de rendez-vous",
+      "cancellation": "Annulation",
+      "thanks": "Remerciement",
+      "promotion": "Promotion",
+      "business_description": "Description du commerce",
+      "service_description": "Description du service"
+    },
+    "language": "Langue du texte",
+    "tone": "Ton",
+    "tones": {
+      "friendly": "Amical",
+      "formal": "Formel",
+      "playful": "Léger",
+      "professional": "Professionnel"
+    },
+    "idea": "Votre idée (3 mots ou plus)",
+    "ideaOptional": "Votre idée (facultatif)",
+    "ideaPlaceholder": "ex. salon coiffure hommes Nouakchott",
+    "ideaPromo": "ex. -20 % sur la coupe le vendredi",
+    "generate": "Générer",
+    "again": "Générer à nouveau",
+    "preview": "Texte proposé (modifiable)",
+    "reviewNote": "Relisez ce texte : il peut contenir des erreurs. Rien n'est enregistré ni envoyé.",
+    "copy": "Copier",
+    "copied": "Texte copié",
+    "use": "Utiliser ce texte",
+    "badge": "Généré par l'IA",
+    "cardTitle": "Messages avec l'IA",
+    "cardDesc": "Rappel, annulation, remerciement ou promotion : l'IA écrit, vous relisez."
+  },
+  "aiReviews": {
+    "title": "Analyse des avis",
+    "desc": "Résumé, sentiments et thèmes de vos derniers avis.",
+    "analyze": "Analyser les avis",
+    "again": "Analyser à nouveau",
+    "none": "Pas encore d'avis à analyser.",
+    "positive": "Positifs",
+    "neutral": "Neutres",
+    "negative": "Négatifs",
+    "themes": "Thèmes",
+    "counts": "{positive} positifs, {neutral} neutres, {negative} négatifs"
   }
 }
