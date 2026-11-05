@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -6,6 +7,8 @@ import { ErrorState } from '@/components/mawid/error-state';
 import { ManageBooking } from '@/components/mawid/manage-booking';
 import { SiteHeader } from '@/components/mawid/site-header';
 import { env } from '@/lib/env';
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function BookingPage({
   params,

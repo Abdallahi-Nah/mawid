@@ -66,7 +66,7 @@ export function AuthForm({ mode, state }: { mode: Mode; state?: 'loading' | 'err
           : { email: values.email, password: values.password },
       });
       qc.setQueryData(['me'], user);
-      router.push(register ? '/onboarding' : '/dashboard');
+      router.push(register ? '/onboarding' : user.role === 'ADMIN' ? '/admin' : '/dashboard');
     } catch (e) {
       setApiError(errorMessage(t, e));
       setErrors(fieldErrors(e));

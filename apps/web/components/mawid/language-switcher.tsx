@@ -28,7 +28,7 @@ export function LanguageSwitcher() {
           type="button"
           lang={l}
           title={names[l].full}
-          aria-label={names[l].full}
+          aria-label={`${names[l].short} ${names[l].full}`}
           aria-pressed={l === locale}
           onClick={() => router.replace(pathname, { locale: l })}
           className={cn(

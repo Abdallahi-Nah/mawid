@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-latin)', 'var(--font-arabic)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-latin)', 'var(--font-arabic, system-ui)', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: c('background'),
@@ -20,14 +20,24 @@ const config: Config = {
         secondary: { DEFAULT: c('secondary'), foreground: c('secondary-foreground') },
         muted: { DEFAULT: c('muted'), foreground: c('muted-foreground') },
         accent: { DEFAULT: c('accent'), foreground: c('accent-foreground') },
-        destructive: { DEFAULT: c('destructive'), foreground: c('destructive-foreground'), soft: c('destructive-soft') },
+        destructive: {
+          DEFAULT: c('destructive'),
+          foreground: c('destructive-foreground'),
+          soft: c('destructive-soft'),
+        },
         success: { DEFAULT: c('success'), soft: c('success-soft') },
         warning: { DEFAULT: c('warning'), soft: c('warning-soft') },
         info: { DEFAULT: c('info'), soft: c('info-soft') },
         border: c('border'),
         input: c('input'),
         ring: c('ring'),
-        chart: { 1: c('chart-1'), 2: c('chart-2'), 3: c('chart-3'), 4: c('chart-4'), 5: c('chart-5') },
+        chart: {
+          1: c('chart-1'),
+          2: c('chart-2'),
+          3: c('chart-3'),
+          4: c('chart-4'),
+          5: c('chart-5'),
+        },
       },
       borderRadius: {
         xl: 'calc(var(--radius) + 4px)',

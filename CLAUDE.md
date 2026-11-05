@@ -25,7 +25,7 @@ docker-compose.yml PostgreSQL (host port 5434) + Redis (6379)
 - Dev: `pnpm dev` (web :3000, api :4000)
 - Lint / types / tests / build: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
 - Migrations: `pnpm --filter api prisma:migrate`
-- Browser checks (need API + web running): `node apps/web/scripts/flow-check.mjs` (real flow), `node apps/web/scripts/booking-e2e.mjs` (booking ar+fr at 360 px, owner calendar), `node apps/web/scripts/ai-e2e.mjs` (AI chat ar+fr, fallback, owner AI tools; needs the API started with `node apps/api/dist/dev/e2e-server.js`, a scripted model, no Groq key), `node apps/web/scripts/screenshots.mjs` (screens at 360/768/1280 px, ar and fr)
+- Browser checks (need API + web running): `node apps/web/scripts/flow-check.mjs` (real flow), `node apps/web/scripts/booking-e2e.mjs` (booking ar+fr at 360 px, owner calendar), `node apps/web/scripts/ai-e2e.mjs` (AI chat ar+fr, fallback, owner AI tools; needs the API started with `node apps/api/dist/dev/e2e-server.js`, a scripted model, no Groq key), `node apps/web/scripts/phase5-e2e.mjs` (dashboard numbers, CSV, deposit, reviews, QR, plan limit, admin; builds its own data; API on :4010 and web on :3100 by default), `node apps/web/scripts/a11y.mjs` (axe, WCAG 2.1 A/AA on every page, ar/fr/en, light and dark: must report 0 serious or critical), `node apps/web/scripts/a11y-keyboard.mjs` (skip link, Tab order, focus ring, dialog focus trap, booking by keyboard), `node apps/web/scripts/perf.mjs` (LCP on Fast 4G and Slow 4G, target under 2 s), `node apps/web/scripts/screenshots.mjs` (screens at 360/768/1280 px, ar and fr)
 - AI with a real key (optional): `LIVE_GROQ=1 pnpm --filter api exec jest src/ai/ai-live`; kill switch `AI_ENABLED=false`; replay scenarios in `docs/ai-conversations.md`
 - Demo data: `pnpm --filter api db:seed` (password for all demo accounts: `Demo1234!`)
 - API docs: http://localhost:4000/docs, health: http://localhost:4000/health
@@ -42,3 +42,8 @@ docker-compose.yml PostgreSQL (host port 5434) + Redis (6379)
 - Write tests for business logic. Run lint, typecheck and tests before saying a task is done.
 - Small, focused commits with clear messages. Do not add a new dependency without telling why.
 - Definition of done: it works, tests pass, lint and typecheck are clean, README or docs updated if needed.
+
+## Quality checks (phase 5)
+- Lighthouse (mobile) on the public page: `CHROME_PATH=/usr/bin/google-chrome npx lighthouse@12 http://localhost:3100/fr/b/salon-nour --only-categories=performance,accessibility,best-practices,seo` (accessibility 100, SEO 100).
+- Arabic font is self-hosted in `apps/web/public/fonts` and preloaded on Arabic pages only; OG image fonts are in `apps/web/assets/fonts`.
+- SEO: `app/sitemap.ts`, `app/robots.ts`, JSON-LD and hreflang in `app/[locale]/b/[slug]/page.tsx`, OG image in `opengraph-image.tsx`.

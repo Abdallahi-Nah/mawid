@@ -21,12 +21,12 @@ export function StaffCard({
   selected?: boolean;
   onSelect?: () => void;
 }) {
+  const Tag = onSelect ? 'button' : 'div';
   return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={selected}
-      onClick={onSelect}
+    <Tag
+      {...(onSelect
+        ? { type: 'button' as const, role: 'radio', 'aria-checked': !!selected, onClick: onSelect }
+        : {})}
       className={cn(
         'flex w-full items-center gap-3 rounded-xl border bg-card p-4 text-start shadow-soft transition-all',
         'hover:shadow-lifted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
@@ -49,6 +49,6 @@ export function StaffCard({
           <span dir="ltr">{rating}</span>
         </span>
       )}
-    </button>
+    </Tag>
   );
 }

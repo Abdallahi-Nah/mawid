@@ -2,7 +2,7 @@
 
 import { Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChatWidget } from '@/components/mawid/chat-widget';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -12,6 +12,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+
+// The chat code is downloaded only when the button is used: the public page loads faster.
+const ChatWidget = dynamic(
+  () => import('@/components/mawid/chat-widget').then((m) => m.ChatWidget),
+  {
+    ssr: false,
+    loading: () => <div aria-busy="true" className="h-24" />,
+  },
+);
 
 // Floating AI chat button that opens the chat widget (real assistant, streamed by the API).
 export function ChatFab({

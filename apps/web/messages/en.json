@@ -87,7 +87,42 @@
     "cta": {
       "title": "Ready to take bookings?"
     },
-    "footer": "© 2026 Mawid. All rights reserved."
+    "footer": "© 2026 Mawid. All rights reserved.",
+    "range": "Period",
+    "range7": "7 days",
+    "range30": "30 days",
+    "range90": "90 days",
+    "export": "Export as CSV",
+    "exporting": "Exporting",
+    "exportError": "The export failed. Try again.",
+    "today": "Today",
+    "week": "This week",
+    "bookingsUnit": "bookings",
+    "revenue": "Estimated revenue",
+    "cancelRate": "Cancellation rate",
+    "noShowRate": "No-show rate",
+    "rating": "Average rating",
+    "ratingNone": "No reviews yet",
+    "reviewsCount": "{count} reviews",
+    "revenueHint": "Confirmed and completed bookings",
+    "perDay": {
+      "title": "Bookings per day",
+      "aria": "Number of bookings per day",
+      "series": "Bookings"
+    },
+    "top": {
+      "title": "Most booked services",
+      "bookings": "{count} bookings",
+      "empty": "No booking in this period."
+    },
+    "peak": {
+      "title": "Peak hours",
+      "aria": "Number of bookings per hour",
+      "series": "Bookings"
+    },
+    "emptyTitle": "No booking yet",
+    "emptyDesc": "Share the link of your page to get your first bookings.",
+    "loadError": "Could not load the numbers."
   },
   "design": {
     "title": "Design system",
@@ -327,7 +362,10 @@
     "chatOpen": "Open the AI assistant",
     "chatGreeting": "Hi! I'm the Salon Nour assistant. How can I help?",
     "chatSoon": "The full chat comes in the next step.",
-    "closedToday": "Closed today"
+    "closedToday": "Closed today",
+    "ratingSummary": "{avg} out of 5 · {count} reviews",
+    "ownerReply": "Reply from the business",
+    "depositBadge": "Deposit {amount}"
   },
   "book": {
     "title": "Book your appointment",
@@ -355,7 +393,9 @@
     "pendingDesc": "Your request was sent. The business must confirm it. You will get a message.",
     "addToCalendar": "Add to my calendar",
     "icsFile": ".ics file",
-    "manageLink": "View, move or cancel"
+    "manageLink": "View, move or cancel",
+    "depositNote": "A deposit of {amount} is required. You will send your payment proof on your appointment page.",
+    "depositCta": "Pay the deposit"
   },
   "dash": {
     "nav": {
@@ -366,7 +406,12 @@
       "services": "Services",
       "staff": "Team",
       "settings": "Settings",
-      "customers": "Customers"
+      "customers": "Customers",
+      "payments": "Payments",
+      "reviews": "Reviews",
+      "more": "More",
+      "admin": "Administration",
+      "suspendedTitle": "Business suspended"
     },
     "greeting": "Hello, {name}",
     "chart": {
@@ -529,7 +574,20 @@
     "TOO_EARLY": "This time is too soon or not available.",
     "AI_UNAVAILABLE": "The AI assistant is unavailable right now.",
     "AI_QUOTA_EXCEEDED": "The monthly AI limit has been reached.",
-    "DRAFT_INVALID": "This proposal expired. Please choose a slot again."
+    "DRAFT_INVALID": "This proposal expired. Please choose a slot again.",
+    "PLAN_LIMIT_STAFF": "Your plan limits the number of employees. Upgrade to Pro to add more.",
+    "PLAN_LIMIT_BOOKINGS": "Your plan reached its booking limit this month. Upgrade to Pro to continue.",
+    "BUSINESS_SUSPENDED": "This business is suspended for now.",
+    "DEPOSIT_TOO_HIGH": "The deposit cannot be more than the price of the service.",
+    "DEPOSIT_REQUIRED": "Validate the deposit first to confirm this booking.",
+    "PROOF_REQUIRED": "Type the payment reference or add a screenshot.",
+    "NO_PROOF": "The customer has not sent a proof yet.",
+    "PAYMENT_DECIDED": "This payment was already processed.",
+    "NO_DEPOSIT_DUE": "This booking has no deposit to pay.",
+    "ALREADY_PAID": "The deposit is already paid.",
+    "REVIEW_EXISTS": "You already left a review.",
+    "NOT_COMPLETED": "You can leave a review after your appointment.",
+    "RANGE_TOO_LARGE": "The period is too long (366 days at most)."
   },
   "settings": {
     "title": "Business settings",
@@ -569,7 +627,12 @@
     "maxDaysAheadHint": "How many days in advance.",
     "slotStep": "Slot step",
     "slotStepHint": "Offered times are spaced by this duration.",
-    "minutes": "{count} min"
+    "minutes": "{count} min",
+    "buffer": "Default preparation time (min)",
+    "bufferHint": "Free time kept after each appointment. A service can ask for more.",
+    "paymentInstructions": "How to pay a deposit",
+    "paymentInstructionsHint": "Shown to the customer when a service asks for a deposit. Example: Bankily 22 00 11 22.",
+    "payment": "Payment"
   },
   "services": {
     "title": "Services",
@@ -587,7 +650,10 @@
     "editAria": "Edit {name}",
     "deleteAria": "Delete {name}",
     "deleteTitle": "Delete this service?",
-    "deleteDesc": "\"{name}\" will be deleted. This cannot be undone."
+    "deleteDesc": "\"{name}\" will be deleted. This cannot be undone.",
+    "deposit": "Deposit (MRU, optional)",
+    "depositHint": "0 or empty = no deposit. The booking stays pending until you validate it.",
+    "depositBadge": "Deposit {amount}"
   },
   "staffPage": {
     "title": "Team",
@@ -661,7 +727,7 @@
   },
   "notif": {
     "aria": "Notifications",
-    "ariaUnread": "Notifications ({count} unread)",
+    "ariaUnread": "{count} unread notifications",
     "title": "Notifications",
     "markAll": "Mark all as read",
     "empty": "No notifications",
@@ -669,7 +735,8 @@
     "types": {
       "owner_new_booking": "New booking from {name}",
       "owner_cancelled": "{name} cancelled",
-      "owner_changed": "{name} changed the time"
+      "owner_changed": "{name} changed the time",
+      "owner_payment": "{name} sent a payment proof"
     }
   },
   "aiWrite": {
@@ -719,5 +786,175 @@
     "negative": "Negative",
     "themes": "Themes",
     "counts": "{positive} positive, {neutral} neutral, {negative} negative"
+  },
+  "plan": {
+    "title": "My plan",
+    "names": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "staff": "Active employees",
+    "bookings": "Bookings this month",
+    "ai": "AI messages this month",
+    "unlimited": "Unlimited",
+    "usage": "{used} of {limit}",
+    "aria": "{label}: {used} of {limit}",
+    "upgradeTitle": "Upgrade to Pro",
+    "upgradeText": "Your {plan} plan is almost full. Upgrade to Pro to accept more bookings and employees.",
+    "upgradeCta": "Contact us to upgrade to Pro",
+    "limitReached": "Limit reached",
+    "error": "Could not load your plan."
+  },
+  "payments": {
+    "title": "Payments (deposits)",
+    "desc": "Check the payment proofs sent by your customers.",
+    "filters": {
+      "all": "All",
+      "PENDING": "To check",
+      "PAID": "Validated",
+      "FAILED": "Rejected"
+    },
+    "status": {
+      "PENDING": "To check",
+      "PAID": "Validated",
+      "FAILED": "Rejected",
+      "REFUNDED": "Refunded"
+    },
+    "emptyTitle": "No payment",
+    "emptyDesc": "Deposits show here when a service asks for a deposit.",
+    "amount": "Amount",
+    "reference": "Reference",
+    "proof": "Screenshot",
+    "viewProof": "View the screenshot",
+    "noProof": "No proof yet",
+    "booking": "Appointment",
+    "validate": "Validate",
+    "reject": "Reject",
+    "validateTitle": "Validate this payment?",
+    "validateDesc": "The booking will be confirmed and the customer gets an email.",
+    "rejectTitle": "Reject this proof?",
+    "rejectDesc": "The booking stays pending. The customer can send another proof.",
+    "validated": "Payment validated, booking confirmed",
+    "rejected": "Proof rejected",
+    "error": "Could not load the payments.",
+    "proofAlt": "Payment screenshot from {name}"
+  },
+  "reviewsPage": {
+    "title": "Customer reviews",
+    "desc": "Answer your customers: your reply is shown on your public page.",
+    "emptyTitle": "No review yet",
+    "emptyDesc": "After each completed appointment, the customer gets an email to leave a review.",
+    "reply": "Reply",
+    "editReply": "Edit the reply",
+    "yourReply": "Your reply",
+    "replyLabel": "Your reply",
+    "replyPlaceholder": "Thank you for your feedback...",
+    "send": "Publish the reply",
+    "replied": "Reply published",
+    "error": "Could not load the reviews.",
+    "forService": "{service}",
+    "stars": "{rating} out of 5"
+  },
+  "reviewForm": {
+    "title": "Share your opinion",
+    "subtitle": "{service} at {business}",
+    "rating": "Your rating",
+    "ratingStar": "{n} out of 5",
+    "comment": "Your comment (optional)",
+    "commentPlaceholder": "How was your visit?",
+    "submit": "Send my review",
+    "thanksTitle": "Thank you for your review!",
+    "thanksDesc": "It will help other customers choose.",
+    "alreadyTitle": "You already left a review",
+    "alreadyDesc": "Thank you, it is saved.",
+    "invalidTitle": "Invalid link",
+    "invalidDesc": "This review link does not exist or is no longer valid.",
+    "notReadyTitle": "Not possible yet",
+    "notReadyDesc": "You can leave a review after your appointment.",
+    "pickRating": "Choose a rating from 1 to 5."
+  },
+  "deposit": {
+    "title": "Deposit to pay",
+    "amount": "Amount to pay: {amount}",
+    "howTo": "How to pay",
+    "noInstructions": "Contact the business to know how to pay.",
+    "reference": "Payment reference",
+    "referenceHint": "The transaction number on your phone.",
+    "file": "Screenshot (optional)",
+    "fileHint": "PNG, JPEG or WebP, 2 MB maximum.",
+    "send": "Send my proof",
+    "sent": "Proof sent",
+    "needProof": "Type the reference or add a screenshot.",
+    "status": {
+      "todo": "Send your payment proof to confirm your appointment.",
+      "submitted": "Proof received. The business will check it.",
+      "PAID": "Deposit received. Your appointment is confirmed.",
+      "FAILED": "The proof was rejected. Send another one."
+    },
+    "resend": "Send another proof"
+  },
+  "shareCard": {
+    "title": "Share my page",
+    "desc": "Print the QR code or send the link to your customers.",
+    "qrAlt": "QR code of your public page",
+    "download": "Download the QR code",
+    "copy": "Copy the link",
+    "copied": "Link copied",
+    "error": "The QR code could not be created."
+  },
+  "admin": {
+    "title": "Administration",
+    "desc": "All the businesses on Mawid.",
+    "forbidden": "This area is for administrators only.",
+    "stats": {
+      "businesses": "Businesses",
+      "active": "Active",
+      "suspended": "Suspended",
+      "users": "Users",
+      "bookings": "Bookings",
+      "thisMonth": "this month",
+      "aiCalls": "AI calls this month",
+      "aiCost": "Estimated AI cost"
+    },
+    "search": "Search (name, address, email)",
+    "allPlans": "All plans",
+    "allStates": "All",
+    "onlyActive": "Active",
+    "onlySuspended": "Suspended",
+    "columns": {
+      "business": "Business",
+      "owner": "Owner",
+      "plan": "Plan",
+      "staff": "Employees",
+      "bookings": "Bookings (month)",
+      "ai": "AI (month)",
+      "state": "Status",
+      "actions": "Actions"
+    },
+    "active": "Active",
+    "suspendedBadge": "Suspended",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "suspendTitle": "Suspend {name}?",
+    "suspendDesc": "The public page and bookings will be blocked. The owner will not be able to use the dashboard.",
+    "reactivateTitle": "Reactivate {name}?",
+    "reactivateDesc": "The business can receive bookings again.",
+    "planLabel": "Plan of {name}",
+    "planChanged": "Plan changed",
+    "suspended": "Business suspended",
+    "reactivated": "Business reactivated",
+    "emptyTitle": "No business",
+    "emptyDesc": "No result for this search.",
+    "error": "Could not load the data.",
+    "aiTitle": "AI usage this month",
+    "aiColumns": {
+      "calls": "Calls",
+      "errors": "Errors",
+      "tokens": "Tokens (in / out)",
+      "cost": "Estimated cost"
+    },
+    "aiEmpty": "No AI call this month.",
+    "costNote": "Cost estimated with the public Groq prices, for information only."
   }
 }

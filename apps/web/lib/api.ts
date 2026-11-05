@@ -52,3 +52,21 @@ export async function api<T>(path: string, o: Options = {}): Promise<T> {
   }
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
+
+/** Downloads a file from the API (the cookie is sent) and gives it to the browser, for example the CSV export. */
+export async function downloadFile(path: string, filename: string): Promise<void> {
+  let res = await send(path, {});
+  if (res.status === 401 && (await refreshSession())) res = await send(path, {});
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { code?: string };
+    throw new ApiError(res.status, data.code ?? 'UNKNOWN');
+  }
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

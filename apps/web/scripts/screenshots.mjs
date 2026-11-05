@@ -20,7 +20,12 @@ const pages = {
   services: 'dashboard/services',
   staff: 'dashboard/staff',
   settings: 'dashboard/settings',
+  customers: 'dashboard/customers',
+  payments: 'dashboard/payments',
+  reviews: 'dashboard/reviews',
+  notfound: 'no-such-page',
 };
+const adminPages = { admin: 'admin' };
 const widths = [360, 768, 1280];
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ channel: 'chrome' });
@@ -35,12 +40,23 @@ if (!login.ok())
   throw new Error(`Login failed (${login.status()}). Is the API running with the seed data?`);
 const storageState = await loginCtx.storageState();
 await loginCtx.close();
+
+const adminCtx = await browser.newContext();
+const adminLogin = await adminCtx.request.post(`${api}/auth/login`, {
+  data: { email: 'admin@mawid.demo', password: 'Demo1234!' },
+});
+if (!adminLogin.ok()) throw new Error(`Admin login failed (${adminLogin.status()}).`);
+const adminState = await adminCtx.storageState();
+await adminCtx.close();
 for (const locale of ['ar', 'fr']) {
   for (const width of widths) {
     const ctx = await browser.newContext({ viewport: { width, height: 800 }, storageState });
     const page = await ctx.newPage();
     const errors = [];
-    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    page.on(
+      'console',
+      (m) => m.type() === 'error' && !/status of 404/.test(m.text()) && errors.push(m.text()),
+    );
     page.on('pageerror', (e) => errors.push(String(e)));
     for (const [name, path] of Object.entries(pages)) {
       errors.length = 0;
@@ -60,6 +76,24 @@ for (const locale of ['ar', 'fr']) {
       await page.screenshot({ path: `${out}${name}-${locale}-${width}.png`, fullPage: true });
     }
     await ctx.close();
+
+    // The admin area, with an admin account.
+    const actx = await browser.newContext({
+      viewport: { width, height: 800 },
+      storageState: adminState,
+    });
+    const apage = await actx.newPage();
+    for (const [name, path] of Object.entries(adminPages)) {
+      await apage.goto(`${base}/${locale}/${path}`, { waitUntil: 'networkidle' });
+      await apage.waitForTimeout(600);
+      const overflow = await apage.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      if (overflow > 0)
+        problems.push(`${locale} ${width} ${name}: horizontal overflow ${overflow}px`);
+      await apage.screenshot({ path: `${out}${name}-${locale}-${width}.png`, fullPage: true });
+    }
+    await actx.close();
   }
 }
 await browser.close();

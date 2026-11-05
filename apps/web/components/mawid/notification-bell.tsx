@@ -65,7 +65,7 @@ export function NotificationBell() {
             {q.data?.items.map((n) => (
               <li key={n.id}>
                 <Link
-                  href="/dashboard/calendar"
+                  href={n.type === 'owner_payment' ? '/dashboard/payments' : '/dashboard/calendar'}
                   onClick={() => {
                     if (!n.readAt) read.mutate(n.id);
                     setOpen(false);

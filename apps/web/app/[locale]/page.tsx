@@ -1,6 +1,7 @@
 import { Check, CalendarClock, Sparkles, BellRing } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { HeroDemo } from '@/components/mawid/hero-demo';
 import { SiteHeader } from '@/components/mawid/site-header';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { formatPrice } from '@/lib/format';
 import { business } from '@/lib/mock';
+import { alternates, ogLocale, pageUrl } from '@/lib/seo';
 import { cn } from '@/lib/utils';
 
 const benefits = [
@@ -23,6 +25,26 @@ const plans = [
   { key: 'pro', price: 1500, popular: true },
   { key: 'business', price: 3500, popular: false },
 ] as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const locale = params.locale as Locale;
+  const t = await getTranslations({ locale, namespace: 'home' });
+  return {
+    title: { absolute: t('title') },
+    description: t('subtitle'),
+    alternates: alternates(locale),
+    openGraph: {
+      title: t('title'),
+      description: t('subtitle'),
+      url: pageUrl(locale),
+      locale: ogLocale(locale),
+    },
+  };
+}
 
 export default function HomePage({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
@@ -100,7 +122,7 @@ export default function HomePage({ params }: { params: { locale: string } }) {
         <section id="demo" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-14">
           <Card className="flex flex-col items-start gap-4 bg-primary p-8 text-primary-foreground shadow-lifted sm:p-12">
             <h2 className="text-3xl font-bold tracking-tight">{t('demo.title')}</h2>
-            <p className="max-w-xl text-primary-foreground/85">{t('demo.desc')}</p>
+            <p className="max-w-xl text-primary-foreground/95">{t('demo.desc')}</p>
             <Button asChild size="lg" variant="secondary">
               <Link href={`/b/${business.slug}`}>{t('demo.cta')}</Link>
             </Button>

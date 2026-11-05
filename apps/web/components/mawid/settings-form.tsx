@@ -1,13 +1,14 @@
 'use client';
 
 import { BUSINESS_CATEGORIES, LOCALES, updateBusinessSchema } from '@mawid/shared';
-import { Check, Copy, Upload } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ErrorState } from '@/components/mawid/error-state';
 import { AiWriteDialog, BUSINESS_KINDS } from '@/components/mawid/ai-write-dialog';
 import { Field } from '@/components/mawid/form-field';
+import { ShareCard } from '@/components/mawid/share-card';
 import { Spinner } from '@/components/mawid/spinner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -21,16 +22,13 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { env } from '@/lib/public-env';
 import { errorMessage, fieldErrors } from '@/lib/errors';
 import { useBusiness, useUpdateBusiness, useUploadLogo } from '@/lib/queries';
-import { useLocale } from 'next-intl';
 
 const TIMEZONES = ['Africa/Nouakchott', 'Africa/Casablanca', 'Africa/Dakar', 'Europe/Paris', 'UTC'];
 
 export function SettingsForm() {
   const t = useTranslations();
-  const locale = useLocale();
   const biz = useBusiness();
   const update = useUpdateBusiness();
   const logo = useUploadLogo();
@@ -50,10 +48,11 @@ export function SettingsForm() {
     minNoticeHours: '2',
     maxDaysAhead: '60',
     slotStepMin: '15',
+    bufferMin: '0',
+    paymentInstructions: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string>();
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const b = biz.data;
@@ -73,6 +72,8 @@ export function SettingsForm() {
         minNoticeHours: String(b.minNoticeHours),
         maxDaysAhead: String(b.maxDaysAhead),
         slotStepMin: String(b.slotStepMin),
+        bufferMin: String(b.bufferMin),
+        paymentInstructions: b.paymentInstructions ?? '',
       });
     }
   }, [biz.data]);
@@ -102,7 +103,6 @@ export function SettingsForm() {
   const set = (k: keyof typeof v) => (e: { target: { value: string } }) =>
     setV((x) => ({ ...x, [k]: e.target.value }));
   const err = (k: string) => (errors[k] ? t(`form.errors.${errors[k]}`) : undefined);
-  const publicUrl = `${env.appUrl}/${locale}/b/${v.slug}`;
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -114,6 +114,7 @@ export function SettingsForm() {
       minNoticeHours: Number(v.minNoticeHours),
       maxDaysAhead: Number(v.maxDaysAhead),
       slotStepMin: Number(v.slotStepMin),
+      bufferMin: Number(v.bufferMin),
     });
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map((i) => [String(i.path[0]), i.message])));
@@ -127,16 +128,6 @@ export function SettingsForm() {
         setErrors(fieldErrors(e2));
       },
     });
-  }
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(publicUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error(t('apiErrors.UNKNOWN'));
-    }
   }
 
   function onLogo(file: File | undefined) {
@@ -367,6 +358,23 @@ export function SettingsForm() {
           </Select>
         </Field>
         <Field
+          id="s-buffer"
+          label={t('settings.buffer')}
+          error={err('bufferMin')}
+          hint={t('settings.bufferHint')}
+        >
+          <Input
+            id="s-buffer"
+            type="number"
+            min={0}
+            max={120}
+            dir="ltr"
+            className="text-start"
+            value={v.bufferMin}
+            onChange={set('bufferMin')}
+          />
+        </Field>
+        <Field
           id="s-color"
           label={t('settings.brandColor')}
           error={err('brandColor')}
@@ -394,34 +402,25 @@ export function SettingsForm() {
         </Field>
       </Card>
 
-      <Card className="space-y-3 p-5">
-        <h2 className="font-semibold">{t('settings.share')}</h2>
-        <div className="flex items-center gap-2">
-          <Input
-            readOnly
-            dir="ltr"
-            className="text-start"
-            value={publicUrl}
-            aria-label={t('settings.share')}
+      <Card className="space-y-4 p-5">
+        <h2 className="font-semibold">{t('settings.payment')}</h2>
+        <Field
+          id="s-pay"
+          label={t('settings.paymentInstructions')}
+          error={err('paymentInstructions')}
+          hint={t('settings.paymentInstructionsHint')}
+        >
+          <Textarea
+            id="s-pay"
+            rows={3}
+            maxLength={300}
+            value={v.paymentInstructions}
+            onChange={set('paymentInstructions')}
           />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={t('settings.copyLink')}
-            onClick={copy}
-          >
-            {copied ? (
-              <Check aria-hidden className="size-4" />
-            ) : (
-              <Copy aria-hidden className="size-4" />
-            )}
-          </Button>
-        </div>
-        <p aria-live="polite" className="sr-only">
-          {copied ? t('settings.copied') : ''}
-        </p>
+        </Field>
       </Card>
+
+      <ShareCard />
 
       {apiError && (
         <p

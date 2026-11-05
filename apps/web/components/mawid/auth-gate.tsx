@@ -10,7 +10,16 @@ import { useMe } from '@/lib/queries';
 import type { Role } from '@/lib/types';
 
 /** Protects a page: not logged in -> /login, wrong role -> "no access". The API checks the role again on every call. */
-export function AuthGate({ roles, children }: { roles: Role[]; children: ReactNode }) {
+export function AuthGate({
+  roles,
+  needsBusiness = true,
+  children,
+}: {
+  roles: Role[];
+  /** false for the admin area: an admin account has no business. */
+  needsBusiness?: boolean;
+  children: ReactNode;
+}) {
   const t = useTranslations();
   const router = useRouter();
   const me = useMe();
@@ -40,7 +49,7 @@ export function AuthGate({ roles, children }: { roles: Role[]; children: ReactNo
       </div>
     );
   }
-  if (!roles.includes(me.data.role) || !me.data.businessId) {
+  if (!roles.includes(me.data.role) || (needsBusiness && !me.data.businessId)) {
     return (
       <ErrorState
         title={t('auth.forbiddenTitle')}
