@@ -4,6 +4,7 @@ import type {
   AdminAiUsage,
   AdminBusiness,
   AdminStats,
+  FailedNotification,
   BookingsPerDayPoint,
   InAppNotification,
   OwnerPayment,
@@ -333,4 +334,16 @@ export const useAdminPlan = () =>
         body: { plan: v.plan },
       }),
     [['admin']],
+  );
+
+export const useFailedNotifications = () =>
+  useQuery({
+    queryKey: ['admin', 'failed-notifications'],
+    queryFn: () => api<Page<FailedNotification>>('/admin/failed-notifications?pageSize=50'),
+    refetchInterval: 60_000,
+  });
+export const useRetryNotification = () =>
+  useApiMutation(
+    (id: string) => api(`/admin/failed-notifications/${id}/retry`, { method: 'POST' }),
+    [['admin', 'failed-notifications']],
   );

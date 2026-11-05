@@ -1,8 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
+import { reportError } from '@/lib/report-error';
+
 // Last safety net: even the page layout failed, so there is no language provider here.
 // The text is written in the three languages on purpose.
-export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
+export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
+  useEffect(() => reportError(error), [error]);
   return (
     <html lang="fr">
       <body

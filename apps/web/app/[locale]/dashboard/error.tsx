@@ -1,10 +1,14 @@
 'use client';
 
+import { useEffect } from 'react';
+import { reportError } from '@/lib/report-error';
+
 import { useTranslations } from 'next-intl';
 import { ErrorState } from '@/components/mawid/error-state';
 import { Button } from '@/components/ui/button';
 
-export default function Error({ reset }: { error: Error; reset: () => void }) {
+export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+  useEffect(() => reportError(error), [error]);
   const t = useTranslations('common');
   return (
     <ErrorState
