@@ -6,13 +6,12 @@ import { SiteHeader } from '@/components/mawid/site-header';
 import { hexToHsl } from '@/lib/color';
 import { fetchPublicBusiness } from '@/lib/public';
 
-export default async function BookPage({
-  params,
-  searchParams,
-}: {
-  params: { locale: string; slug: string };
-  searchParams: { service?: string };
+export default async function BookPage(props: {
+  params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<{ service?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations();
   let business;

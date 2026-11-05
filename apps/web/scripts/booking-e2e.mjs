@@ -85,6 +85,7 @@ async function bookOnce(locale, { reschedule }) {
   const phone = `+222 22 ${String(Math.floor(100000 + Math.random() * 899999))}`;
   let manageUrl = '';
 
+  const t0 = Date.now(); // AC-01: a customer books in less than 60 s on a phone
   await step(page, `${locale}: booking page opens (dir, no overflow)`, async () => {
     await page.goto(`${base}/${locale}/b/salon-nour/book`);
     await page.getByRole('heading', { name: get(m, 'book.serviceTitle') }).waitFor();
@@ -124,6 +125,9 @@ async function bookOnce(locale, { reschedule }) {
     await page.screenshot({ path: `${out}${locale}-confirmed.png`, fullPage: true });
     await noOverflow(page, 'confirmation');
     if (!startsAt) throw new Error('no booking response seen');
+    const seconds = (Date.now() - t0) / 1000;
+    console.log(`      AC-01 ${locale}: booked in ${seconds.toFixed(1)} s (limit 60 s)`);
+    if (seconds > 60) throw new Error(`AC-01 failed: ${seconds.toFixed(1)} s`);
   });
   await step(page, `${locale}: calendar links on the confirmation`, async () => {
     const ics = await page.getByRole('link', { name: get(m, 'book.icsFile') }).getAttribute('href');

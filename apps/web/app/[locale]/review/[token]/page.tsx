@@ -10,11 +10,10 @@ import { env } from '@/lib/env';
 // The link is secret: search engines must not index it.
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default async function ReviewPage({
-  params,
-}: {
-  params: { locale: string; token: string };
+export default async function ReviewPage(props: {
+  params: Promise<{ locale: string; token: string }>;
 }) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations();
   let view: ReviewFormView | null = null;

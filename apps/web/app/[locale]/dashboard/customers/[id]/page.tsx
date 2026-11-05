@@ -1,7 +1,10 @@
 import { setRequestLocale } from 'next-intl/server';
 import { CustomerDetailView } from '@/components/mawid/customer-detail';
 
-export default function CustomerPage({ params }: { params: { locale: string; id: string } }) {
+export default async function CustomerPage(props: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   return <CustomerDetailView id={params.id} />;
 }

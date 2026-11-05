@@ -10,11 +10,10 @@ import { env } from '@/lib/env';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default async function BookingPage({
-  params,
-}: {
-  params: { locale: string; token: string };
+export default async function BookingPage(props: {
+  params: Promise<{ locale: string; token: string }>;
 }) {
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations();
   let view: PublicBookingView | null = null;

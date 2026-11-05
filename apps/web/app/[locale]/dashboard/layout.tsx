@@ -7,13 +7,14 @@ import { SiteHeader } from '@/components/mawid/site-header';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default function DashboardLayout({
-  children,
-  params,
-}: {
+export default async function DashboardLayout(props: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const params = await props.params;
+
+  const { children } = props;
+
   setRequestLocale(params.locale);
   return (
     <>

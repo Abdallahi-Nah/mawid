@@ -4,13 +4,12 @@ import { OnboardingWizard } from '@/components/mawid/onboarding-wizard';
 import { SiteHeader } from '@/components/mawid/site-header';
 import { parseState } from '@/lib/mock';
 
-export default function OnboardingPage({
-  params,
-  searchParams,
-}: {
-  params: { locale: string };
-  searchParams: { state?: string };
+export default async function OnboardingPage(props: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ state?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   const state = parseState(searchParams.state);
   return (
