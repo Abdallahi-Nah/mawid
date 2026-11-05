@@ -40,7 +40,9 @@ describe('Groq key never leaves the server (AC-08)', () => {
       execFileSync('git', ['check-ignore', '-q', 'apps/api/.env'], { cwd: root }),
     ).not.toThrow();
     const envFiles = tracked().filter((f) => /(^|\/)\.env(\..+)?$/.test(f));
-    expect(envFiles.every((f) => f.endsWith('.env.example'))).toBe(true);
+    // Templates (".env.example", "deploy/.env.prod.example") are fine; a filled .env file never is.
+    expect(envFiles.every((f) => f.endsWith('.example'))).toBe(true);
+    expect(envFiles.length).toBeGreaterThan(0);
   });
 
   it('the web source never reads a Groq variable or imports the SDK', () => {
