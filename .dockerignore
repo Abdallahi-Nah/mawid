@@ -1,0 +1,17 @@
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/coverage
+**/*.log
+.git
+.github
+.husky
+docs
+scripts
+backups
+apps/web/**
+!apps/web/package.json
+apps/api/uploads
+**/.env
+**/.env.local

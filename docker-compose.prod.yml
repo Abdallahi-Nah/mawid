@@ -1,0 +1,93 @@
+# Production example for ONE server (a VPS with Docker): API + PostgreSQL + Redis + HTTPS with Caddy.
+# The web app is deployed on Vercel (see docs/DEPLOY.md). Nothing here is started or paid for by itself.
+#
+#   cp deploy/.env.prod.example deploy/.env.prod     # then fill in every value
+#   docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+#
+# Only Caddy (ports 80 and 443) is reachable from the Internet. PostgreSQL and Redis stay on the private network.
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ['80:80', '443:443']
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?e.g. api.example.com}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      TRUST_PROXY: 1 # Caddy is one proxy in front of the API
+      DATABASE_URL: postgresql://mawid:${POSTGRES_PASSWORD:?}@postgres:5432/mawid
+      REDIS_URL: redis://redis:6379
+      APP_URL: ${APP_URL:?https://app.example.com}
+      API_URL: https://${API_DOMAIN}
+      JWT_SECRET: ${JWT_SECRET:?}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?}
+      MAIL_FROM: ${MAIL_FROM:?}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      AI_ENABLED: ${AI_ENABLED:-true}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:4000/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+    stop_grace_period: 30s # lets the email worker finish its jobs on a restart
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mawid
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: mawid
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U mawid -d mawid']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    # appendonly: the email queue (reminders) survives a restart
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  caddy_data:
+  caddy_config:

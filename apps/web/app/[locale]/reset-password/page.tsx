@@ -2,13 +2,12 @@ import { setRequestLocale } from 'next-intl/server';
 import { PasswordForm } from '@/components/mawid/password-forms';
 import { SiteHeader } from '@/components/mawid/site-header';
 
-export default function Page({
-  params,
-  searchParams,
-}: {
-  params: { locale: string };
-  searchParams: { token?: string };
+export default async function Page(props: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   return (
     <>

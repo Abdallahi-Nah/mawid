@@ -372,6 +372,9 @@ describe('notifications (integration, needs the database and Redis)', () => {
         15000,
       );
       expect(mail.attempts - before).toBe(3);
+      // The reason is kept for the admin dead-letter list.
+      const failed = await rows(s, { channel: 'EMAIL', status: 'FAILED' });
+      expect(failed[0].error).toContain('mail server down');
       mail.failures = 0;
     });
 

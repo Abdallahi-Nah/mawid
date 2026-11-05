@@ -1,0 +1,3 @@
+# Daily backup at 02:15 (server time), kept 14 days. Add it with: crontab -e
+# Adapt the paths. The log shows each run; a failed run leaves a non-zero exit code.
+15 2 * * * cd /opt/mawid && DATABASE_URL="postgresql://mawid:CHANGE_ME@localhost:5432/mawid" BACKUP_DIR=/var/backups/mawid BACKUP_KEEP_DAYS=14 ./scripts/backup-db.sh >> /var/log/mawid-backup.log 2>&1

@@ -15,6 +15,8 @@ export abstract class JobQueue {
   abstract remove(jobId: string): Promise<boolean>;
   /** Milliseconds before a delayed job runs, or null if the job does not exist. */
   abstract delayOf(jobId: string): Promise<number | null>;
+  /** Is Redis answering? Used by the readiness check. */
+  abstract ping(): Promise<boolean>;
   /** Starts the worker. onFinalFailure is called once all attempts have failed. */
   abstract start(
     handler: (data: JobData) => Promise<void>,

@@ -411,6 +411,7 @@ describe('modules (integration, needs the database)', () => {
           'PATCH /reviews/:id/reply',
           'PATCH /admin/businesses/:id/suspension', // admin only: admin.e2e.spec.ts
           'PATCH /admin/businesses/:id/plan',
+          'POST /admin/failed-notifications/:id/retry',
           'PATCH /time-off/:id',
           'DELETE /time-off/:id',
         ].sort(),

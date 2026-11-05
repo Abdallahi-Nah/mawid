@@ -12,6 +12,7 @@ import { BusinessesModule } from './businesses/businesses.module';
 import { CommonModule } from './common/common.module';
 import { CustomersModule } from './customers/customers.module';
 import { EnvModule } from './config/env.module';
+import { loggerParams } from './config/logging';
 import { HealthController } from './health/health.controller';
 import { MailModule } from './mail/mail.module';
 import { NotificationsModule } from './notifications/notifications.module';
@@ -28,18 +29,7 @@ import { TimeOffModule } from './time-off/time-off.module';
 
 @Module({
   imports: [
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level:
-          process.env.NODE_ENV === 'production'
-            ? 'info'
-            : process.env.NODE_ENV === 'test'
-              ? 'silent'
-              : 'debug',
-        transport: process.env.NODE_ENV === 'production' ? undefined : { target: 'pino-pretty' },
-        redact: ['req.headers.cookie', 'req.headers.authorization', 'res.headers["set-cookie"]'],
-      },
-    }),
+    LoggerModule.forRoot(loggerParams()),
     // Default limit for all routes. Login, register and password routes have a stricter one.
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60_000, limit: 120 }],

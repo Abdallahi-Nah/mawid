@@ -25,6 +25,8 @@ import {
   useAdminPlan,
   useAdminStats,
   useAdminSuspend,
+  useFailedNotifications,
+  useRetryNotification,
 } from '@/lib/queries';
 import { errorMessage } from '@/lib/errors';
 import { cn } from '@/lib/utils';
@@ -52,6 +54,8 @@ export function AdminPanel() {
   const list = useAdminBusinesses(q.trim(), plan, state, page);
   const suspend = useAdminSuspend();
   const changePlan = useAdminPlan();
+  const failed = useFailedNotifications();
+  const retry = useRetryNotification();
   const [target, setTarget] = useState<AdminBusiness>();
   const [error, setError] = useState<string>();
   const pages = Math.max(1, Math.ceil((list.data?.total ?? 0) / 20));
@@ -72,6 +76,15 @@ export function AdminPanel() {
     try {
       await changePlan.mutateAsync({ id: b.id, plan: value });
       toast.success(t('admin.planChanged'));
+    } catch (e) {
+      toast.error(errorMessage(t, e));
+    }
+  }
+
+  async function retryMail(id: string) {
+    try {
+      await retry.mutateAsync(id);
+      toast.success(t('admin.retried'));
     } catch (e) {
       toast.error(errorMessage(t, e));
     }
@@ -293,7 +306,13 @@ export function AdminPanel() {
           ) : usage.data.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t('admin.aiEmpty')}</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div
+              className="overflow-x-auto"
+              role="region"
+              aria-label={t('admin.aiTitle')}
+              // A scrollable area must be reachable with the keyboard.
+              tabIndex={0}
+            >
               <table className="w-full min-w-[34rem] text-sm">
                 <caption className="sr-only">{t('admin.aiTitle')}</caption>
                 <thead>
@@ -336,6 +355,47 @@ export function AdminPanel() {
             </div>
           )}
           <p className="text-xs text-muted-foreground">{t('admin.costNote')}</p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle className="text-base">{t('admin.failedTitle')}</CardTitle>
+          <p className="text-sm text-muted-foreground">{t('admin.failedDesc')}</p>
+        </CardHeader>
+        <CardContent>
+          {failed.isError ? (
+            <p role="alert" className="text-sm text-destructive">
+              {t('admin.error')}
+            </p>
+          ) : failed.isPending ? (
+            <Skeleton className="h-16 rounded-xl" />
+          ) : failed.data.items.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t('admin.failedEmpty')}</p>
+          ) : (
+            <ul className="divide-y">
+              {failed.data.items.map((n) => (
+                <li key={n.id} className="flex flex-wrap items-center gap-3 py-3">
+                  <div className="min-w-0 flex-1 text-sm">
+                    <p className="font-medium">
+                      {n.business.name} · <span dir="ltr">{n.type}</span>
+                    </p>
+                    <p className="break-words text-muted-foreground">
+                      {t('admin.failedError')} : {n.error ?? '—'}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={retry.isPending}
+                    onClick={() => retryMail(n.id)}
+                  >
+                    {t('admin.retry')}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
 

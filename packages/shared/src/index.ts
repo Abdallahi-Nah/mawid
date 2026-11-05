@@ -567,7 +567,6 @@ export interface PlanInfo {
   limits: PlanLimits;
   usage: { staff: number; bookingsThisMonth: number; aiMessagesThisMonth: number };
 }
-export const PLAN_LIMIT_CODES = ['PLAN_LIMIT_STAFF', 'PLAN_LIMIT_BOOKINGS'] as const;
 
 // ---------------------------------------------------------------------------------------------
 // Customers and notifications (phase 3)
@@ -775,4 +774,17 @@ export interface AdminAiUsage {
   tokensOut: number;
   /** An estimate from the public Groq price list (see apps/api/src/admin/ai-pricing.ts). */
   estimatedCostUsd: number;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Dead-letter list of emails that failed for good (phase 6, reliability). ADMIN only.
+// ---------------------------------------------------------------------------------------------
+export interface FailedNotification {
+  id: string;
+  type: string;
+  channel: string;
+  error: string | null;
+  createdAt: string;
+  business: { id: string; name: string };
+  booking: { id: string; startsAt: string; status: string };
 }

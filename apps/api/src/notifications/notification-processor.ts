@@ -57,7 +57,7 @@ export class NotificationProcessor {
     );
     await this.prisma.notification.updateMany({
       where: { id: data.notificationId },
-      data: { status: 'FAILED' },
+      data: { status: 'FAILED', error: error.message.slice(0, 500) },
     });
   }
 

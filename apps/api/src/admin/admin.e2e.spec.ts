@@ -4,7 +4,7 @@ import * as argon2 from 'argon2';
 import { DateTime } from 'luxon';
 import request from 'supertest';
 import { PrismaService } from '../prisma/prisma.service';
-import { createTestApp, uniqueEmail } from '../test-utils';
+import { createTestApp, MemoryMail, uniqueEmail } from '../test-utils';
 
 type Agent = ReturnType<typeof request.agent>;
 const PASSWORD = 'Password123';
@@ -13,6 +13,7 @@ const day = (n: number): string => DateTime.utc().plus({ days: n }).toISODate() 
 describe('admin area (integration, needs the database)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+  let mail: MemoryMail;
   let admin: Agent;
   const emails: string[] = [];
   const server = () => app.getHttpServer();
@@ -54,7 +55,7 @@ describe('admin area (integration, needs the database)', () => {
   }
 
   beforeAll(async () => {
-    ({ app, prisma } = await createTestApp());
+    ({ app, prisma, mail } = await createTestApp());
     const email = uniqueEmail('admin');
     emails.push(email);
     await prisma.user.create({
@@ -244,5 +245,77 @@ describe('admin area (integration, needs the database)', () => {
 
     const list = (await admin.get('/admin/businesses').query({ q: o.slug }).expect(200)).body;
     expect(list.items[0].aiCallsThisMonth).toBe(3);
+  });
+
+  describe('dead-letter list of failed emails', () => {
+    async function failedMail(o: Awaited<ReturnType<typeof owner>>) {
+      const customer = await prisma.customer.create({
+        data: {
+          businessId: o.businessId,
+          name: 'Fatima',
+          phone: `+2229${Math.floor(1000000 + Math.random() * 8999999)}`,
+          email: uniqueEmail('dl'),
+        },
+      });
+      const b = await prisma.booking.create({
+        data: {
+          businessId: o.businessId,
+          customerId: customer.id,
+          staffId: o.staffId,
+          serviceId: o.serviceId,
+          startsAt: new Date(Date.now() + 5 * 86_400_000),
+          endsAt: new Date(Date.now() + 5 * 86_400_000 + 1_800_000),
+          status: 'CONFIRMED',
+          price: 300,
+        },
+      });
+      return prisma.notification.create({
+        data: {
+          businessId: o.businessId,
+          bookingId: b.id,
+          channel: 'EMAIL',
+          type: 'confirmation',
+          status: 'FAILED',
+          error: 'Resend error: domain not verified',
+        },
+      });
+    }
+
+    it('lists failed emails with their business and last error (admin only)', async () => {
+      const o = await owner();
+      const n = await failedMail(o);
+      await o.agent.get('/admin/failed-notifications').expect(403);
+      const res = await admin.get('/admin/failed-notifications').expect(200);
+      const row = res.body.items.find((x: { id: string }) => x.id === n.id);
+      expect(row).toMatchObject({
+        type: 'confirmation',
+        error: 'Resend error: domain not verified',
+        business: { id: o.businessId, name: 'Admin Test' },
+      });
+    });
+
+    it('retry puts the email back in the queue: it is sent and leaves the list', async () => {
+      const o = await owner();
+      const n = await failedMail(o);
+      await admin.post(`/admin/failed-notifications/${n.id}/retry`).expect(200);
+      await o.agent.post(`/admin/failed-notifications/${n.id}/retry`).expect(403);
+      const end = Date.now() + 8000;
+      let status = '';
+      while (Date.now() < end) {
+        status = (await prisma.notification.findUniqueOrThrow({ where: { id: n.id } })).status;
+        if (status === 'SENT') break;
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      expect(status).toBe('SENT');
+      expect(
+        mail.to(
+          (await prisma.customer.findFirstOrThrow({ where: { businessId: o.businessId } })).email!,
+        ).length,
+      ).toBe(1);
+      const again = await admin.post(`/admin/failed-notifications/${n.id}/retry`);
+      expect(again.status).toBe(409);
+      expect(again.body.code).toBe('NOT_FAILED');
+      await admin.post(`/admin/failed-notifications/${crypto.randomUUID()}/retry`).expect(404);
+    });
   });
 });

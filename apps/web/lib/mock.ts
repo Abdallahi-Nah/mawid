@@ -28,18 +28,3 @@ export type MockState = 'loading' | 'empty' | 'error' | undefined;
 export function parseState(value: string | string[] | undefined): MockState {
   return value === 'loading' || value === 'empty' || value === 'error' ? value : undefined;
 }
-
-/** Fake availability: 09:00 to 17:30 every 30 min, some slots taken. Friday is closed. */
-export function slotsFor(date: Date): { time: string; disabled?: boolean }[] {
-  if (date.getDay() === 5) return [];
-  const out: { time: string; disabled?: boolean }[] = [];
-  for (let i = 0; i < 18; i++) {
-    const h = 9 + Math.floor(i / 2);
-    const m = i % 2 === 0 ? '00' : '30';
-    out.push({
-      time: `${String(h).padStart(2, '0')}:${m}`,
-      disabled: (date.getDate() + i) % 4 === 0,
-    });
-  }
-  return out;
-}

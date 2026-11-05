@@ -28,11 +28,10 @@ const initials = (name: string) =>
     .map((w) => w[0])
     .join('');
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string; slug: string };
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const locale = params.locale as Locale;
   const b = await fetchPublicBusiness(params.slug).catch(() => null);
   if (!b) return { robots: { index: false } };
@@ -55,13 +54,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function BusinessPage({
-  params,
-  searchParams,
-}: {
-  params: { locale: string; slug: string };
-  searchParams: { state?: string; chat?: string };
+export default async function BusinessPage(props: {
+  params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<{ state?: string; chat?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   setRequestLocale(params.locale);
   const t = await getTranslations();
   const locale = (await getLocale()) as Locale;

@@ -955,6 +955,14 @@
       "cost": "Coût estimé"
     },
     "aiEmpty": "Aucun appel IA ce mois.",
-    "costNote": "Coût estimé avec les prix publics de Groq, à titre indicatif."
+    "costNote": "Coût estimé avec les prix publics de Groq, à titre indicatif.",
+    "failedTitle": "Emails en échec",
+    "failedDesc": "Emails qui n'ont pas pu partir après 3 essais. Corrigez la cause (clé Resend, domaine, panne) puis renvoyez-les.",
+    "failedEmpty": "Aucun email en échec.",
+    "retry": "Renvoyer",
+    "retried": "Email remis en file d'attente",
+    "failedType": "Type",
+    "failedError": "Dernière erreur",
+    "failedBooking": "Rendez-vous"
   }
 }

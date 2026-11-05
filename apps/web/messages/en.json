@@ -955,6 +955,14 @@
       "cost": "Estimated cost"
     },
     "aiEmpty": "No AI call this month.",
-    "costNote": "Cost estimated with the public Groq prices, for information only."
+    "costNote": "Cost estimated with the public Groq prices, for information only.",
+    "failedTitle": "Failed emails",
+    "failedDesc": "Emails that could not be sent after 3 attempts. Fix the cause (Resend key, domain, outage), then send them again.",
+    "failedEmpty": "No failed email.",
+    "retry": "Send again",
+    "retried": "Email put back in the queue",
+    "failedType": "Type",
+    "failedError": "Last error",
+    "failedBooking": "Appointment"
   }
 }

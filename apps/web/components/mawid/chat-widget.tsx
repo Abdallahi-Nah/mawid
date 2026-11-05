@@ -65,7 +65,11 @@ export function ChatWidget({
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => abortRef.current?.abort(), []);
-  useEffect(() => endRef.current?.scrollIntoView?.({ block: 'end' }), [messages, typing]);
+  // Braces on purpose: an effect must return nothing or a cleanup function. Returning the result of
+  // scrollIntoView() breaks React when a browser makes that method return a Promise.
+  useEffect(() => {
+    endRef.current?.scrollIntoView?.({ block: 'end' });
+  }, [messages, typing]);
 
   const patch = (id: number, fn: (m: Msg) => Msg) =>
     setMessages((all) => all.map((m) => (m.id === id ? fn(m) : m)));

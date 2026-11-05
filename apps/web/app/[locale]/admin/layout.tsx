@@ -6,13 +6,14 @@ import { SiteHeader } from '@/components/mawid/site-header';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default function AdminLayout({
-  children,
-  params,
-}: {
+export default async function AdminLayout(props: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const params = await props.params;
+
+  const { children } = props;
+
   setRequestLocale(params.locale);
   return (
     <>

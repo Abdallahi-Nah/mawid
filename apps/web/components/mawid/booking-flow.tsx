@@ -95,7 +95,9 @@ export function BookingFlow({
   const slotsState = slotsQuery.isError ? 'error' : slotsQuery.isFetching ? 'loading' : 'ready';
 
   // A chosen time is only valid for the service and employee it was loaded for.
-  useEffect(() => setStartsAt(undefined), [serviceId, staffId]);
+  useEffect(() => {
+    setStartsAt(undefined);
+  }, [serviceId, staffId]);
 
   // Move focus to the step title for keyboard and screen reader users.
   useEffect(() => {

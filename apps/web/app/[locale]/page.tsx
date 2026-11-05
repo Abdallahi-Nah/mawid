@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { Check, CalendarClock, Sparkles, BellRing } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
@@ -26,11 +27,10 @@ const plans = [
   { key: 'business', price: 3500, popular: false },
 ] as const;
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: string };
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const locale = params.locale as Locale;
   const t = await getTranslations({ locale, namespace: 'home' });
   return {
@@ -46,7 +46,8 @@ export async function generateMetadata({
   };
 }
 
-export default function HomePage({ params }: { params: { locale: string } }) {
+export default function HomePage(props: { params: Promise<{ locale: string }> }) {
+  const params = use(props.params);
   setRequestLocale(params.locale);
   const t = useTranslations('home');
   const locale = useLocale() as Locale;

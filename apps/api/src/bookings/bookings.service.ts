@@ -76,6 +76,18 @@ export function isOverlapError(e: unknown): boolean {
     /no_overlap|exclusion constraint|23P01/i.test(e.message)
   );
 }
+/**
+ * PostgreSQL found two transactions waiting for each other ("deadlock detected", 40P01). With the anti
+ * double-booking constraint this happens when several requests insert the same or overlapping times at once.
+ * It is a conflict to retry, never a server error: after a short wait the database gives a clean answer.
+ */
+export function isDeadlockError(e: unknown): boolean {
+  return (
+    (e instanceof Prisma.PrismaClientUnknownRequestError ||
+      e instanceof Prisma.PrismaClientKnownRequestError) &&
+    /deadlock detected|40P01|ShareLock on transaction/i.test(e.message)
+  );
+}
 const isUniqueError = (e: unknown): boolean =>
   e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002';
 
@@ -368,49 +380,67 @@ export class BookingsService {
     // Two first-time bookings with the same phone can race on the customer row: try again once.
     for (let attempt = 0; ; attempt++) {
       try {
-        return await this.prisma.forTenant(businessId).$transaction(async (tx) => {
-          const customer = await tx.customer.upsert({
-            where: { businessId_phone: { businessId, phone } },
-            create: { businessId, name: d.customer.name, phone, email, userId: d.userId },
-            update: {
-              name: d.customer.name,
-              ...(email ? { email } : {}),
-              ...(d.userId ? { userId: d.userId } : {}),
-            },
-          });
-          const booking = await tx.booking.create({
-            data: {
-              businessId,
-              customerId: customer.id,
-              staffId: d.staffId,
-              serviceId: d.service.id,
-              startsAt: d.startsAt,
-              endsAt: new Date(d.startsAt.getTime() + d.service.durationMin * 60_000),
-              status: d.status,
-              source: d.source,
-              price: d.service.price,
-              bufferMin: d.bufferMin,
-              notes: d.notes,
-              locale: d.locale,
-            },
-          });
-          if (d.deposit) {
-            await tx.payment.create({
-              data: {
-                businessId,
-                bookingId: booking.id,
-                method: 'MOBILE',
-                amount: d.deposit,
-                status: 'PENDING',
-                provider: this.paymentProvider.name,
+        // This one write goes through the plain client (a transaction on the tenant client cannot run the lock
+        // below). Every row it writes carries the business id explicitly, and the customer is found by
+        // (business id, phone), so nothing can cross to another business.
+        return await this.prisma.$transaction(
+          async (tx) => {
+            // One booking at a time per employee. Without it, many simultaneous inserts for the same time wait
+            // for each other and PostgreSQL has to break the deadlock after a full second. With it, the second
+            // request simply finds the first booking and gets the clean "slot taken" answer at once.
+            await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${d.staffId}, 0))`;
+            const customer = await tx.customer.upsert({
+              where: { businessId_phone: { businessId, phone } },
+              create: { businessId, name: d.customer.name, phone, email, userId: d.userId },
+              update: {
+                name: d.customer.name,
+                ...(email ? { email } : {}),
+                ...(d.userId ? { userId: d.userId } : {}),
               },
             });
-          }
-          return booking.id;
-        });
+            const booking = await tx.booking.create({
+              data: {
+                businessId,
+                customerId: customer.id,
+                staffId: d.staffId,
+                serviceId: d.service.id,
+                startsAt: d.startsAt,
+                endsAt: new Date(d.startsAt.getTime() + d.service.durationMin * 60_000),
+                status: d.status,
+                source: d.source,
+                price: d.service.price,
+                bufferMin: d.bufferMin,
+                notes: d.notes,
+                locale: d.locale,
+              },
+            });
+            if (d.deposit) {
+              await tx.payment.create({
+                data: {
+                  businessId,
+                  bookingId: booking.id,
+                  method: 'MOBILE',
+                  amount: d.deposit,
+                  status: 'PENDING',
+                  provider: this.paymentProvider.name,
+                },
+              });
+            }
+            return booking.id;
+            // A burst of bookings can wait for a free database connection: wait up to 10 s instead of failing at 2 s.
+          },
+          { maxWait: 10_000, timeout: 10_000 },
+        );
       } catch (e) {
         if (isOverlapError(e)) throw slotTaken();
         if (isUniqueError(e) && attempt < 2) continue;
+        if (isDeadlockError(e)) {
+          // The other request holds the slot (or is about to): wait a little, try again, and if it keeps
+          // colliding the slot is simply taken.
+          if (attempt >= 4) throw slotTaken();
+          await new Promise((r) => setTimeout(r, 15 + Math.random() * 40 * (attempt + 1)));
+          continue;
+        }
         throw e;
       }
     }

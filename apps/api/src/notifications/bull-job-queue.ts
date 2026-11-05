@@ -64,6 +64,15 @@ export class BullJobQueue extends JobQueue implements OnModuleDestroy {
     return Math.max(0, job.timestamp + (job.opts.delay ?? 0) - Date.now());
   }
 
+  async ping(): Promise<boolean> {
+    try {
+      await this.queue.getJobCounts('waiting'); // a round trip to Redis
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   start(
     handler: (data: JobData) => Promise<void>,
     onFinalFailure: (data: JobData, error: Error) => Promise<void>,

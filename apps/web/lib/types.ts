@@ -92,4 +92,3 @@ export interface CustomerDetail extends CustomerSummary {
     staffName: string;
   }[];
 }
-export type { InAppNotification } from '@mawid/shared';
