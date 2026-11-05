@@ -13,8 +13,16 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
-// Floating AI chat button that opens the chat widget (mock conversation, no backend).
-export function ChatFab({ forceError }: { forceError?: boolean }) {
+// Floating AI chat button that opens the chat widget (real assistant, streamed by the API).
+export function ChatFab({
+  slug,
+  businessName,
+  forceUnavailable,
+}: {
+  slug: string;
+  businessName: string;
+  forceUnavailable?: boolean;
+}) {
   const t = useTranslations();
   return (
     <Sheet>
@@ -32,7 +40,7 @@ export function ChatFab({ forceError }: { forceError?: boolean }) {
           <SheetTitle>{t('chat.assistant')}</SheetTitle>
           <SheetDescription>{t('chat.subtitle')}</SheetDescription>
         </SheetHeader>
-        <ChatWidget forceError={forceError} />
+        <ChatWidget slug={slug} businessName={businessName} forceUnavailable={forceUnavailable} />
       </SheetContent>
     </Sheet>
   );

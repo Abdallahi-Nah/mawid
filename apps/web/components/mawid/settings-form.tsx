@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ErrorState } from '@/components/mawid/error-state';
+import { AiWriteDialog, BUSINESS_KINDS } from '@/components/mawid/ai-write-dialog';
 import { Field } from '@/components/mawid/form-field';
 import { Spinner } from '@/components/mawid/spinner';
 import { Button } from '@/components/ui/button';
@@ -221,7 +222,15 @@ export function SettingsForm() {
           </Select>
         </Field>
         <Field id="s-desc" label={t('settings.description')} error={err('description')}>
-          <Textarea id="s-desc" rows={3} value={v.description} onChange={set('description')} />
+          <div className="space-y-2">
+            <Textarea id="s-desc" rows={3} value={v.description} onChange={set('description')} />
+            <AiWriteDialog
+              kinds={BUSINESS_KINDS}
+              defaultLocale={v.defaultLocale as 'ar' | 'fr' | 'en'}
+              seed={[v.name, v.category].filter(Boolean).join(', ')}
+              onUse={(text) => setV((x) => ({ ...x, description: text }))}
+            />
+          </div>
         </Field>
         <Field id="s-addr" label={t('settings.address')} error={err('address')}>
           <Input id="s-addr" value={v.address} onChange={set('address')} />

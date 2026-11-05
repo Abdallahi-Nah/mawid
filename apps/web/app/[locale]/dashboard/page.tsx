@@ -2,6 +2,7 @@ import { CalendarCheck, Percent, Sparkles, UserPlus, Wallet } from 'lucide-react
 import { useLocale, useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { BookingsChart } from '@/components/mawid/bookings-chart';
+import { AiTools } from '@/components/mawid/ai-tools';
 import { EmptyState } from '@/components/mawid/empty-state';
 import { ErrorState } from '@/components/mawid/error-state';
 import { StatCard } from '@/components/mawid/stat-card';
@@ -194,6 +195,8 @@ export default function DashboardPage({
           )}
         </CardContent>
       </Card>
+
+      <AiTools />
     </div>
   );
 }

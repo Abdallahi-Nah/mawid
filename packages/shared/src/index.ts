@@ -424,3 +424,109 @@ export interface InAppNotification {
   readAt: string | null;
   booking: { id: string; startsAt: string; customerName: string; serviceName: string };
 }
+
+// ---------------------------------------------------------------------------------------------
+// AI assistant (phase 4)
+// ---------------------------------------------------------------------------------------------
+/** One turn of the chat. The browser can only send "user" and "assistant" turns (never system or tool). */
+export const aiChatMessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().trim().min(1, 'required').max(600, 'tooLong'),
+});
+export const aiChatSchema = z.object({
+  businessSlug: z.string().min(1).max(60),
+  messages: z.array(aiChatMessageSchema).min(1).max(30),
+  locale: z.enum(LOCALES).optional(),
+});
+export type AiChatInput = z.infer<typeof aiChatSchema>;
+
+/** The customer picks a suggested slot: the server prepares a draft without calling the model. */
+export const aiDraftSchema = z.object({
+  businessSlug: z.string().min(1).max(60),
+  serviceId: z.string().uuid(),
+  staffId: z.string().uuid().nullable().optional(),
+  startsAt: isoDateTime,
+});
+export type AiDraftInput = z.infer<typeof aiDraftSchema>;
+
+/** The customer clicks "Confirm" on a draft: only a draft signed by the server can become a booking. */
+export const aiConfirmSchema = z.object({
+  draftToken: z.string().min(20).max(1000),
+  customer: bookingCustomerSchema,
+  notes: z.preprocess(emptyToNull, z.string().trim().max(500, 'tooLong').nullable().optional()),
+  locale: z.enum(LOCALES).optional(),
+});
+export type AiConfirmInput = z.infer<typeof aiConfirmSchema>;
+
+/** A booking proposal. It is NOT a booking: nothing is reserved until the customer confirms. */
+export interface AiDraft {
+  draftToken: string;
+  expiresAt: string;
+  service: { id: string; name: string; durationMin: number; price: number };
+  staff: { id: string | null; displayName: string | null }; // null = any employee
+  startsAt: string;
+  endsAt: string;
+  timezone: string;
+}
+
+/** Free slots found by the assistant, shown as clickable cards. */
+export interface AiSlotsSuggestion {
+  serviceId: string;
+  staffId: string | null;
+  serviceName: string;
+  timezone: string;
+  slots: { start: string; end: string; staffName: string | null }[];
+}
+
+/** Server-Sent Events of POST /public/ai/chat. */
+export type AiStreamEvent =
+  | { type: 'text'; delta: string }
+  | { type: 'slots'; data: AiSlotsSuggestion }
+  | { type: 'draft'; data: AiDraft }
+  | { type: 'error'; code: string }
+  | { type: 'done' };
+
+// Owner writing and analysis tools (AI-03, AI-04, AI-05). The owner always reads the text before using it.
+export const AI_MESSAGE_KINDS = ['reminder', 'cancellation', 'thanks', 'promotion'] as const;
+export const AI_CONTENT_KINDS = ['business_description', 'service_description'] as const;
+export const AI_TONES = ['friendly', 'formal', 'playful', 'professional'] as const;
+
+export const aiGenerateSchema = z.object({
+  kind: z.enum([...AI_MESSAGE_KINDS, ...AI_CONTENT_KINDS]),
+  locale: z.enum(LOCALES), // language of the generated text (the customer's language)
+  tone: z.enum(AI_TONES).default('friendly'),
+  /** AI-05: 3 words or a short idea. AI-03 promotion: the offer. Treated as data, never as instructions. */
+  keywords: z.preprocess(
+    emptyToNull,
+    z.string().trim().min(3, 'required').max(300, 'tooLong').nullable().optional(),
+  ),
+  serviceId: z.string().uuid().optional(), // for service_description
+});
+export type AiGenerateInput = z.infer<typeof aiGenerateSchema>;
+export interface AiGenerateResult {
+  text: string;
+  model: string;
+}
+
+export const aiAnalyzeSchema = z.object({ locale: z.enum(LOCALES).default('fr') });
+export type AiAnalyzeInput = z.infer<typeof aiAnalyzeSchema>;
+
+export const reviewAnalysisSchema = z.object({
+  summary: z.string().max(1500),
+  sentiment_counts: z.object({
+    positive: z.number().int().min(0),
+    neutral: z.number().int().min(0),
+    negative: z.number().int().min(0),
+  }),
+  themes: z
+    .array(
+      z.object({
+        name: z.string().max(60),
+        sentiment: z.enum(['positive', 'neutral', 'negative']),
+        mentions: z.number().int().min(0),
+      }),
+    )
+    .max(10),
+});
+export type ReviewAnalysis = z.infer<typeof reviewAnalysisSchema>;
+export type ReviewAnalysisResult = ReviewAnalysis & { reviewCount: number };
