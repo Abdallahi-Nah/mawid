@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { LlmClient } from './ai/llm.client';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { MailMessage, MailService } from './mail/mail.service';
 import { PrismaService } from './prisma/prisma.service';
@@ -27,7 +28,9 @@ export class MemoryMail extends MailService {
   }
 }
 
-export async function createTestApp(): Promise<{
+export async function createTestApp(
+  opts: { llm?: LlmClient; env?: Record<string, string> } = {},
+): Promise<{
   app: INestApplication;
   prisma: PrismaService;
   mail: MemoryMail;
@@ -35,11 +38,16 @@ export async function createTestApp(): Promise<{
   // Each test app gets its own queue in Redis, so nothing leaks between tests or into a running dev API.
   process.env.QUEUE_PREFIX = `mawid-test-${Math.random().toString(36).slice(2, 8)}`;
   process.env.NOTIFY_BACKOFF_MS ??= '50';
+  // A fake key: the real Groq is never called in tests (the model client is replaced below).
+  if (process.env.LIVE_GROQ !== '1') process.env.GROQ_API_KEY = 'test-key-not-real';
+  process.env.AI_ENABLED = 'true';
+  Object.assign(process.env, opts.env);
   const mail = new MemoryMail();
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+  let builder = Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(MailService)
-    .useValue(mail)
-    .compile();
+    .useValue(mail);
+  if (opts.llm) builder = builder.overrideProvider(LlmClient).useValue(opts.llm);
+  const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication();
   app.use(cookieParser());
   app.useGlobalFilters(new AllExceptionsFilter());

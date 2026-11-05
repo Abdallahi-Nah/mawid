@@ -15,6 +15,14 @@ export const envSchema = z.object({
   GROQ_MODEL_CHAT: optionalStr,
   GROQ_MODEL_FAST: optionalStr,
   GROQ_MODEL_STT: optionalStr,
+  // Kill switch: AI_ENABLED=false turns every AI feature off (the normal booking flow is not affected).
+  AI_ENABLED: z
+    .string()
+    .default('true')
+    .transform((v) => v.trim().toLowerCase() !== 'false'),
+  AI_TIMEOUT_MS: z.coerce.number().default(15_000),
+  // Calls to Groq allowed per month for a FREE business (PRO x10, BUSINESS x50).
+  AI_MONTHLY_QUOTA: z.coerce.number().default(1000),
   RESEND_API_KEY: optionalStr,
   MAIL_FROM: z.string().min(1),
   UPLOAD_DIR: z.string().default('uploads'),

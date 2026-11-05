@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
+import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard, RolesGuard } from './auth/guards';
 import { BookingsModule } from './bookings/bookings.module';
@@ -47,6 +48,7 @@ import { TimeOffModule } from './time-off/time-off.module';
     BusinessesModule,
     NotificationsModule,
     BookingsModule,
+    AiModule,
     CustomersModule,
     ServicesModule,
     StaffModule,

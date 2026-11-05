@@ -76,7 +76,11 @@ export class BookingsService {
   // Public: the customer (guest or logged in)
   // ----------------------------------------------------------------------------------------------
 
-  async createPublic(input: CreateBookingInput, user?: AuthUser): Promise<PublicBookingView> {
+  async createPublic(
+    input: CreateBookingInput,
+    user?: AuthUser,
+    source: 'WEB' | 'AI' = 'WEB',
+  ): Promise<PublicBookingView> {
     const business = await this.prisma.business.findUnique({ where: { slug: input.businessSlug } });
     if (!business)
       throw new NotFoundException({ code: 'NOT_FOUND', message: 'Business not found' });
@@ -103,7 +107,7 @@ export class BookingsService {
       service: avail.service,
       startsAt,
       status: business.bookingMode === 'AUTO' ? 'CONFIRMED' : 'PENDING',
-      source: 'WEB',
+      source,
       notes: input.notes ?? null,
       locale: input.locale ?? business.defaultLocale,
     });
