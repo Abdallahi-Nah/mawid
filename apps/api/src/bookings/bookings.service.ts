@@ -35,6 +35,7 @@ import { PlansService } from '../plans/plans.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AvailabilityService } from './availability.service';
 import { BookingEvents } from './booking-events';
+import { assertNotInPast, MANUAL_BOOKING_TOLERANCE_MS } from './past';
 import { assertTransition, OPEN_STATUSES } from './status';
 
 const HOUR = 3_600_000;
@@ -237,6 +238,8 @@ export class BookingsService {
 
   /** Booking made by the owner (phone or walk-in). Working hours are not enforced: the owner may accept extra time. */
   async createManual(businessId: string, input: ManualBookingInput): Promise<OwnerBookingView> {
+    // The owner can write down a customer who just walked in (a few minutes ago), but not a past day.
+    assertNotInPast(new Date(input.startsAt), MANUAL_BOOKING_TOLERANCE_MS);
     const t = this.prisma.forTenant(businessId);
     const service = await t.service.findFirst({ where: { id: input.serviceId, active: true } });
     if (!service)
@@ -282,6 +285,8 @@ export class BookingsService {
         message: 'This booking can no longer be changed',
       });
     }
+    // No tolerance when moving: the new time must be now or later (day, month, year, hour, minute, second).
+    assertNotInPast(new Date(input.startsAt));
     if (input.staffId && input.staffId !== current.staffId) {
       const ok = await t.staff.findFirst({
         where: {

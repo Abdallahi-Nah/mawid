@@ -102,14 +102,36 @@ describe('customers (integration, needs the database)', () => {
     const s = await shop();
     const customer = { name: 'Omar Ould Salem', phone: '+22233000010', email: 'omar@example.com' };
     await book(s, '09:00', customer, day(-4)).expect(409); // the past is not bookable online...
-    // ...but the owner records it by hand.
+    // ...and the owner can no longer put an appointment in the past by hand (rule PAST_NOT_ALLOWED), so the two
+    // past visits of this test are written straight into the database.
+    const row = await prisma.customer.create({
+      data: {
+        businessId: s.businessId,
+        name: customer.name,
+        phone: customer.phone,
+        email: customer.email,
+      },
+    });
+    const past = (date: string) =>
+      prisma.booking.create({
+        data: {
+          businessId: s.businessId,
+          customerId: row.id,
+          staffId: s.staffId,
+          serviceId: s.serviceId,
+          startsAt: new Date(iso(date, '09:00')),
+          endsAt: new Date(new Date(iso(date, '09:00')).getTime() + 30 * 60_000),
+          status: 'CONFIRMED',
+          price: 300,
+        },
+      });
     const manual = (date: string, time: string) =>
       s.agent
         .post('/bookings')
         .send({ serviceId: s.serviceId, staffId: s.staffId, startsAt: iso(date, time), customer })
         .expect(201);
-    const done = (await manual(day(-4), '09:00')).body;
-    const missed = (await manual(day(-3), '09:00')).body;
+    const done = await past(day(-4));
+    const missed = await past(day(-3));
     await manual(day(6), '09:00');
     await s.agent.patch(`/bookings/${done.id}/status`).send({ status: 'COMPLETED' }).expect(200);
     await s.agent.patch(`/bookings/${missed.id}/status`).send({ status: 'NO_SHOW' }).expect(200);

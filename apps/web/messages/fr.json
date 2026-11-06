@@ -200,7 +200,8 @@
       "timeInvalid": "Heure invalide",
       "endBeforeStart": "La fin doit être après le début",
       "breakInvalid": "La pause doit être dans la journée de travail",
-      "hoursOverlap": "Les plages se chevauchent"
+      "hoursOverlap": "Les plages se chevauchent",
+      "pastNotAllowed": "Ce moment est déjà passé. Choisissez maintenant ou plus tard (15 minutes de tolérance pour un client arrivé à l'instant)."
     }
   },
   "mock": {
@@ -587,7 +588,8 @@
     "ALREADY_PAID": "L'acompte est déjà payé.",
     "REVIEW_EXISTS": "Vous avez déjà donné votre avis.",
     "NOT_COMPLETED": "Vous pourrez donner votre avis après votre rendez-vous.",
-    "RANGE_TOO_LARGE": "La période est trop longue (366 jours au maximum)."
+    "RANGE_TOO_LARGE": "La période est trop longue (366 jours au maximum).",
+    "PAST_NOT_ALLOWED": "Impossible de choisir un moment déjà passé."
   },
   "settings": {
     "title": "Réglages du commerce",

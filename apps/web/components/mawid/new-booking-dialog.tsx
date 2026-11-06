@@ -1,6 +1,6 @@
 'use client';
 
-import { manualBookingSchema } from '@mawid/shared';
+import { MANUAL_BOOKING_TOLERANCE_MIN, manualBookingSchema } from '@mawid/shared';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -26,7 +26,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { errorMessage } from '@/lib/errors';
 import { useCreateManualBooking, useServices, useStaff } from '@/lib/queries';
-import { hhmmToMinutes, zonedToUtcISO } from '@/lib/tz';
+import { dayKeyTz, hhmmToMinutes, zonedToUtcISO } from '@/lib/tz';
 
 const EMPTY = {
   serviceId: '',
@@ -69,6 +69,14 @@ export function NewBookingDialog({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setApiError(undefined);
+    // Not in the past (the API checks too): the exact moment, with the same 15 minutes of tolerance for a walk-in.
+    if (v.date && v.time) {
+      const start = new Date(zonedToUtcISO(v.date, hhmmToMinutes(v.time), tz)).getTime();
+      if (start < Date.now() - MANUAL_BOOKING_TOLERANCE_MIN * 60_000) {
+        setErrors({ startsAt: 'pastNotAllowed' });
+        return;
+      }
+    }
     const parsed = manualBookingSchema.safeParse({
       serviceId: v.serviceId,
       staffId: v.staffId,
@@ -149,7 +157,14 @@ export function NewBookingDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="nb-date">{t('booking.dateLabel')}</Label>
-              <Input id="nb-date" type="date" dir="ltr" value={v.date} onChange={set('date')} />
+              <Input
+                id="nb-date"
+                type="date"
+                dir="ltr"
+                min={dayKeyTz(new Date(Date.now() - MANUAL_BOOKING_TOLERANCE_MIN * 60_000), tz)}
+                value={v.date}
+                onChange={set('date')}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="nb-time">{t('cal.time')}</Label>

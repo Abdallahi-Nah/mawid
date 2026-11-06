@@ -4,6 +4,11 @@ All notable changes to Mawid. Format: [Keep a Changelog](https://keepachangelog.
 
 ## [Unreleased]
 
+### Fixed
+
+- An appointment can no longer be moved or created in the past by the owner (drag and drop, new appointment form): `PAST_NOT_ALLOWED`. A customer who just arrived can be written down up to 15 minutes back; a move has no tolerance. The comparison uses the exact moment (day, month, year, hour, minute, second).
+- Plan usage text in Arabic ("0 من 50") follows the language direction.
+
 ### Added
 
 - Test deployment without a domain: the web app can relay the API under `/backend` (`API_PROXY_TARGET`, `PUBLIC_API_URL`), with `COOKIE_PATH_PREFIX` for the refresh cookie. Off by default. See `docs/DEPLOY.md` section 0b.

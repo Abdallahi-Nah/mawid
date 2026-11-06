@@ -412,12 +412,28 @@ describe('booking (integration, needs the database)', () => {
           .code,
       ).toBe('TOO_EARLY');
 
-      const past1 = (await manual(day(-3), '10:00').expect(201)).body;
+      // The owner cannot write an appointment into the past any more (PAST_NOT_ALLOWED), so the two past visits
+      // of this test are written straight into the database.
+      const known = await prisma.customer.findFirstOrThrow({ where: { businessId: s.businessId } });
+      const past = (date: string, time: string) =>
+        prisma.booking.create({
+          data: {
+            businessId: s.businessId,
+            customerId: known.id,
+            staffId: s.staffIds[0],
+            serviceId: s.serviceId,
+            startsAt: new Date(iso(date, time)),
+            endsAt: new Date(new Date(iso(date, time)).getTime() + 30 * 60_000),
+            status: 'CONFIRMED',
+            price: 300,
+          },
+        });
+      const past1 = await past(day(-3), '10:00');
       expect(
         (await s.agent.patch(`/bookings/${past1.id}/status`).send({ status: 'COMPLETED' })).body
           .status,
       ).toBe('COMPLETED');
-      const past2 = (await manual(day(-3), '11:00').expect(201)).body;
+      const past2 = await past(day(-3), '11:00');
       expect(
         (await s.agent.patch(`/bookings/${past2.id}/status`).send({ status: 'NO_SHOW' })).body
           .status,

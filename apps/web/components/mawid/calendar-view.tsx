@@ -210,10 +210,16 @@ function Calendar({
 
   function moveTo(id: string, dateKey: string, minutes: number, staffId?: string) {
     const clamped = Math.max(0, Math.min(1439, minutes));
+    const startsAt = zonedToUtcISO(dateKey, clamped, tz);
+    // A service cannot be offered in the past: refuse before calling the API (the API checks too).
+    if (new Date(startsAt).getTime() < Date.now()) {
+      toast.error(t('apiErrors.PAST_NOT_ALLOWED'));
+      return;
+    }
     move.mutate(
       {
         id,
-        data: { startsAt: zonedToUtcISO(dateKey, clamped, tz), ...(staffId ? { staffId } : {}) },
+        data: { startsAt, ...(staffId ? { staffId } : {}) },
       },
       {
         onSuccess: () => toast.success(t('cal.moved')),
