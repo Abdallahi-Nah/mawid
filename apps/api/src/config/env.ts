@@ -38,6 +38,12 @@ export const envSchema = z.object({
   // Number of reverse proxies in front of the API (Railway, Render, Caddy, nginx: 1). 0 = none.
   // Without it, every visitor looks like the proxy's IP and the rate limits would block everyone together.
   TRUST_PROXY: z.coerce.number().int().min(0).max(5).default(0),
+  // Only for the "no domain" test setup: the web app relays the API under this path (for example /backend), so the
+  // refresh cookie path becomes /backend/auth. Leave empty in a normal deployment.
+  COOKIE_PATH_PREFIX: z
+    .string()
+    .regex(/^(\/[A-Za-z0-9_-]+)*$/, 'must look like /backend')
+    .default(''),
   UPLOAD_DIR: z.string().default('uploads'),
   // Notification queue. The prefix keeps several environments (and the tests) apart in one Redis.
   QUEUE_PREFIX: z.string().default('mawid'),
