@@ -34,9 +34,18 @@ const securityHeaders = [
     : []),
 ];
 
+// Optional, for a deployment WITHOUT a domain (test only, see docs/DEPLOY.md): the web server relays /backend/* to the
+// API, so the browser only talks to one site and the login cookies work. Empty = no relay (normal deployment).
+const proxyTarget = process.env.API_PROXY_TARGET
+  ? new URL(process.env.API_PROXY_TARGET).origin
+  : '';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  async rewrites() {
+    return proxyTarget ? [{ source: '/backend/:path*', destination: `${proxyTarget}/:path*` }] : [];
+  },
   async headers() {
     // Font files never change (new weight = new file name): browsers can keep them for a year.
     return [
@@ -49,7 +58,8 @@ const nextConfig = {
   },
   // The browser calls the API directly (cookies are httpOnly). This value is public, not a secret.
   env: {
-    NEXT_PUBLIC_API_URL: process.env.API_URL,
+    // The address the BROWSER uses. Same as API_URL, except with the relay (PUBLIC_API_URL=https://site/backend).
+    NEXT_PUBLIC_API_URL: process.env.PUBLIC_API_URL ?? process.env.API_URL,
     NEXT_PUBLIC_APP_URL: process.env.APP_URL,
     // Public by design (a Sentry DSN only allows sending events). Empty = Sentry off in the browser.
     NEXT_PUBLIC_SENTRY_DSN: process.env.SENTRY_DSN,

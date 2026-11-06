@@ -60,7 +60,7 @@ export class AuthController {
   ): Promise<PublicUser> {
     const locale = dto.locale ?? (req.acceptsLanguages('ar', 'fr', 'en') || 'ar');
     const { user, tokens } = await this.auth.register(dto, locale);
-    setAuthCookies(res, tokens.access, tokens.refresh, this.secure);
+    setAuthCookies(res, tokens.access, tokens.refresh, this.secure, this.env.COOKIE_PATH_PREFIX);
     return user;
   }
 
@@ -75,7 +75,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<PublicUser> {
     const { user, tokens } = await this.auth.login(dto.email, dto.password);
-    setAuthCookies(res, tokens.access, tokens.refresh, this.secure);
+    setAuthCookies(res, tokens.access, tokens.refresh, this.secure, this.env.COOKIE_PATH_PREFIX);
     return user;
   }
 
@@ -90,10 +90,10 @@ export class AuthController {
     const token = (req.cookies as Record<string, string> | undefined)?.[REFRESH_COOKIE];
     try {
       const { user, tokens } = await this.auth.refresh(token);
-      setAuthCookies(res, tokens.access, tokens.refresh, this.secure);
+      setAuthCookies(res, tokens.access, tokens.refresh, this.secure, this.env.COOKIE_PATH_PREFIX);
       return user;
     } catch (e) {
-      clearAuthCookies(res, this.secure);
+      clearAuthCookies(res, this.secure, this.env.COOKIE_PATH_PREFIX);
       throw e;
     }
   }
@@ -104,7 +104,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Log out and revoke the refresh token' })
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
     await this.auth.logout((req.cookies as Record<string, string> | undefined)?.[REFRESH_COOKIE]);
-    clearAuthCookies(res, this.secure);
+    clearAuthCookies(res, this.secure, this.env.COOKIE_PATH_PREFIX);
   }
 
   @ApiCookieAuth()

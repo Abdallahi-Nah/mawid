@@ -27,6 +27,27 @@ The login cookies are `SameSite=Lax`. A browser only sends them to the API if th
 So buy or reuse a domain (about 10 USD per year) and create two subdomains. Everything below assumes
 `app.example.com` (web) and `api.example.com` (API).
 
+### 0b. No domain yet? A test setup (not for production)
+Without a domain you can still try the whole application, including the owner dashboard, by letting the web app
+**relay the API under its own address**: the browser then only talks to one site (`/backend/...`) and the cookies work.
+It is slower (every call goes through the web server) and a sleeping free API can time out on the first call, so use it
+for tests and demos only; buy a domain for real use.
+
+| Where | Variable | Value |
+|---|---|---|
+| API (Render, Railway...) | `COOKIE_PATH_PREFIX` | `/backend` |
+| API | `APP_URL` | the exact address of the web app, for example `https://mawid-gamma.vercel.app` (no `/` at the end) |
+| API | `TRUST_PROXY` | `2` (two relays: the web host, then the API host) |
+| Web (Vercel) | `API_URL` | the API address, for example `https://mawid-xxxx.onrender.com` (used by the web server and for image links) |
+| Web | `API_PROXY_TARGET` | the same API address |
+| Web | `PUBLIC_API_URL` | `https://<your web address>/backend` (what the browser calls) |
+| Web | `APP_URL` | your web address |
+
+Redeploy both after changing them (the web variables are read at build time). `node apps/web/scripts/proxy-e2e.mjs` checks
+this setup in a browser with the web app and the API on two different sites (127.0.0.1 and localhost): without the relay the
+session is lost, with it register, refresh, logout and the dashboard all work. Streaming of the AI chat through the relay was
+checked locally; on a free hosting plan check it again.
+
 ## 1. Accounts and keys to prepare
 
 | What                                         | Where            | Needed for                                                       |
