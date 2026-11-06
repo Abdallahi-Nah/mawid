@@ -46,6 +46,8 @@ run "booking ar + fr, cancel, calendar"       node scripts/booking-e2e.mjs "$APP
 run "AI chat (mocked Groq)"                   node scripts/ai-e2e.mjs "$APP_URL" "$API_URL"
 # Dashboard numbers, CSV, deposit, reviews, QR, plan limits, admin
 run "dashboard, deposit, reviews, plan, admin" node scripts/phase5-e2e.mjs "$APP_URL" "$API_URL"
+# No appointment in the past: drag and drop and the new-appointment form
+run "no past appointments"                    node scripts/past-e2e.mjs "$APP_URL" "$API_URL"
 run "keyboard"                                 node scripts/a11y-keyboard.mjs "$APP_URL"
 run "accessibility (axe)"                      node scripts/a11y.mjs "$APP_URL" "$API_URL"
 echo

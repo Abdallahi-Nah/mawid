@@ -358,6 +358,9 @@ export const rescheduleSchema = z.object({ startsAt: isoDateTime });
 export type RescheduleInput = z.infer<typeof rescheduleSchema>;
 
 /** Owner or employee creates a booking (phone or walk-in customer). */
+/** The owner may write down a customer who just walked in: a start up to this many minutes back is accepted. */
+export const MANUAL_BOOKING_TOLERANCE_MIN = 15;
+
 export const manualBookingSchema = z.object({
   serviceId: z.string().uuid(),
   staffId: z.string().uuid(),

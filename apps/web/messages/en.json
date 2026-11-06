@@ -200,7 +200,8 @@
       "timeInvalid": "Invalid time",
       "endBeforeStart": "The end must be after the start",
       "breakInvalid": "The break must be inside the working day",
-      "hoursOverlap": "The time ranges overlap"
+      "hoursOverlap": "The time ranges overlap",
+      "pastNotAllowed": "This time has already passed. Choose now or later (15 minutes of tolerance for a customer who just arrived)."
     }
   },
   "mock": {
@@ -587,7 +588,8 @@
     "ALREADY_PAID": "The deposit is already paid.",
     "REVIEW_EXISTS": "You already left a review.",
     "NOT_COMPLETED": "You can leave a review after your appointment.",
-    "RANGE_TOO_LARGE": "The period is too long (366 days at most)."
+    "RANGE_TOO_LARGE": "The period is too long (366 days at most).",
+    "PAST_NOT_ALLOWED": "You cannot choose a time that has already passed."
   },
   "settings": {
     "title": "Business settings",
