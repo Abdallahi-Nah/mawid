@@ -51,10 +51,9 @@ export function PlanCard() {
               <li key={r.key} className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2 text-sm">
                   <span>{r.label}</span>
-                  <span
-                    dir="ltr"
-                    className={cn('tabular-nums', full && 'font-semibold text-destructive')}
-                  >
+                  {/* No dir="ltr" here: the sentence ("0 من 50", "0 of 50") must follow the language direction.
+                      Forcing left-to-right scrambles the order of the numbers around the Arabic word. */}
+                  <span className={cn('tabular-nums', full && 'font-semibold text-destructive')}>
                     {r.limit === null
                       ? `${r.used} · ${t('unlimited')}`
                       : t('usage', { used: r.used, limit: r.limit })}
